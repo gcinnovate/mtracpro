@@ -1,0 +1,172 @@
+{% extends "layout.html" %}
+{% from 'layout.html' import navbar, myscripts, err %}
+
+{% block title %}mTracPro.::.Facilities{% endblock%}
+{% block stylesheets %}
+    <!-- Data Tables -->
+    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+    <link href="/static/js/plugins/Buttons-1.1.2/css/buttons.dataTables.min.css" rel="stylesheet">
+
+
+    <!-- Sweet Alert -->
+    <link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+{% endblock %}
+
+{% block nav %}
+    {% call navbar() %}
+
+    {% endcall %}
+{% endblock %}
+
+{% block content %}
+    {{ err(ses.rdata_err)}}
+
+    <!-- DATA TABLE -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Health Facilities</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover dataTables-example" id="mydata">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Level</th>
+                                    <th>District</th>
+                                    <th>Location</th>
+                                    <th>Completeness</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for facility in facilities %}
+                                <tr class="">
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ facility.name }}</td>
+                                    <td>{{ facility.type_id }}</td>
+                                    <td>{{ facility.district }}</td>
+                                    <td>{{ facility.location_name }}</td>
+                                    <td>{{ "Yes" }}</td>
+                                    <td>
+                                       	<button type="button" class="btn btn-white btn-xs details_btn" id="{{facility.id}}" data-toggle="modal"
+                                                data-target="#myModal2">
+                                                 <i title="Details" class="fa fa-list-alt"></i>
+                                        </button>
+                                        &nbsp;&nbsp;
+										<button type="button" class="btn btn-white btn-xs sms_btn" id="{{facility.id}}" data-toggle="modal"
+											data-target="#myModal3">
+												<i title="SMS" class="fa fa-envelope-o"></i>
+										</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+                        {{ pagination_str }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END DATA TABLE -->
+	<div class="modal inmodal" id="myModal2" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">Facility Details</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="modal_res">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+	<form role="form" action="" method="post" id="form2" class="form-horizontal">
+    <div class="modal inmodal" id="myModal3" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">Send SMS</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="modal_res2">
+                    </div>
+                    <div class="row">
+                        <p>Send subcounty store manager and subcounty chief SMS to confirm receipt of nets</p>
+                        <div class="form-group"><label for="remarks" class="col-lg-3 control-label">Inquiry SMS:</label>
+                            <div class="col-lg-9">
+                                <textarea name="sms" id="sms" type="text"  rows="4" class="form-control"></textarea>
+                                <input type="hidden" name="to_subcounty" id="to_subcounty"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" type="submit" id="sendsms">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    {% call myscripts() %}
+        <!-- Data Tables -->
+        <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+        <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+        <script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+        <script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+        <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/dataTables.buttons.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/buttons.flash.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/jszip.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/pdfmake.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/vfs_fonts.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/buttons.html5.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/buttons.print.min.js"></script>
+
+        <script src="/static/js/plugins/bootstrap-validator/dist/validator.min.js"></script>
+
+        <!-- Sweet alert -->
+        <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>
+
+        <script src="/static/js/mtrackpro/facility.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('#mydata').DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ],
+                    pageLength: 25,
+                    bPaginate: false,
+                    info: false
+                });
+
+            });
+        </script>
+    {% endcall %}
+{% endblock %}
+
+
