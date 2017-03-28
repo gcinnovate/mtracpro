@@ -1,0 +1,17 @@
+.DS_Store
+.idea/
+*.pyc
+*.log
+*.old
+*.org
+*.tar*
+*.la
+*~
+*.swp
+web/local_settings.py
+web/test/test_flow.py
+web/static/downloads/
+*.zip
+*.csv
+*xls
+*.xlsx
