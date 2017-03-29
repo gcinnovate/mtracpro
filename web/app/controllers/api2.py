@@ -138,8 +138,9 @@ class CreateFacility:
                         if d:
                             district_id = d[0]["id"]
                             db.query(
-                                "UPDATE healthfacilities SET district_id = $district_id",
-                                {'district_id': district_id})
+                                "UPDATE healthfacilities SET district_id = $district_id "
+                                " WHERE id = $facility",
+                                {'district_id': district_id, 'facility': facility_id})
                             res2 = db.query(
                                 "SELECT id FROM locations "
                                 "WHERE name ilike $name AND type_id = 4"
