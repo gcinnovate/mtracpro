@@ -10,9 +10,17 @@ class Reporters:
         params = web.input(page=1, ed="", d_id="", caller="web", search="")
         edit_val = params.ed
         session = get_session()
-        districts = db.query(
-            "SELECT id, name FROM locations WHERE type_id = "
-            "(SELECT id FROM locationtype WHERE name = 'district') ORDER by name")
+        if session.role == 'District User':
+            districts_SQL = (
+                "SELECT id, name FROM locations WHERE type_id = "
+                "(SELECT id FROM locationtype WHERE name = 'district') "
+                "AND name = '%s'" % session.username.capitalize())
+        else:
+            districts_SQL = (
+                "SELECT id, name FROM locations WHERE type_id = "
+                "(SELECT id FROM locationtype WHERE name = 'district') ORDER by name")
+
+        districts = db.query(districts_SQL)
         roles = db.query("SELECT id, name from reporter_groups order by name")
         district = {}
         allow_edit = False

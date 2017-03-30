@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from 'layout.html' import navbar, myscripts, err %}
 
-{% block title %}LLIN.::.Reporters{% endblock%}
+{% block title %}mTracPro.::.Reporters{% endblock%}
 {% block stylesheets %}
     <!-- Data Tables -->
     <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
@@ -22,174 +22,146 @@
 
 {% block content %}
     {{ err(ses.rdata_err)}}
+    <!-- TABS -->
     <div class="row">
         <div class="col-lg-12">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5>Filter Reporters</h5>
-                    <div class="ibox-tools">
-                        <a class="collapse-link">
-                            <i class="fa fa-chevron-up"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="ibox-content">
-                    <form class="form-horizontal" role="form" method="get" data-toggle="validator">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                    <div class="form-group"><label for="search" class="col-lg-3 control-label">Free Form Search:</label>
-                        <div class="col-lg-5">
-                            <input name="search" id="search" type="text" class="form-control" required/>
-                        </div>
-                        <div class="col-lg-3">
-                                <button class="btn btn-sm btn-primary" type="submit">Search Reporter</button>
-                        </div>
-                    </div>
-                    </form>
-                </div>
+            <div class="tabs-container">
+                <ul class="nav nav-tabs">
+                    <li class=""><a data-toggle="tab" href="#tab-1"><i class="fa fa-user"></i>Add/Edit Reporter</a></li>
+                    <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-filter"></i> Filter Reporters</a></li>
+                </ul>
+                <div class="tab-content">
+                    <!-- tab-1 -->
+                    <div id="tab-1" class="tab-pane active">
+                        <form role="form" class="form-horizontal" data-toggle="validator" action="" method="post">
+                        <div class="panel-body">
+                            <div class="row">
+                                <!-- LEFT-->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="form-group"><label for="district" class="col-lg-3 control-label">District:</label>
+                                            <div class="col-lg-9">
+                                                <select name="district" id="district" class="form-control" required>
+                                                    <option value="">Select District</option>
+                                                    {% for d in districts %}
+                                                    <option value="{{ d.id}}" {% if d.id == district.id %} selected="yes" {% endif %}>{{ d.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group"><label class="col-lg-3 control-label">Subcounty:</label>
+                                            <div class="col-lg-9">
+                                                <select name="subcounty" id="subcounty" class="form-control">
+                                                    <option value="">Select Sub County</option>
+                                                    {% for s in subcounties %}
+                                                    <option value="{{ s.id }}" {% if s.id == subcounty.id %} selected="yes" {% endif %}>{{ s.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group"><label class="col-lg-3 control-label">Facility:</label>
+                                            <div class="col-lg-9">
+                                                <select name="facility" id="facility" class="form-control" required>
+                                                    <option value="">Select Health Facility</option>
+                                                    {% for f in facilities %}
+                                                    <option value="{{ f.id }}" {% if f.id == facility.id %} selected="yes" {% endif %}>{{ f.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
 
+                                        <div class="form-group"><label for="role" class="col-lg-3 control-label">Role:</label>
+                                            <div class="col-lg-9">
+                                                <select name="role" id="role" class="form-control" multiple="yes" size="6" required>
+                                                    <option value="">Select Role</option>
+                                                    {% for v in roles %}
+                                                    <option value="{{ v.id }}" {% if v.name == role %} selected="yes" {% endif %}>{{ v.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end left row-->
+                                </div>
+                                <!-- END LEFT-->
+
+                                <!-- RIGHT-->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <label for="firstname" class="col-lg-3 control-label">First Name:</label>
+                                            <div class="col-lg-9">
+                                                <input name="firstname" id="firstname" type="text" value="{{ firstname }}" required class="form-control"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="lastname" class="col-lg-3 control-label">Last Name:</label>
+                                            <div class="col-lg-9">
+                                                <input name="lastname" id="lastname" type="text" value="{{ lastname }}" required class="form-control"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group"><label for="tel" class="col-lg-3 control-label">Telephone:</label>
+                                            <div class="col-lg-9">
+                                                <input name="telephone" id="tel" type="text" value="{{ telephone }}"
+                                                pattern="^\+?256(3[19]|41|7[015789])[0-9]{7}$" required class="form-control"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group"><label for="alt_tel" class="col-lg-3 control-label">Other Tel:</label>
+                                            <div class="col-lg-9">
+                                                <input name="alt_telephone" id="alt_telephone" type="text" value="{{ alt_telephone }}"
+                                                pattern="^\+?256(3[19]|41|7[015789])[0-9]{7}$" class="form-control"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group"><label for="alt_tel" class="col-lg-3 control-label">Email:</label>
+                                            <div class="col-lg-9">
+                                                <input name="email" id="email" type="text" value="{{ email }}"
+                                                pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$" class="form-control"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-offset-3 col-lg-3">
+                                                <button class="btn btn-sm btn-primary" type="submit">Save Reporter</button>
+                                            </div>
+
+                                        </div>
+                                    </div><!-- end right row-->
+                                </div>
+                                <!-- END RIGHT-->
+
+                            </div><!-- end inner row -->
+                        </div>
+                        </form>
+                    </div>
+                    <!-- end tab-1 -->
+
+                    <!-- tab2 -->
+                    <div id="tab-2" class="tab-pane">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                        <form class="form-horizontal" role="form" method="get" data-toggle="validator">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <div class="form-group"><label for="search" class="col-lg-3 control-label">Free Form Search:</label>
+                                            <div class="col-lg-5">
+                                                <input name="search" id="search" type="text" class="form-control" required/>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                    <button class="btn btn-sm btn-primary" type="submit">Search Reporter</button>
+                                            </div>
+                                        </div>
+                                        </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end tab-2 -->
+
+                </div>
             </div>
         </div>
     </div>
-
-    <form role="form" class="form-horizontal" data-toggle="validator" action="" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-        <div class="row">
-            <!-- LEFT -->
-            <div class="col-lg-6">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>Reporters Form<small> register reporters</small></h5>
-                        <div class="ibox-tools">
-                            <a class="collapse-link">
-                                <i class="fa fa-chevron-up"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="ibox-content">
-                        <div class="row">
-                            <div class="form-group"><label for="district" class="col-lg-3 control-label">District:</label>
-                                <div class="col-lg-9">
-                                    <select name="district" id="district" class="form-control" required>
-                                        <option value="">Select District</option>
-                                        {% for d in districts %}
-                                        <option value="{{ d.id}}" {% if d.id == district.id %} selected="yes" {% endif %}>{{ d.name}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group"><label class="col-lg-3 control-label">Subcounty:</label>
-                                <div class="col-lg-9">
-                                    <select name="subcounty" id="subcounty" class="form-control">
-                                        <option value="">Select Sub County</option>
-                                        {% for s in subcounties %}
-                                        <option value="{{ s.id }}" {% if s.id == subcounty.id %} selected="yes" {% endif %}>{{ s.name}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group"><label for="parish" class="col-lg-3 control-label">Parish:</label>
-                                <div class="col-lg-9">
-                                    <select name="parish" id="parish" class="form-control">
-                                        <option value="">Select Parish</option>
-                                        {% for p in parishes %}
-                                        <option value="{{ p.id }}" {% if p.id == parish.id %} selected="yes" {% endif %}>{{ p.name}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group"><label for="village" class="col-lg-3 control-label">Village:</label>
-                                <div class="col-lg-9">
-                                    <select name="village" id="village" class="form-control">
-                                        <option value="">Select Village</option>
-                                        {% for v in villages %}
-                                        <option value="{{ v.id }}" {% if v.id == village.id %} selected="yes" {% endif %}>{{ v.name}}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <input type="hidden" name="location" id="location" value="{{ location }}"/>
-                                </div>
-                            </div>
-                            <div class="form-group"><label for="role" class="col-lg-3 control-label">Role:</label>
-                                <div class="col-lg-9">
-                                    <select name="role" id="role" class="form-control" required>
-                                        <option value="">Select Role</option>
-                                        {% for v in roles %}
-                                        <option value="{{ v.id }}" {% if v.name == role %} selected="yes" {% endif %}>{{ v.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group"><label for="national_id" class="col-lg-3 control-label">National ID:</label>
-                                <div class="col-lg-9">
-                                    <input name="national_id" id="national_id" type="text" value="{{ national_id }}"
-                                    pattern="^CM[a-zA-Z0-9]{12}$" class="form-control"/>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div><!-- content -->
-                </div>
-            </div>
-            <!-- END LEFT -->
-            <!-- RIGHT -->
-            <div class=" col-lg-6">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>Reporters Form</h5>
-                        <div class="ibox-tools">
-                            <a class="collapse-link">
-                                <i class="fa fa-chevron-up"></i>
-                            </a>
-                            <!--
-                            <a class="close-link">
-                                <i class="fa fa-times"></i>
-                            </a>
-                            -->
-                        </div>
-                    </div>
-                    <div class="ibox-content">
-                        <div class="form-group"><label for="firstname" class="col-lg-3 control-label">First Name:</label>
-                            <div class="col-lg-9">
-                                <input name="firstname" id="firstname" type="text" value="{{ firstname }}" required class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="form-group"><label for="lastname" class="col-lg-3 control-label">Last Name:</label>
-                            <div class="col-lg-9">
-                                <input name="lastname" id="lastname" type="text" value="{{ lastname }}" required class="form-control"/>
-                            </div>
-                        </div>
-
-                        <div class="form-group"><label for="tel" class="col-lg-3 control-label">Telephone:</label>
-                            <div class="col-lg-9">
-                                <input name="telephone" id="tel" type="text" value="{{ telephone }}"
-                                pattern="^\+?256(3[19]|41|7[015789])[0-9]{7}$" required class="form-control"/>
-                            </div>
-                        </div>
-
-                        <div class="form-group"><label for="alt_tel" class="col-lg-3 control-label">Other Tel:</label>
-                            <div class="col-lg-9">
-                                <input name="alt_telephone" id="alt_telephone" type="text" value="{{ alt_telephone }}"
-                                pattern="^\+?256(3[19]|41|7[015789])[0-9]{7}$" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="form-group"><label for="alt_tel" class="col-lg-3 control-label">Email:</label>
-                            <div class="col-lg-9">
-                                <input name="email" id="email" type="text" value="{{ email }}"
-                                pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-lg-offset-3 col-lg-3">
-                                <button class="btn btn-sm btn-primary" type="submit">Save Reporter</button>
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <!-- END RIGHT -->
-        </div>
-    </form>
+    <!-- END TABS -->
+    <br/>
     <!-- DATA TABLE -->
     <div class="row">
         <div class="col-lg-12">
@@ -276,12 +248,7 @@
                     'copy', 'csv', 'excel', 'pdf', 'print'
                 ],
                 pageLength: 25
-                /*
-                "dom": 'lTfigt',
-                "tableTools": {
-                    "sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
-                }
-                */
+
             });
 
             $('.delete_btn').click(function () {

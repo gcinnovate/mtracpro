@@ -41,6 +41,40 @@ class LocationChildren:
         return json.dumps(ret)
 
 
+class DistrictFacilities:
+    """Returns facilities in a given district """
+    def GET(self, id):
+        ret = []
+        rs = db.query(
+            "SELECT id, name FROM healthfacilities WHERE district_id = $id "
+            "ORDER BY name;", {'id': id})
+        if rs:
+            for r in rs:
+                ret.append(
+                    {
+                        "id": r['id'],
+                        "name": r['name']
+                    })
+        return json.dumps(ret)
+
+
+class LocationFacilities:
+    """Returns facilities in a given location """
+    def GET(self, id):
+        ret = []
+        rs = db.query(
+            "SELECT id, name FROM healthfacilities WHERE location = $id "
+            "ORDER BY name;", {'id': id})
+        if rs:
+            for r in rs:
+                ret.append(
+                    {
+                        "id": r['id'],
+                        "name": r['name']
+                    })
+        return json.dumps(ret)
+
+
 class Location:
     def GET(self, id):
         ret = []
