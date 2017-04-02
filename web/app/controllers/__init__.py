@@ -8,6 +8,7 @@ controllers of the app.
 import web
 from web.contrib.template import render_jinja
 from settings import (absolute, config)
+import json
 
 # Mako Template options
 # render = render_mako(
@@ -40,6 +41,11 @@ db = web.database(
 SESSION = ''
 APP = None
 
+dataElements = {}
+rs = db.query("SELECT dataelement, description FROM dhis2_mtrack_indicators_mapping")
+for r in rs:
+    dataElements[r['dataelement']] = r['description']
+
 
 def put_app(app):
     global APP
@@ -59,7 +65,21 @@ def get_session():
 def datetimeformat(value, fmt='%Y-%m-%d'):
     return value.strftime(fmt)
 
-myFilters = {'datetimeformat': datetimeformat}
+
+def formatmsg(msg):
+    ret = "<ul>"
+    try:
+        body = json.loads(msg)
+    except:
+        body = {}
+    if body:
+        datavalues = body['dataValues']
+        for d in datavalues:
+            ret += "<li><small>%s" % d['value'] + " " + dataElements[d['dataElement']] + "</small></li>"
+    ret += "</ul>"
+    return ret
+
+myFilters = {'datetimeformat': datetimeformat, 'formatmsg': formatmsg}
 
 # Jinja2 Template options
 render = render_jinja(

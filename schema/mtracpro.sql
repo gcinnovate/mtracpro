@@ -290,6 +290,8 @@ CREATE TABLE healthfacilities(
     created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+CREATE INDEX healthfacilities_idx ON healthfacilities(code);
+CREATE INDEX healthfacilities_idx1 ON healthfacilities(district);
 
 CREATE TABLE reporters(
     id BIGSERIAL NOT NULL PRIMARY KEY,
@@ -333,6 +335,23 @@ CREATE TABLE reporter_groups_reporters(
     reporter_id BIGINT REFERENCES reporters(id),
     created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE  dhis2_mtrack_indicators_mapping(
+    id SERIAL PRIMARY KEY NOT NULL,
+    form TEXT NOT NULL DEFAULT '', -- mTrac Form e.g cases, death
+    slug TEXT NOT NULL DEFAULT '', -- command variable in mTrac
+    cmd TEXT NOT NULL DEFAULT '', -- mTrac commands e.g ma, ch, tf
+    form_order INTEGER, -- order they appear in case of HTML form generation
+    description TEXT NOT NULL DEFAULT '',
+    dataset TEXT NOT NULL DEFAULT '',
+    dataelement TEXT NOT NULL DEFAULT '',
+    category_combo TEXT NOT NULL DEFAULT '',
+    created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX dhis2_mtrack_indicators_mapping_idx ON dhis2_mtrack_indicators_mapping(form);
+CREATE INDEX dhis2_mtrack_indicators_mapping_idx1 ON dhis2_mtrack_indicators_mapping(slug);
+CREATE INDEX dhis2_mtrack_indicators_mapping_idx3 ON dhis2_mtrack_indicators_mapping(dataelement);
 
 -- used for scheduling messages
 CREATE TABLE schedules(

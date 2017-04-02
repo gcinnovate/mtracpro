@@ -53,7 +53,7 @@
                             {% for report in reports %}
                                 <tr class="">
                                     <td><input name="reqid" class="topromote" value="{{ report.id }}" type="checkbox"/></td>
-                                    <td>{{ report.raw_msg }}</td>
+                                    <td>{{ report.raw_msg }} {{ report.body|formatmsg}}</td>
                                     <td>{{ report.facility }}</td>
                                     <td>{{ report.created|datetimeformat }}</td>
                                     <td>{{ report.msisdn }}</td>

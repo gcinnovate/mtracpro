@@ -16,6 +16,9 @@ PAGE_LIMIT = 25
 
 SMS_OFFSET_TIME = 5
 
+HMIS_033B_DATASET = 'V1kJRs8CtW4'
+PREFERRED_DHIS2_CONTENT_TYPE = 'xml'
+
 CASES_POSITIONS = {
     'ma': 0, 'dy': 1, 'sa': 2, 'af': 3, 'ae': 4, 'ab': 5, 'mg': 6, 'ch': 7, 'gw': 8,
     'me': 9, 'nt': 10, 'vf': 11, 'pl': 12, 'tf': 13, 'yf': 14, 'tb': 15, 'md': 16, 'pd': 17
@@ -404,9 +407,9 @@ MAPPING = {
 }
 
 XML_TEMPLATE = """
-<dataValueSet xmlns="http://dhis2.org/schema/dxf/2.0" dataSet="V1kJRs8CtW4" completeDate="%(complete_date)s" period="%(period)s" orgUnit="%(orgunit)s">
+<dataValueSet xmlns="http://dhis2.org/schema/dxf/2.0" dataSet="V1kJRs8CtW4" completeDate="%(completeDate)s" period="%(period)s" orgUnit="%(orgUnit)s">
 <dataValues>
-    %(datavales)s
+    %(dataValues)s
 </dataValues>
 </dataValueSet>
 """
@@ -414,6 +417,14 @@ XML_TEMPLATE = """
 DEFAULT_DATA_VALUES = {
     'cases': "<dataValue dataElement='fclvwNhzu7d' categoryOptionCombo='gGhClrV5odI' value='0' />",
     'death': "<dataValue dataElement='YXIu5CW9LPR' categoryOptionCombo='gGhClrV5odI' value='0' />"
+}
+
+JSON_TEMPLATE = {
+    'dataSet': 'V1kJRs8CtW4',
+    'completeDate': '',
+    'period': '',
+    'orgUnit': '',
+    'dataValues': []
 }
 
 # the order of fields in the reporter upload excel file

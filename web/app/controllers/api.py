@@ -6,7 +6,8 @@ from . import db
 from app.tools.utils import get_basic_auth_credentials, auth_user, format_msisdn
 # from app.tools.utils import get_location_role_reporters, queue_schedule, log_schedule, update_queued_sms
 from app.tools.utils import parse_message, post_request_to_dispatcher2, get_reporting_week
-from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE
+from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
+from settings import HMIS_033B_DATASET
 
 
 def get_webhook_msg(params, label='msg'):
@@ -72,6 +73,19 @@ class LocationFacilities:
                         "id": r['id'],
                         "name": r['name']
                     })
+        return json.dumps(ret)
+
+
+class FacilityReporters:
+    """Returns reports attached to a particular health facility"""
+    def GET(self, id):
+        ret = []
+        rs = db.query(
+            "SELECT telephone FROM reporters WHERE id IN "
+            "(SELECT reporter_id FROM reporter_healthfacilities WHERE facility_id=$id)",
+            {'id': id})
+        if rs:
+            pass
         return json.dumps(ret)
 
 
@@ -227,10 +241,12 @@ class Dhis2Queue:
     def POST(self):
         params = web.input(
             facilitycode="", form="", district="", msisdn="", raw_msg="", report_type="")
-        print params.facilitycode
-        print params.phone
         values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
-        dataValues = ""
+        if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+            dataValues = []
+        else:
+            dataValues = ""
+
         if params.facilitycode:
             for v in values:
                 val = v.get('value')
@@ -242,24 +258,38 @@ class Dhis2Queue:
                 if val and val.__str__().isdigit():
                     slug = "%s_%s" % (params.form, label)
                     print "%s=>%s" % (slug, val), MAPPING[slug]
-                    dataValues += (
-                        "<dataValue dataElement='%s' categoryOptionCombo="
-                        "'%s' value='%s' />\n" %
-                        (MAPPING[slug]['dhis2_uuid'], MAPPING[slug]['dhis2_combo_id'], val))
+                    if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+                        dataValues.append(
+                            {
+                                'dataElement': MAPPING[slug]['dhis2_uuid'],
+                                'categoryOptionCombo': MAPPING[slug]['dhis2_combo_id'],
+                                'value': val})
+                    else:
+                        dataValues += (
+                            "<dataValue dataElement='%s' categoryOptionCombo="
+                            "'%s' value='%s' />\n" %
+                            (MAPPING[slug]['dhis2_uuid'], MAPPING[slug]['dhis2_combo_id'], val))
+
             if not dataValues and params.form in ('cases', 'death'):
-                dataValues = DEFAULT_DATA_VALUES[params.form]
+                if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+                    dataValues = []
+                else:
+                    dataValues = DEFAULT_DATA_VALUES[params.form]
 
             if dataValues:
                 args_dict = {
-                    'complete_date': datetime.datetime.now().strftime("%Y-%m-%d"),
+                    'completeDate': datetime.datetime.now().strftime("%Y-%m-%d"),
                     'period': get_reporting_week(datetime.datetime.now()),
-                    'orgunit': params.facilitycode,
-                    'datavales': dataValues
+                    'orgUnit': params.facilitycode,
+                    'dataValues': dataValues
                 }
-
-                post_xml = XML_TEMPLATE % args_dict
+                if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+                    args_dict['dataSet'] = HMIS_033B_DATASET
+                    payload = json.dumps(args_dict)
+                else:
+                    payload = XML_TEMPLATE % args_dict
                 year, week = tuple(args_dict['period'].split('W'))
-                print post_xml
+                print payload
                 extra_params = {
                     'week': week, 'year': year, 'msisdn': params.msisdn,
                     'facility': params.facilitycode, 'raw_msg': params.raw_msg,
@@ -267,7 +297,11 @@ class Dhis2Queue:
                 # now ready to queue to DB for pushing to DHIS2
                 # resp = queue_submission(serverid, post_xml, year, week)
                 print extra_params
-                resp = post_request_to_dispatcher2(post_xml, params=extra_params)
+                if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+                    resp = post_request_to_dispatcher2(
+                        payload, params=extra_params, ctype='application/json')
+                else:
+                    resp = post_request_to_dispatcher2(payload, params=extra_params)
                 print "Resp:", resp
 
         return json.dumps({"status": "success"})

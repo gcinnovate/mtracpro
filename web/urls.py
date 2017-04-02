@@ -6,7 +6,7 @@ class handlers.
 
 from app.controllers.main_handler import Index, Logout
 from app.controllers.api import Location, LocationChildren, SubcountyLocations
-from app.controllers.api import DistrictFacilities, LocationFacilities
+from app.controllers.api import DistrictFacilities, LocationFacilities, FacilityReporters
 from app.controllers.api import Cases, Deaths, Dhis2Queue, Test
 from app.controllers.api2 import LocationsEndpoint, ReportersXLEndpoint
 from app.controllers.api2 import CreateFacility
@@ -63,6 +63,7 @@ URLS = (
     r'/test', Test,
     r'/api/v1/loc_children/(\d+)/?', LocationChildren,
     r'/api/v1/district_facilities/(\d+)/?', DistrictFacilities,
+    r'/api/v1/facility_reporters/(\d+)/?', FacilityReporters,
     r'/api/v1/loc_facilities/(\d+)/?', LocationFacilities,
     r'/api/v1/location/(\d+)/?', Location,
     r'/api/v1/subcountylocations/(\d+)/?', SubcountyLocations,
