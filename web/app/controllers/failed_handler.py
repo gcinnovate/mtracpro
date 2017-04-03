@@ -24,7 +24,7 @@ class Failed:
 
         dic = lit(
             relations='requests', fields="*",
-            criteria="status='failed' AND created > '%s' AND xml_is_well_formed(body)" % (amonthAgo),
+            criteria="status='failed' AND created > '%s'" % (amonthAgo),
             order="id desc",
             limit=limit, offset=start)
         res = doquery(db, dic)
@@ -42,13 +42,15 @@ class Failed:
             page = int(params.page)
         except:
             page = 1
+        limit = PAGE_LIMIT
+        start = (page - 1) * limit if page > 0 else 0
 
         with db.transaction():
-            if params.pbtn == 'Retry Selected':
+            if params.abtn == 'Retry Selected':
                 if params.reqid:
                     for val in params.reqid:
                         db.update('requests', where="id = %s" % val, status='ready')
-            if params.pbtn == 'Delete Selected':
+            if params.abtn == 'Delete Selected':
                 if params.reqid:
                     for val in params.reqid:
                         db.delete('requests', where="id = %s" % val)
@@ -57,9 +59,14 @@ class Failed:
         # we start getting requests a month old
         t = cal.parse("2 month ago")[0]
         amonthAgo = '%s-%s-%s' % (t.tm_year, t.tm_mon, t.tm_mday)
-        res = db.query(
-            "SELECT * FROM requests WHERE status='failed' AND created > $since "
-            "AND xml_is_well_formed(body) ORDER BY id DESC")
+        dic = lit(
+            relations='requests', fields="*",
+            criteria="status='failed' AND created > '%s'" % (amonthAgo),
+            order="id desc",
+            limit=limit, offset=start)
+        res = doquery(db, dic)
+        count = countquery(db, dic)
+        pagination_str = getPaginationString(default(page, 0), count, limit, 2, "failed", "?page=")
 
         l = locals()
         del l['self']

@@ -26,7 +26,7 @@
                 <div class="ibox-title">
                     <h5>Failed Requests</h5>
                     <div class="ibox-tools">
-                        <button class="btn btn-info delete_btn" id="yy"><i class="fa fa-repeat"></i> Retry Selected</button>
+                        <button class="btn btn-info delete_btn" name="abtn" value="Retry Selected"><i class="fa fa-repeat"></i> Retry Selected</button>
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
@@ -49,7 +49,7 @@
 							{% for l in res %}
 								<tr>
 									<td><input name="reqid" class="topromote" value="{{ l.id }}" type="checkbox"/></td>
-									<td>{{ l.raw_msg}}</td>
+									<td>{{ l.raw_msg}}{{l.body|formatmsg}}</td>
 									<td>{{ l.created|datetimeformat }}</td>
 									<td>{{ l.facility }}</td>
 									<td>{{ l.year|string + "W" + l.week}}</td>
