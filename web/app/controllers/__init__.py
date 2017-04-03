@@ -47,9 +47,11 @@ for r in rs:
     dataElements[r['dataelement']] = r['description']
 
 ourDistricts = []
+allDistricts = {}
 rs = db.query("SELECT id, name FROM  locations WHERE type_id = 3")
 for r in rs:
     ourDistricts.append({'id': r['id'], 'name': r['name']})
+    allDistricts[r['id']] = r['name']
 
 facilityLevels = {}
 rs = db.query("SELECT id, name FROM healthfacility_type")
@@ -93,10 +95,15 @@ def formatmsg(msg):
 def facilityLevel(facilityid):
     return facilityLevels[facilityid]
 
+
+def getDistrict(districtid):
+    return allDistricts[districtid]
+
 myFilters = {
     'datetimeformat': datetimeformat,
     'formatmsg': formatmsg,
-    'facilityLevel': facilityLevel
+    'facilityLevel': facilityLevel,
+    'getDistrict': getDistrict
 }
 
 # Jinja2 Template options
