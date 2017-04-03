@@ -35,16 +35,24 @@ class Approve:
     @csrf_protected
     @require_login
     def POST(self):
-        params = web.input(page="1", ed="", d_id="")
+        params = web.input(page="1", ed="", d_id="", abtn="", reqid=[])
         try:
             page = int(params.page)
         except:
             page = 1
 
         with db.transaction():
-            if params.ed:
+            if params.abtn == 'Approve Selected':
+                if params.reqid:
+                    for val in params.reqid:
+                        db.update('requests', status='ready', where="id = %s" % val)
+                db.transaction().commit()
                 return web.seeother("/approve")
-            else:
+            if params.abtn == 'Cancel Selected':
+                if params.reqid:
+                    for val in params.reqid:
+                        db.update('requests', status='canceled', where="id = %s" % val)
+                db.transaction().commit()
                 return web.seeother("/approve")
 
         l = locals()
