@@ -46,6 +46,16 @@ rs = db.query("SELECT dataelement, description FROM dhis2_mtrack_indicators_mapp
 for r in rs:
     dataElements[r['dataelement']] = r['description']
 
+ourDistricts = []
+rs = db.query("SELECT id, name FROM  locations WHERE type_id = 3")
+for r in rs:
+    ourDistricts.append({'id': r['id'], 'name': r['name']})
+
+facilityLevels = {}
+rs = db.query("SELECT id, name FROM healthfacility_type")
+for r in rs:
+    facilityLevels[r['id']] = r['name']
+
 
 def put_app(app):
     global APP
@@ -79,7 +89,15 @@ def formatmsg(msg):
     ret += "</ul>"
     return ret
 
-myFilters = {'datetimeformat': datetimeformat, 'formatmsg': formatmsg}
+
+def facilityLevel(facilityid):
+    return facilityLevels[facilityid]
+
+myFilters = {
+    'datetimeformat': datetimeformat,
+    'formatmsg': formatmsg,
+    'facilityLevel': facilityLevel
+}
 
 # Jinja2 Template options
 render = render_jinja(
