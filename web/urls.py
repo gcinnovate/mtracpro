@@ -30,6 +30,7 @@ from app.controllers.forgotpass_handler import ForgotPass
 from app.controllers.facilities_handler import Facilities
 from app.controllers.downloads_handler import Downloads
 from app.controllers.adminunits_handler import AdminUnits
+from app.controllers.fsync_handler import FSync
 
 URLS = (
     r'^/', Index,
@@ -41,6 +42,7 @@ URLS = (
     r'/facilities', Facilities,
     r'/auditlog', AuditLog,
     r'/settings', Settings,
+    r'/fsync', FSync,
     r'/dashboard', Dashboard,
     r'/users', Users,
     r'/groups', Groups,
