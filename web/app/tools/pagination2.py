@@ -37,9 +37,9 @@ def getPaginationString(_page, totalitems, limit, adjacents, targetpage, pagestr
         pagination += "<li class='paginate_button'><a href='" + targetpage + pagestring + "1'>First</a></li>"
         if _page > 1:
             pagination += "<li class='paginate_button previous'><a href='" + "%s%s%s" % (
-                targetpage, pagestring, prev) + "'>&laquo;previous</a></li>"
+                targetpage, pagestring, prev) + "'>&laquo; Prev</a></li>"
         else:
-            pagination += "<li class='paginate_button disabled'><a href='#'>&laquo;prev</a></li>"
+            pagination += "<li class='paginate_button disabled'><a href='#'>&laquo; Prev</a></li>"
         if (lastpage < (7 + (adjacents * 2))):
             counter = 1
             while (counter < lastpage):
@@ -72,7 +72,7 @@ def getPaginationString(_page, totalitems, limit, adjacents, targetpage, pagestr
             # close to end;  only hide early pages
             else:
                 counter = lastpage - (1 + (adjacents * 3))
-                while (counter < lastpage):
+                while (counter <= lastpage):
                     if counter == _page:
                         pagination += "<li class=\"paginate_button active\"><a href='#'>%s</a>" % counter
                     else:
@@ -82,9 +82,9 @@ def getPaginationString(_page, totalitems, limit, adjacents, targetpage, pagestr
 
         # next button
         if (_page < counter - 1):
-            pagination += "<li class=\"paginate_button next\"><a href=\"" + targetpage + pagestring + "%s" % _next + "\">next&raquo;</a></li>"
+            pagination += "<li class=\"paginate_button next\"><a href=\"" + targetpage + pagestring + "%s" % _next + "\">Next &raquo;</a></li>"
         else:
-            pagination += "<li class=\"paginate_button disabled\"><span>next&raquo;</span></li>"
+            pagination += "<li class=\"paginate_button disabled\"><span>Next &raquo;</span></li>"
         pagination += "<li class=\"paginate_button\"><a href=\"" + "%s%s%s" % (
             targetpage, pagestring, lastpage) + "\">" + "Last" + "</a></li></ul></div>"
         # pagination += "<div class='dataTables_info' role='status'> " + "%s" % _page + " of " + "%s" % lastpage + " Pages  </div>\n"
