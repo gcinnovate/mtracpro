@@ -1,7 +1,7 @@
 import json
 import web
 import datetime
-from . import db
+from . import db, get_current_week
 # from settings import config, SMS_OFFSET_TIME
 from app.tools.utils import get_basic_auth_credentials, auth_user, format_msisdn
 # from app.tools.utils import get_location_role_reporters, queue_schedule, log_schedule, update_queued_sms
@@ -162,31 +162,35 @@ class ReportersEndpoint:
         return json.dumps(ret)
 
 
-class DistributionRecord:
-    def GET(self, id):
-        r = db.query("SELECT * FROM distribution_log_w2sc_view WHERE id = $id", {'id': id})
+class ReportsThisWeek:
+    def GET(self, facilitycode):
+        year, week = get_current_week()
+        reports = db.query(
+            "SELECT raw_msg, msisdn FROM requests WHERE year = $yr AND week = $wk "
+            "AND facility = $fcode AND status IN ('pending', 'ready', 'completed', 'failed') "
+            " ORDER BY id DESC",
+            {'yr': year, 'wk': '%s' % week, 'fcode': facilitycode})
+
         html_str = '<table class="table table-striped table-bordered table-hover">'
-        html_str += "<thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>"
-        if r:
-            ret = r[0]
-            html_str += "<tr><td>District</td><td>%s</td></tr>" % ret['district']
-            html_str += "<tr><td>Sub County</td><td>%s</td></tr>" % ret['destination']
-            html_str += "<tr><td>Release Order</td><td>%s</td></tr>" % ret['release_order']
-            html_str += "<tr><td>Waybill</td><td>%s</td></tr>" % ret['waybill']
-            html_str += "<tr><td>Quantity</td><td>Bales: %s, Nets: %s</td></tr>" % (ret['quantity_bales'], ret['quantity_nets'])
-            html_str += "<tr><td>Warehouse</td><td>%s (%s)</td></tr>" % (ret['warehouse'], ret['branch'])
-            html_str += "<tr><td>Departure Date</td><td>%s</td></tr>" % ret['departure_date']
-            html_str += "<tr><td>Departure Time</td><td>%s</td></tr>" % ret['departure_time']
-            html_str += "<tr><td>Quantity Received</td><td>%s</td></tr>" % ret['quantity_received']
-            html_str += "<tr><td>Driver</td><td>Name: %s, Tel:%s</td></tr>" % (ret['delivered_by'], ret['telephone'])
-            html_str += "<tr><td>Remarks</td><td>%s</td></tr>" % ret['remarks']
-            if ret['is_delivered']:
-                label = "<span class='label label-primary'>Delivered</span>"
-                html_str += "<tr><td>Delivered?</td><td>%s</td></tr>" % label
-            else:
-                label = "<span class='label label-danger'>Not Delivered</span>"
-                html_str += "<tr><td>Delivered?</td><td>%s</td></tr>" % label
-        html_str += "</tbody></table>"
+        reporters = []
+        if reports:
+            html_str += "<tr><td><strong>Accepted Reports</strong></td>"
+            html_str += '<td><table class="table table-striped table-bordered table-hover">'
+            html_str += '<tr><th>#</th><th>Message</th></tr>'
+
+            for x, r in enumerate(reports):
+                html_str += "<tr><td>%s" % (x + 1) + "</td><td>" + r['raw_msg'] + "</td></tr>"
+                if r['msisdn'] not in reporters:
+                    reporters.append(r['msisdn'])
+            html_str += "</table></td></tr>"
+            html_str += "<tr><td><strong>Reporters</strong></td>"
+            html_str += '<td><table class="table table-striped table-bordered table-hover">'
+            html_str += '<tr><th>#</th><th>Name</th><th>Phone Number</th></tr>'
+
+            for p, reporter in enumerate(reporters):
+                html_str += "<tr><td>%s" % (p + 1) + "</td><td></td><td>" + reporter + "</td></tr>"
+            html_str += "</table></td></tr>"
+        html_str += "</table>"
         return html_str
 
 

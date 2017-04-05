@@ -6,22 +6,11 @@ controllers of the app.
 
 # from web.contrib.template import render_mako
 import web
+import json
+import datetime
 from web.contrib.template import render_jinja
 from settings import (absolute, config)
-import json
-
-# Mako Template options
-# render = render_mako(
-#   directories=[absolute('app/views')],
-#   module_directory=absolute('tmp/mako_modules'),
-#   cache_dir=absolute('tmp/mako_cache'),
-#   input_encoding='utf-8',
-#   output_encoding='utf-8',
-#   default_filters=['decode.utf8'],
-#   encoding_errors='replace',
-#   filesystem_checks=DEBUG,
-#   collection_size=512
-# )
+from settings import COMPLETE_REPORTS_KEYWORDS
 
 db_host = config['db_host']
 db_name = config['db_name']
@@ -38,6 +27,16 @@ db = web.database(
     port=db_port
 )
 
+
+def get_current_week(date=datetime.datetime.now()):
+    """Given date, return the reporting week in the format 2016, 01
+    reports coming in this week are for previous one.
+    """
+    offset_from_last_sunday = datetime.datetime.now().weekday() + 1
+    last_sunday = date - datetime.timedelta(days=offset_from_last_sunday)
+    year, weeknum, _ = last_sunday.isocalendar()
+    return (year, weeknum)
+
 SESSION = ''
 APP = None
 
@@ -48,10 +47,12 @@ for r in rs:
 
 ourDistricts = []
 allDistricts = {}
+allDistrictsByName = {}  # make use in pages easy
 rs = db.query("SELECT id, name FROM  locations WHERE type_id = 3")
 for r in rs:
     ourDistricts.append({'id': r['id'], 'name': r['name']})
     allDistricts[r['id']] = r['name']
+    allDistrictsByName[r['name']] = r['id']
 
 facilityLevels = {}
 rs = db.query("SELECT id, name FROM healthfacility_type")
@@ -75,6 +76,8 @@ def get_session():
 
 
 def datetimeformat(value, fmt='%Y-%m-%d'):
+    if not value:
+        return ''
     return value.strftime(fmt)
 
 
@@ -99,11 +102,25 @@ def facilityLevel(facilityid):
 def getDistrict(districtid):
     return allDistricts[districtid]
 
+
+def hasCompleteReport(facilitycode):
+    year, week = get_current_week()
+    res = db.query(
+        "SELECT get_facility_week_reports($fcode, $yr, $wk) as reports",
+        {'fcode': facilitycode, 'yr': year, 'wk': '%s' % week})
+    if res:
+        reports = res[0]['reports']
+        no_of_reports = len(reports.split(','))
+        if no_of_reports >= len(COMPLETE_REPORTS_KEYWORDS):
+            return True
+    return False
+
 myFilters = {
     'datetimeformat': datetimeformat,
     'formatmsg': formatmsg,
     'facilityLevel': facilityLevel,
-    'getDistrict': getDistrict
+    'getDistrict': getDistrict,
+    'hasCompleteReport': hasCompleteReport
 }
 
 # Jinja2 Template options

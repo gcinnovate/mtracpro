@@ -287,6 +287,7 @@ CREATE TABLE healthfacilities(
     location BIGINT REFERENCES locations(id), --subcounty
     location_name TEXT NOT NULL DEFAULT '', -- these are done for performance reasons
     is_033b BOOLEAN DEFAULT 't',
+    last_reporting_date DATE,
     created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -301,9 +302,12 @@ CREATE TABLE reporters(
     alternate_tel TEXT NOT NULL DEFAULT '',
     email TEXT NOT NULL DEFAULT '',
     reporting_location BIGINT REFERENCES locations(id), --village
-    code TEXT NOT NULL DEFAULT '',
+    uuid TEXT NOT NULL DEFAULT '', -- this is the rapidpro uuid
     district_id BIGINT REFERENCES locations,
     reporting_location_name text not null default '',
+    is_active BOOLEAN NOT NULL DEFAULT 't',
+    total_reports INTEGER NOT NULL DEFAULT 0,
+    last_reporting_date DATE,
     created_by INTEGER REFERENCES users(id), -- like actor id
     created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -312,6 +316,8 @@ CREATE TABLE reporters(
 CREATE INDEX reporters_idx1 ON reporters(telephone);
 CREATE INDEX reporters_idx2 ON reporters(alternate_tel);
 CREATE INDEX reporters_idx3 ON reporters(created);
+CREATE INDEX reporters_idx4 ON reporters(district_id);
+CREATE INDEX reporters_idx5 ON reporters(uuid);
 
 CREATE TABLE reporter_healthfacility(
     id BIGSERIAL NOT NULL PRIMARY KEY,
@@ -532,12 +538,27 @@ AS $function$
     END;
 $function$;
 
-CREATE VIEW reporters_view4 AS
+CREATE OR REPLACE FUNCTION public.get_facility_week_reports(facilitycode text, yr int, wk text)
+ RETURNS text
+ LANGUAGE plpgsql
+AS $function$
+    DECLARE
+    r TEXT;
+    p TEXT;
+    BEGIN
+        r := '';
+        FOR p IN SELECT distinct report_type FROM requests WHERE facility = facilitycode
+            AND year = yr AND week = wk AND status IN ('inprogress', 'ready', 'completed') LOOP
+            r := r || p || ',';
+        END LOOP;
+        RETURN rtrim(r,',');
+    END;
+$function$;
+
+CREATE VIEW reporters_view AS
     SELECT a.id, a.firstname, a.lastname, a.telephone, a.alternate_tel, a.email,
-        a.reporting_location, a.created_by, c.name as district, a.district_id,
-        --get_district(a.reporting_location) as district,
-        --get_district_id(a.reporting_location) as district_id,
-        get_reporter_groups(a.id) as role, b.name as loc_name,
-        b.code as location_code
-    FROM reporters a, locations b, locations c
-    WHERE a.reporting_location = b.id and (a.district_id = c.id);
+        a.reporting_location, a.created_by, a.district_id, a.total_reports, a.last_reporting_date, a.is_active, a.uuid,
+        get_reporter_groups(a.id) as role, a.created, b.name as loc_name,
+        b.code as location_code, d.name as facility, c.facility_id as facilityid, d.code as facilitycode
+    FROM reporters a, locations b, reporter_healthfacility c, healthfacilities d
+    WHERE a.reporting_location = b.id AND (a.id = c.reporter_id AND d.id = c.facility_id);

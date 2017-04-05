@@ -44,8 +44,8 @@
                                     <th>Name</th>
                                     <th>Level</th>
                                     <th>District</th>
-                                    <th>Location</th>
-                                    <th>Completeness</th>
+                                    <th>Last Reported</th>
+                                    <th>Has Complete Rpt</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -56,8 +56,20 @@
                                     <td>{{ facility.name }}</td>
                                     <td>{{ facility.type_id|facilityLevel }}</td>
                                     <td>{{ facility.district }}</td>
-                                    <td>{{ facility.location_name }}</td>
-                                    <td>{{ "Yes" }}</td>
+                                    <td>{{ facility.last_reporting_date|datetimeformat }}</td>
+                                    <td>
+                                        {% if facility.code|hasCompleteReport %}
+                                            <button type="button" class="btn btn-primary btn-xs completeness_btn" id="{{facility.code}}" data-toggle="modal"
+                                                data-target="#myModal4">
+                                                 Yes
+                                            </button>
+                                        {% else %}
+                                            <button type="button" class="btn btn-danger btn-xs completeness_btn" id="{{facility.code}}" data-toggle="modal"
+                                                data-target="#myModal4">
+                                                No
+                                            </button>
+                                        {% endif %}
+                                    </td>
                                     <td>
                                        	<button type="button" class="btn btn-white btn-xs details_btn" id="{{facility.id}}" data-toggle="modal"
                                                 data-target="#myModal2">
@@ -86,10 +98,28 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
                         <span class="sr-only">Close</span></button>
-                        <h4 class="modal-title">Facility Details</h4>
+                        <h4 class="modal-title">Health Facility Details</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row" id="modal_res">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="myModal4" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">Facility Report Completeness</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="modal_res4">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -111,13 +141,39 @@
                     <div class="row" id="modal_res2">
                     </div>
                     <div class="row">
-                        <p>Send subcounty store manager and subcounty chief SMS to confirm receipt of nets</p>
-                        <div class="form-group"><label for="remarks" class="col-lg-3 control-label">Inquiry SMS:</label>
-                            <div class="col-lg-9">
-                                <textarea name="sms" id="sms" type="text"  rows="4" class="form-control"></textarea>
-                                <input type="hidden" name="to_subcounty" id="to_subcounty"/>
-                            </div>
-                        </div>
+						<div class="col-lg-12">
+							<div class="form-group"><label for="role" class="col-lg-3 control-label">Facility:</label>
+								<div class="col-lg-9" id="facility_name">
+									<p>Gwe</p>
+								</div>
+							</div>
+							<br/>
+							<br/>
+							<div class="form-group"><label for="role" class="col-lg-3 control-label">Group:</label>
+								<div class="col-lg-9">
+									<select name="role" id="role" class="form-control" required>
+										<option value="">Select Role</option>
+										{% for v in roles %}
+										<option value="{{ v.id }}" {% if v.name == role %} selected="yes" {% endif %}>{{ v.name }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+							<br/>
+							<br/>
+							<div class="form-group"><label for="remarks" class="col-lg-3 control-label">Message:</label>
+								<div class="col-lg-9">
+									<textarea name="sms" id="sms" type="text"  rows="4" class="form-control"></textarea>
+								</div>
+							</div>
+                            <br/>
+                            <br/>
+                            <div class="form-group" style="margin-top:5px;">
+								<div class="col-lg-2 col-lg-offset-10">
+									<input type="text" name="counter" size="7" id="counter" readonly/>
+								</div>
+							</div>
+						</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -162,6 +218,25 @@
                     pageLength: 25,
                     bPaginate: false,
                     info: false
+                });
+
+                $('#sms').keyup(function(){
+                    var obj = $('#sms');
+                    var cc = $('#counter');
+                    var x = obj.val();
+                    var l = obj.val().length;
+                    cc.val(l);
+                    if(x.length >= 160){
+                            var y = obj.val().substring(0,160);
+                            obj.val(y);
+                            cc.val(160);
+                    }
+    		    });
+
+                $('.sms_btn').click(function(){
+                    var currentRow = $(this).closest("tr");
+                    var facility = currentRow.find("td:eq(1)").text();
+                    $('#facility_name').html("<strong>" + facility + "</strong>");
                 });
 
             });

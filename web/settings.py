@@ -438,6 +438,13 @@ EXCEL_UPLOAD_ORDER = {
     'village': 6,
     'village_code': 7
 }
+HMIS_REPORTS = [
+    {
+        'name': 'HMIS 033B Report',
+        'keywords': ['act', 'opd', 'test', 'treat', 'rdt', 'qun', 'cases', 'death']
+    }
+]
+COMPLETE_REPORTS_KEYWORDS = ['cases', 'death', 'tra', 'mat', 'arv', 'apt']
 
 try:
     from local_settings import *

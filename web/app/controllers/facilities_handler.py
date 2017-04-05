@@ -15,6 +15,9 @@ class Facilities:
             page = int(params.page)
         except:
             page = 1
+        roles = db.query(
+            "SELECT id, name from reporter_groups WHERE name "
+            "IN ('VHT', 'HC', 'Incharge', 'Records Assistant') order by name")
         limit = PAGE_LIMIT
         start = (page - 1) * limit if page > 0 else 0
         if session.role == 'District User':
