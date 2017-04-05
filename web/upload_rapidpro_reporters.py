@@ -14,16 +14,20 @@ import datetime
 
 cmd = sys.argv[1:]
 opts, args = getopt.getopt(
-    cmd, 'd:',
+    cmd, 'fd:',
     [])
 
 now = datetime.datetime.now()
 sdate = now - datetime.timedelta(days=1, minutes=5)
 from_date = sdate.strftime('%Y-%m-%d %H:%M')
 
+ADD_FIELDS = False
+
 for option, parameter in opts:
     if option == '-d':
         from_date = parameter
+    if option == '-f':
+        ADD_FIELDS = True
 
 
 def post_request(data, url=config['default_api_uri']):
@@ -63,7 +67,7 @@ def format_msisdn(msisdn=None):
 def add_reporter_fields():
     our_fields = [
         {'label': 'facility', 'value_type': 'T'},
-        {'label': 'facilityuuid', 'value_type': 'T'},
+        {'label': 'facilitycode', 'value_type': 'T'},
         {'label': 'district', 'value_type': 'I'},
         {'label': 'Subcounty', 'value_type': 'I'},
         {'label': 'village', 'value_type': 'T'},
@@ -76,34 +80,30 @@ def add_reporter_fields():
                 json.dumps(f), '%sfields.json' % config['api_url'])
             print res.text
 
-
-add_reporter_fields()
+if ADD_FIELDS:
+    add_reporter_fields()
+    sys.exit(1)
 conn = psycopg2.connect(
     "dbname=" + config["db_name"] + " host= " + config["db_host"] + " port=" + config["db_port"] +
     " user=" + config["db_user"] + " password=" + config["db_passwd"])
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 cur.execute(
-    "UPDATE reporters set reporting_location = get_subcounty_id(reporting_location) "
-    "WHERE id in (SELECT reporter_id FROM reporter_groups_reporters WHERE group_id IN "
-    "(SELECT id FROM reporter_groups WHERE name IN ('Subcounty Store Manager', 'Subcounty Chief')))")
-conn.commit()
-
-cur.execute(
-    "SELECT a.id, a.firstname || ' ' || a.lastname as name, a.telephone, a.alternate_tel, "
-    "a.email, get_location_name(a.district_id) AS district, get_reporter_groups(a.id) AS role, "
-    "b.code as reporting_location FROM reporters a, locations b WHERE a.reporting_location = b.id "
-    "AND a.created >= %s", [from_date]
+    "SELECT id, lastname || ' ' || firstname as name, telephone, alternate_tel, "
+    "email, get_location_name(district_id) AS district, role, "
+    "facility, facilitycode, loc_name, created FROM reporters_view "
+    "WHERE created >= %s", [from_date]
 )
 
 res = cur.fetchall()
 print "==>", res
 if res:
     for r in res:
-        print r
         district = r["district"]
         fields = {
-            "reporting location": r['reporting_location']
+            "reporting location": r['loc_name'],
+            "facilitycode": r['facilitycode'],
+            "facility": r['facility']
         }
         if district:
             fields["district"] = district
@@ -120,10 +120,21 @@ if res:
             post_data = json.dumps(data)
             resp = post_request(post_data)
             # print post_data
-            print resp.text
+            response_dict = json.loads(resp.text)
+            print response_dict
+            try:
+                contact_uuid = response_dict["uuid"]
+                cur.execute("UPDATE reporters SET uuid = %s WHERE id=%s", [contact_uuid, r["id"]])
+                conn.commit()
+            except:
+                pass
+
+            # print resp.text
+
         if alt_phone:
             alt_phone = format_msisdn(alt_phone)
             data["phone"] = alt_phone
             post_data = json.dumps(data)
             resp = post_request(post_data)
-            print resp.text
+            # print resp.text
+conn.close()
