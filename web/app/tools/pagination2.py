@@ -34,12 +34,12 @@ def getPaginationString(_page, totalitems, limit, adjacents, targetpage, pagestr
             pagination += "'"
         pagination += "><ul class='pagination'>"
 
-        pagination += "<li class='paginate_button'><a href='" + targetpage + pagestring + "1'>First</a></li>"
+        pagination += "<li class='paginate_button'><a href='" + targetpage + pagestring + "1'>&laquo; First</a></li>"
         if _page > 1:
             pagination += "<li class='paginate_button previous'><a href='" + "%s%s%s" % (
-                targetpage, pagestring, prev) + "'>&laquo; Prev</a></li>"
+                targetpage, pagestring, prev) + "'>&lsaquo; Prev</a></li>"
         else:
-            pagination += "<li class='paginate_button disabled'><a href='#'>&laquo; Prev</a></li>"
+            pagination += "<li class='paginate_button disabled'><a href='#'>&lsaquo; Prev</a></li>"
         if (lastpage < (7 + (adjacents * 2))):
             counter = 1
             while (counter < lastpage):
@@ -82,11 +82,11 @@ def getPaginationString(_page, totalitems, limit, adjacents, targetpage, pagestr
 
         # next button
         if (_page < counter - 1):
-            pagination += "<li class=\"paginate_button next\"><a href=\"" + targetpage + pagestring + "%s" % _next + "\">Next &raquo;</a></li>"
+            pagination += "<li class=\"paginate_button next\"><a href=\"" + targetpage + pagestring + "%s" % _next + "\">Next &rsaquo;</a></li>"
         else:
-            pagination += "<li class=\"paginate_button disabled\"><span>Next &raquo;</span></li>"
+            pagination += "<li class=\"paginate_button disabled\"><span>Next &rsaquo;</span></li>"
         pagination += "<li class=\"paginate_button\"><a href=\"" + "%s%s%s" % (
-            targetpage, pagestring, lastpage) + "\">" + "Last" + "</a></li></ul></div>"
+            targetpage, pagestring, lastpage) + "\">" + "Last" + " &raquo;</a></li></ul></div>"
         # pagination += "<div class='dataTables_info' role='status'> " + "%s" % _page + " of " + "%s" % lastpage + " Pages  </div>\n"
     return pagination
 
