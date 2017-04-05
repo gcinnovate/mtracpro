@@ -179,28 +179,26 @@
                         <table class="table table-striped table-bordered table-hover dataTables-example" id="mydata">
                             <thead>
                                 <tr>
-                                    <th>#</th>
+                                    <th><input id="selecctall" class=".chkmark" type="checkbox"/></th>
                                     <th>Name</th>
                                     <th>Telephone</th>
-                                    <th>Other Telephone</th>
-                                    <th>Role</th>
-                                    <th>Email</th>
+                                    <th>Role(s)</th>
                                     <th>District</th>
-                                    <th>Reporting Location</th>
+                                    <th>Facility</th>
+                                    <th>Last Reported</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                             {% for reporter in reporters %}
                                 <tr class="">
-                                    <td>{{ loop.index }}</td>
+                                    <td><input name="reqid" class="topromote" value="{{ reporter.id }}" type="checkbox"/></td>
                                     <td>{{ reporter.firstname }} &nbsp; {{ reporter.lastname }}</td>
-                                    <td>{{ reporter.telephone }}</td>
-                                    <td>{{ reporter.alternate_tel }}</td>
-                                    <td>{{ reporter.role }}</td>
-                                    <td>{{ reporter.email }}</td>
-                                    <td>{{ reporter.district }}</td>
-                                    <td>{{ reporter.loc_name }}</td>
+                                    <td><small>{{ reporter.telephone }}</small></td>
+                                    <td><small>{{ reporter.role }}</small></td>
+                                    <td>{{ reporter.district_id|getDistrict }}</td>
+                                    <td>{{ reporter.facility }}</td>
+                                    <td>{{ reporter.last_reporting_date|datetimeformat }}</td>
                                     <td>
                                         <a href="/reporters?ed={{ reporter.id }}" class="btn btn-primary btn-xs" value={{ reporter.id }}>
                                             <i class="fa fa-edit"></i></a>
@@ -211,6 +209,7 @@
                             {% endfor %}
                         </tbody>
                         </table>
+                        {{ pagination_str }}
                     </div>
                 </div>
             </div>
@@ -247,7 +246,9 @@
                 buttons: [
                     'copy', 'csv', 'excel', 'pdf', 'print'
                 ],
-                pageLength: 25
+                pageLength: 25,
+                bPaginate: false,
+                info: false
 
             });
 
@@ -285,11 +286,14 @@
                         }
                     });
             });
-            /*
-            $('#mydata').on( 'page.dt', function () {
-                alert('gwe');
-            } );
-            */
+
+            $('#selecctall').click(function (event) {
+                $('.topromote:input:checkbox').prop('checked', this.checked);
+            });
+            $(".topromote").click(function () {
+                if (!$(this).is(':checked'))
+                $("#selecctall").prop('checked', false);
+            });
 
         });
         </script>
