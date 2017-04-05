@@ -150,7 +150,7 @@ for orgunit in orgunits:
             resp = get_url(config["sync_url"], sync_params)
             print "Sync Service: %s" % resp
         except:
-            print "Sync Service failed for:%s" % orgunit["id"]
+            print "E03: Sync Service failed for:%s" % orgunit["id"]
             logging.error("E03: Sync Service failed for:%s" % orgunit["id"])
     else:  # we have the entry
         logging.debug("Sync Service: updating facility:%s to fsync" % orgunit["id"])
@@ -175,7 +175,8 @@ for orgunit in orgunits:
                     logging.debug("Sync Service: ")
                     print "Sync Service: %s" % resp
                 except:
-                    print "Sync Service failed for:%s" % orgunit["id"]
+                    print config["sync_url"]
+                    print "E04: Sync Service failed for:%s" % orgunit["id"]
                     logging.error("E04: Sync Service failed for:%s" % orgunit["id"])
         else:
             print "Sync Service: Nothing changed for facility:[UUID: %s]" % orgunit["id"]
