@@ -38,10 +38,11 @@
 							<thead>
 							<tr>
 								<th><input id="selecctall" class=".chkmark" type="checkbox"/></th>
-								<th>Report</th>
-								<th>Creation Date</th>
 								<th>Facility</th>
+								<th>Reporter</th>
+								<th>Report</th>
 								<th>Week</th>
+								<th>Creation Date</th>
 								<th>Status</th>
 								<th>Action</th></tr>
 							</thead>
@@ -49,10 +50,11 @@
 							{% for l in res %}
 								<tr>
 									<td><input name="reqid" class="topromote" value="{{ l.id }}" type="checkbox"/></td>
-									<td>{{ l.raw_msg}}{{l.body|formatmsg}}</td>
-									<td>{{ l.created|datetimeformat }}</td>
 									<td>{{ l.facility }}</td>
+									<td>{{ l.msisdn }}</td>
+									<td>{{ l.raw_msg}}{{l.body|formatmsg}}</td>
 									<td>{{ l.year|string + "W" + l.week }}</td>
+									<td>{{ l.created|datetimeformat }}</td>
 									<td>{{ l.status }}</td>
 									<td>
 										<a href="/failed?ed={{ l.id }}&page={{ page }}"><i class="icon-edit"></i></a>

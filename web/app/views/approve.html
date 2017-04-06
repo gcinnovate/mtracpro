@@ -41,11 +41,11 @@
                             <thead>
                                 <tr>
                                     <th><input id="selecctall" class=".chkmark" type="checkbox"/></th>
-                                    <th>Report</th>
                                     <th>Facility</th>
-                                    <th>Date</th>
                                     <th>Reporter</th>
+                                    <th>Report</th>
                                     <th>Week#</th>
+                                    <th>Date</th>
                                     <th>Approved</th>
                                 </tr>
                             </thead>
@@ -53,11 +53,11 @@
                             {% for report in reports %}
                                 <tr class="">
                                     <td><input name="reqid" class="topromote" value="{{ report.id }}" type="checkbox"/></td>
-                                    <td>{{ report.raw_msg }} {{ report.body|formatmsg}}</td>
                                     <td>{{ report.facility }}</td>
-                                    <td>{{ report.created|datetimeformat }}</td>
                                     <td>{{ report.msisdn }}</td>
+                                    <td>{{ report.raw_msg }} {{ report.body|formatmsg}}</td>
                                     <td>{{ report.year|string + "W" + report.week}}</td>
+                                    <td>{{ report.created|datetimeformat }}</td>
 									<td>Yes</td>
                                 </tr>
                             {% endfor %}
