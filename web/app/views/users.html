@@ -245,7 +245,7 @@
                         if (isConfirm) {
                             $.get(
                                 '/users',
-                                {d_idx: del_id, caller: 'api'},
+                                {d_id: del_id, caller: 'api'},
                                 function(data){
                                     if (data.message == "success"){
                                         /* remove row from table */
