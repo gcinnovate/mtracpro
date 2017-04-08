@@ -1,5 +1,8 @@
 import web
 from . import csrf_protected, db, get_session, require_login, render
+from app.tools.pagination2 import doquery, countquery, getPaginationString
+from app.tools.utils import default, lit
+from settings import PAGE_LIMIT
 
 
 class Users:
@@ -8,6 +11,12 @@ class Users:
         params = web.input(page=1, ed="", d_id="")
         edit_val = params.ed
         session = get_session()
+        try:
+            page = int(params.page)
+        except:
+            page = 1
+        limit = PAGE_LIMIT
+        start = (page - 1) * limit if page > 0 else 0
 
         if params.ed:
             r = db.query(
@@ -31,15 +40,25 @@ class Users:
                 db.query("DELETE FROM users WHERE id=$id", {'id': params.d_id})
 
         roles = db.query("SELECT id, name FROM user_roles ORDER by name")
+        criteria = ""
         if session.role == 'Administrator':
-            users = db.query(
-                "SELECT a.id, a.firstname, a.lastname, a.username, a.email, a.telephone, b.name as role "
-                "FROM users a, user_roles b WHERE a.user_role = b.id")
+            dic = lit(
+                relations='users a, user_roles b',
+                fields="a.id, a.firstname, a.lastname, a.username, a.email, a.telephone, b.name as role ",
+                criteria="a.user_role = b.id",
+                order="a.firstname, a.lastname",
+                limit=limit, offset=start)
         else:
-            users = db.query(
-                "SELECT a.id, a.firstname, a.lastname, a.username, a.email, a.telephone, b.name as role "
-                "FROM users a, user_roles b WHERE a.user_role = b.id "
-                "AND a.id=$id", {'id': session.sesid})
+            dic = lit(
+                relations='users a, user_roles b',
+                fields="a.id, a.firstname, a.lastname, a.username, a.email, a.telephone, b.name as role ",
+                criteria="a.user_role = b.id AND a.id=%s" % session.sesid,
+                order="a.firstname, a.lastname",
+                limit=limit, offset=start)
+
+        users = doquery(db, dic)
+        count = countquery(db, dic)
+        pagination_str = getPaginationString(default(page, 0), count, limit, 2, "users", "?page=")
         l = locals()
         del l['self']
         return render.users(**l)
