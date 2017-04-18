@@ -19,7 +19,8 @@ class Approve:
         start = (page - 1) * limit if page > 0 else 0
 
         dic = lit(
-            relations='requests', fields="id, facility, district, msisdn, body, raw_msg, year, week, created",
+            relations='requests_view',
+            fields="id, facility, facility_name, district, msisdn, body, raw_msg, year, week, created",
             criteria="status='pending'",
             order="id desc",
             limit=limit, offset=start)

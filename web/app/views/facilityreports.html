@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from 'layout.html' import navbar, myscripts %}
 
-{% block title %}mTracPro.::.Approve{% endblock%}
+{% block title %}Facility Reports{% endblock%}
 {% block stylesheets %}
     <!-- Data Tables -->
     <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
@@ -25,11 +25,8 @@
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>Reports to Approve</h5>
+                    <h5>Facility Reports</h5>
                     <div class="ibox-tools">
-                        <button class="btn btn-primary delete_btn" name="abtn" value="Approve Selected"><i class="fa fa-thumbs-o-up"></i> Approve Selected</button>
-                        &nbsp;&nbsp;&nbsp;
-                        <button class="btn btn-danger delete_btn" name="abtn" value="Cancel Selected"><i class="fa fa-thumbs-o-down"></i> Cancel Selected</button>
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
@@ -40,7 +37,6 @@
                         <table class="table table-striped table-bordered table-hover dataTables-example" id="mydata">
                             <thead>
                                 <tr>
-                                    <th><input id="selecctall" class=".chkmark" type="checkbox"/></th>
                                     <th>Facility</th>
                                     <th>Reporter</th>
                                     <th>Report</th>
@@ -52,7 +48,6 @@
                             <tbody>
                             {% for report in reports %}
                                 <tr class="">
-                                    <td><input name="reqid" class="topromote" value="{{ report.id }}" type="checkbox"/></td>
                                     <td>{{ report.facility_name }}</td>
                                     <td><a href="/messagehistory/{{ report.msisdn }}/" target="_blank">{{report.msisdn}}</a></td>
                                     <td>{{ report.raw_msg }} {{ report.body|formatmsg}}</td>
@@ -101,15 +96,6 @@
                     info: false
 
                 });
-
-               	$('#selecctall').click(function (event) {
-                // $('input:checkbox').prop('checked', this.checked);
-                $('.topromote:input:checkbox').prop('checked', this.checked);
-				});
-				$(".topromote").click(function () {
-					if (!$(this).is(':checked'))
-						$("#selecctall").prop('checked', false);
-				});
 
         	});
         </script>

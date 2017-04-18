@@ -9,7 +9,7 @@ from app.controllers.api import Location, LocationChildren, SubcountyLocations
 from app.controllers.api import DistrictFacilities, LocationFacilities, FacilityReporters
 from app.controllers.api import Cases, Deaths, Dhis2Queue, Test, ReportsThisWeek
 from app.controllers.api2 import LocationsEndpoint, ReportersXLEndpoint
-from app.controllers.api2 import CreateFacility
+from app.controllers.api2 import CreateFacility, ReportForms, IndicatorHtml
 from app.controllers.reporters_handler import Reporters
 from app.controllers.users_handler import Users
 from app.controllers.groups_handler import Groups
@@ -31,6 +31,8 @@ from app.controllers.facilities_handler import Facilities
 from app.controllers.downloads_handler import Downloads
 from app.controllers.adminunits_handler import AdminUnits
 from app.controllers.fsync_handler import FSync
+from app.controllers.messagehistory_handler import MessageHistory
+from app.controllers.facilityreports_handler import FacilityReports
 
 URLS = (
     r'^/', Index,
@@ -51,6 +53,8 @@ URLS = (
     r'/create', CreateFacility,
     r'/dataentry', DataEntry,
     r'/polling', Polls,
+    r'/messagehistory/\+?(\w+)/?', MessageHistory,
+    r'/facilityreports/(\w+)/?', FacilityReports,
     # Dispatcher2 URIs
     r'/requests', Requests,
     r'/completed', Completed,
@@ -72,4 +76,6 @@ URLS = (
     r'/api/v1/locations_endpoint/(\w+)/?', LocationsEndpoint,
     r'/api/v1/reporters_xlendpoint', ReportersXLEndpoint,
     r'/api/v1/reportsthisweek/(\w+)/?', ReportsThisWeek,
+    r'/api/v1/reportforms/(\w+)/?', ReportForms,
+    r'/api/v1/indicatorhtml/(\w+)/?', IndicatorHtml,
 )
