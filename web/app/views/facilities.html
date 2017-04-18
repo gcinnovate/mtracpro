@@ -53,7 +53,7 @@
                             {% for facility in facilities %}
                                 <tr class="">
                                     <td>{{ loop.index }}</td>
-                                    <td>{{ facility.name }}</td>
+                                    <td><a href="/facilityreports/{{facility.code}}/" target="_blank">{{ facility.name }}</a></td>
                                     <td>{{ facility.type_id|facilityLevel }}</td>
                                     <td>{{ facility.district }}</td>
                                     <td>{{ facility.last_reporting_date|datetimeformat }}</td>

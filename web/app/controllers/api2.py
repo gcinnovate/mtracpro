@@ -229,3 +229,40 @@ class CreateFacility:
         l = locals()
         del l['self']
         return "Created!"
+
+
+class ReportForms:
+    def GET(self, report_type):
+        web.header("Content-Type", "application/json; charset=utf-8")
+        res = db.query(
+            "SELECT distinct form FROM dhis2_mtrack_indicators_mapping "
+            "WHERE dataset=$dataset", {'dataset': report_type})
+        ret = []
+        for r in res:
+            ret.append({'name': r['form']})
+        return json.dumps(ret)
+
+
+class IndicatorHtml:
+    def GET(self, report):
+        htmlStr = ""
+        res = db.query(
+            "SELECT slug, description FROM dhis2_mtrack_indicators_mapping "
+            "WHERE form=$report ORDER BY form_order", {'report': report})
+        for r in res:
+            htmlStr += '<div class="form-group"><label for="%(slug)s" class="col-lg-6 control-label">' % r
+            htmlStr += r['description'] + ":</label>"
+            htmlStr += """
+                            <div class="col-lg-6">
+                                <input name="%(slug)s" id="%(slug)s" type="text" class="form-control"/>
+                            </div>
+                        </div>
+            """ % r
+        htmlStr += """
+                       <div class="form-group">
+                            <div class="col-lg-offset-6 col-lg-3">
+                                <button class="btn btn-sm btn-primary" type="submit">Save Report</button>
+                            </div>
+                        </div>
+        """
+        return htmlStr

@@ -44,6 +44,38 @@ $(function(){
     });
 
     $('#report_type').change(function(){
+        var report_type = $(this).val();
+        $('#report').empty();
+        $('#report').append("<option value='' selected='selected'>Select Report</option>");
+        $.get(
+            '/api/v1/reportforms/' + report_type,
+            {},
+            function(data){
+                var reportforms = data;
+                for (var i in reportforms){
+                    val = reportforms[i]["name"];
+                    /*txt = val.replace(/\b\w/g, l => l.toUpperCase()) + " Report";*/
+                    txt = val.toUpperCase() + " Report";
+                    $('#report').append(
+                        $(document.createElement("option")).attr("value",val).text(txt)
+                    );
+
+                }
+
+            },
+            'json'
+        );
     });
 
+    $('#report').change(function(){
+        var report = $(this).val();
+        $('#dataentry_res').html("");
+        $.get(
+            '/api/v1/indicatorhtml/' + report,
+            {},
+            function(data){
+                $('#dataentry_res').html(data);
+            }
+        );
+    });
 });

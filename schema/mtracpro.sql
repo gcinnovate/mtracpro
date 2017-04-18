@@ -562,3 +562,11 @@ CREATE VIEW reporters_view AS
         b.code as location_code, d.name as facility, c.facility_id as facilityid, d.code as facilitycode
     FROM reporters a, locations b, reporter_healthfacility c, healthfacilities d
     WHERE a.reporting_location = b.id AND (a.id = c.reporter_id AND d.id = c.facility_id);
+
+-- REQUESTS VIEW -- run only after dispatcher2 runs
+CREATE VIEW requests_view AS
+    SELECT a.id, a.source, a.destination, a.body, a.ctype, a.status, a.statuscode, a.errors,
+        a.submissionid, a.week, a.month, a.year, a.msisdn, a.facility, a.district, a.report_type, a.raw_msg,
+        a.created, b.name facility_name
+    FROM requests a, healthfacilities b
+    WHERE a.facility = b.code;

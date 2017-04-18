@@ -193,7 +193,7 @@
                             {% for reporter in reporters %}
                                 <tr class="">
                                     <td><input name="reqid" class="topromote" value="{{ reporter.id }}" type="checkbox"/></td>
-                                    <td>{{ reporter.firstname }} &nbsp; {{ reporter.lastname }}</td>
+                                    <td><a href="/messagehistory/{{ reporter.telephone }}/" target="_blank"> {{ reporter.firstname }} &nbsp; {{ reporter.lastname }}</a></td>
                                     <td><small>{{ reporter.telephone }}</small></td>
                                     <td><small>{{ reporter.role }}</small></td>
                                     <td>{{ reporter.district_id|getDistrict }}</td>
