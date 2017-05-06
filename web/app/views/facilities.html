@@ -51,7 +51,7 @@
                             </thead>
                             <tbody>
                             {% for facility in facilities %}
-                                <tr class="">
+                                <tr id="{{ facility.id }}">
                                     <td>{{ loop.index }}</td>
                                     <td><a href="/facilityreports/{{facility.code}}/" target="_blank">{{ facility.name }}</a></td>
                                     <td>{{ facility.type_id|facilityLevel }}</td>
@@ -142,7 +142,8 @@
                     </div>
                     <div class="row">
 						<div class="col-lg-12">
-							<div class="form-group"><label for="role" class="col-lg-3 control-label">Facility:</label>
+							<div class="form-group"><label class="col-lg-3 control-label">Facility:</label>
+                                <input type="hidden" name="facilityid" id="facilityid"/>
 								<div class="col-lg-9" id="facility_name">
 									<p>Gwe</p>
 								</div>
@@ -154,7 +155,7 @@
 									<select name="role" id="role" class="form-control" required>
 										<option value="">Select Role</option>
 										{% for v in roles %}
-										<option value="{{ v.id }}" {% if v.name == role %} selected="yes" {% endif %}>{{ v.name }}</option>
+										<option value="{{ v.name }}" {% if v.name == role %} selected="yes" {% endif %}>{{ v.name }}</option>
 										{% endfor %}
 									</select>
 								</div>
@@ -235,6 +236,8 @@
 
                 $('.sms_btn').click(function(){
                     var currentRow = $(this).closest("tr");
+                    var facilityid = currentRow.attr('id');
+                    $('#facilityid').val(facilityid);
                     var facility = currentRow.find("td:eq(1)").text();
                     $('#facility_name').html("<strong>" + facility + "</strong>");
                 });
