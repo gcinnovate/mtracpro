@@ -2,7 +2,8 @@ import json
 import logging
 from . import db
 import web
-# from settings import config
+from app.tools.utils import post_request
+from settings import config
 from app.tools.utils import get_basic_auth_credentials, auth_user, get_webhook_msg
 
 logging.basicConfig(
@@ -266,3 +267,28 @@ class IndicatorHtml:
                         </div>
         """
         return htmlStr
+
+
+class FacilitySMS:
+    def GET(self, facilityid):
+        pass
+
+    def POST(self, facilityid):
+        params = web.input(role="", sms="")
+        res = db.query(
+            "SELECT uuid FROM reporters_view WHERE facilityid=$fid AND "
+            "role like $role", {'fid': facilityid, 'role': '%%%s%%' % params.role})
+        contact_uuids = []
+        for r in res:
+            contact_uuids.append(r['uuid'])
+        post_data = json.dumps({'contacts': contact_uuids, 'text': params.sms})
+        post_request(post_data, '%sbroadcasts.json' % config['api_url'])
+        return "<h4>Successfully Sent SMS!</h4>"
+
+
+class SendSMS:
+    def POST(self):
+        params = web.input(uuid="", sms="")
+        post_data = json.dumps({'contacts': [params.uuid], 'text': params.sms})
+        post_request(post_data, '%sbroadcasts.json' % config['api_url'])
+        return "Success"

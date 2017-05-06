@@ -20,14 +20,15 @@ class MessageHistory:
             reporter = res[0]
             uuid = reporter['uuid']
             name = reporter['name']
-            resp = get_request(config['api_url'] + "messages.json?contact=%s" % uuid)
-            messages = json.loads(resp.text)
+            try:
+                resp = get_request(config['api_url'] + "messages.json?contact=%s" % uuid)
+                messages = json.loads(resp.text)
+            except:
+                messages = {}
             if 'results' in messages:
                 msgs = list(messages['results'])
                 msgs.reverse()
-                for m in msgs:
-                    print m
-
+                chat_msgs = msgs[-4:]
         l = locals()
         del l['self']
         return render.messagehistory(**l)

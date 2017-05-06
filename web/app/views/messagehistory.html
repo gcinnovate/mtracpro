@@ -20,8 +20,8 @@
         <div class="col-lg-12">
             <div class="ibox chart-view">
                 <div class="ibox-title">
-                    <small class="pull-right text-muted">{{ phone }}</small>
-                    Message History
+                    <small class="pull-right text-muted">{{ name }}  (Tel:{{ phone }})</small>
+                    <strong>Message History</strong>
                 </div>
                 <div class="ibox-content">
                     <div class="row">
@@ -61,6 +61,67 @@
     </div>
 
 {% endblock %}
+{% block chat_popup %}
+	<div class="small-chat-box fadeInRight animated">
+
+        <div class="heading" draggable="true">
+            <small class="chat-date pull-right">
+                {{ name }}
+            </small>
+            Send SMS
+        </div>
+
+        <div class="content" id="chat_content">
+			{% for m in chat_msgs %}
+                {% if m.direction == 'I' %}
+                    <div class="left">
+                        <div class="author-name">
+                            {{ name }}
+                            <small class="chat-date">
+                            10:02 am
+                            </small>
+                        </div>
+                        <div class="chat-message active">
+                            {{ m.text }}
+                        </div>
+                    </div>
+
+                {% else %}
+                     <div class="right">
+                        <div class="author-name">
+                            mTracpro
+                            <small class="chat-date">
+                            10:02 am
+                            </small>
+                        </div>
+                        <div class="chat-message">
+                            {{ m.text }}
+                        </div>
+                    </div>
+                {% endif %}
+			{% endfor %}
+
+		 </div>
+        <div class="form-chat">
+            <div class="input-group input-group-sm">
+				<input type="text" class="form-control" id="sms">
+                <input type="hidden" name="uuid" id="uuid" value="{{ uuid }}">
+				<span class="input-group-btn">
+					<button class="btn btn-primary" type="button" id="send_btn">Send</button>
+				</span>
+			</div>
+        </div>
+
+    </div>
+    <div id="small-chat">
+        <!--<span class="badge badge-warning pull-right">5</span>-->
+        <a class="open-small-chat">
+            <i class="fa fa-comments"></i>
+
+        </a>
+    </div>
+</div>
+{% endblock %}
 
 {% block scripts %}
     {% call myscripts() %}
@@ -71,17 +132,28 @@
         <script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
 
         <script src="/static/js/plugins/bootstrap-validator/dist/validator.min.js"></script>
-        <script src="/static/js/mtrackpro/fsync.js"></script>
         <script>
-           $(document).ready(function() {
-            $('.dataTables-example').DataTable({
-                "dom": 'lTfigt',
-                "tableTools": {
-                    "sSwfPath": "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
-                }
-            });
+            $(document).ready(function() {
+                $('#send_btn').click(function(){
+                    txt = $('#sms').val();
+                    uuid = $('#uuid').val();
+                    $.post(
+                        '/api/v1/sendsms',
+                        {uuid:uuid, sms:txt},
+                        function(data){
+                            if (data == 'Success') {
+                                html = "<div class='right'><div class='author-name'>mTracPro";
+                                html += "<small class='chat-date'>10:20</small></div>";
+                                html += "<div class='chat-message'>" + txt + "</div></div>";
+                                $('#chat_content').append(html);
+                                $('#sms').val(data);
+                            }
+                        }
+                    );
+                    return false;
+                });
 
-        });
+            });
         </script>
     {% endcall %}
 {% endblock %}

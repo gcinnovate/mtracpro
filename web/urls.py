@@ -10,6 +10,7 @@ from app.controllers.api import DistrictFacilities, LocationFacilities, Facility
 from app.controllers.api import Cases, Deaths, Dhis2Queue, Test, ReportsThisWeek
 from app.controllers.api2 import LocationsEndpoint, ReportersXLEndpoint
 from app.controllers.api2 import CreateFacility, ReportForms, IndicatorHtml
+from app.controllers.api2 import FacilitySMS, SendSMS
 from app.controllers.reporters_handler import Reporters
 from app.controllers.users_handler import Users
 from app.controllers.groups_handler import Groups
@@ -78,4 +79,6 @@ URLS = (
     r'/api/v1/reportsthisweek/(\w+)/?', ReportsThisWeek,
     r'/api/v1/reportforms/(\w+)/?', ReportForms,
     r'/api/v1/indicatorhtml/(\w+)/?', IndicatorHtml,
+    r'/api/v1/facilitysms/(\d+)/?', FacilitySMS,
+    r'/api/v1/sendsms', SendSMS,
 )
