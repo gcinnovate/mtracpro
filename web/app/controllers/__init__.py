@@ -59,6 +59,13 @@ rs = db.query("SELECT id, name FROM healthfacility_type")
 for r in rs:
     facilityLevels[r['id']] = r['name']
 
+roles = []
+rolesById = {}
+rs = db.query("SELECT id, name from reporter_groups order by name")
+for r in rs:
+    roles.append({'id': r['id'], 'name': r['name']})
+    rolesById[r['id']] = r['name']
+
 
 def put_app(app):
     global APP
@@ -130,7 +137,7 @@ render = render_jinja(
 )
 
 render._lookup.globals.update(
-    ses=get_session()
+    ses=get_session(), roles=roles
 )
 render._lookup.filters.update(myFilters)
 
