@@ -66,12 +66,12 @@ def format_msisdn(msisdn=None):
 
 def add_reporter_fields():
     our_fields = [
-        {'label': 'facility', 'value_type': 'T'},
-        {'label': 'facilitycode', 'value_type': 'T'},
-        {'label': 'district', 'value_type': 'I'},
-        {'label': 'Subcounty', 'value_type': 'I'},
-        {'label': 'village', 'value_type': 'T'},
-        {'label': 'reporting location', 'value_type': 'T'},
+        {'label': 'facility', 'value_type': 'text'},
+        {'label': 'facilitycode', 'value_type': 'text'},
+        {'label': 'district', 'value_type': 'district'},
+        {'label': 'Subcounty', 'value_type': 'text'},
+        {'label': 'village', 'value_type': 'text'},
+        {'label': 'reporting location', 'value_type': 'text'},
     ]
     fields = get_available_fields()
     for f in our_fields:
@@ -114,7 +114,7 @@ if res:
                 "name": r['name'],
                 "phone": phone,
                 "email": r['email'],
-                "groups": [r['role']],
+                "groups": r['role'].split(','),
                 "fields": fields
             }
             post_data = json.dumps(data)
