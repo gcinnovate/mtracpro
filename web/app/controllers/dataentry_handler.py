@@ -1,5 +1,7 @@
 import web
 from . import csrf_protected, db, require_login, render, get_session
+from app.tools.utils import get_reporting_week
+import datetime
 
 
 class DataEntry:
@@ -19,6 +21,11 @@ class DataEntry:
                 "(SELECT id FROM locationtype WHERE name = 'district') ORDER by name")
 
         districts = db.query(districts_SQL)
+        rweek = get_reporting_week(datetime.datetime.now())
+        year, week = rweek.split('W')
+        reporting_weeks = []
+        for i in range(1, int(week)):
+            reporting_weeks.append("%sW%s" % (year, i))
 
         l = locals()
         del l['self']

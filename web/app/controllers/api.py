@@ -81,11 +81,15 @@ class FacilityReporters:
     def GET(self, id):
         ret = []
         rs = db.query(
-            "SELECT telephone FROM reporters WHERE id IN "
-            "(SELECT reporter_id FROM reporter_healthfacilities WHERE facility_id=$id)",
+            "SELECT firstname, lastname, telephone FROM reporters WHERE id IN "
+            "(SELECT reporter_id FROM reporter_healthfacility WHERE facility_id=$id) "
+            " ORDER BY firstname, lastname",
             {'id': id})
-        if rs:
-            pass
+        for r in rs:
+            ret.append({
+                "firstname": r['firstname'],
+                "lastname": r['lastname'],
+                "telephone": r['telephone']})
         return json.dumps(ret)
 
 

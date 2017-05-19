@@ -84,6 +84,9 @@
                                 <div class="col-lg-9">
                                     <select name="week" id="week" class="form-control" required>
                                         <option value="">Select Reporting Week</option>
+                                        {% for w in reporting_weeks %}
+                                            <option value="{{ w }}">{{ w }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </div>
