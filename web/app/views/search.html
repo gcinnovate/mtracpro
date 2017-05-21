@@ -9,6 +9,8 @@
     <link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
 	<link href="/static/css/plugins/datapicker/datepicker3.css" rel="stylesheet">
     <link href="/static/js/plugins/Buttons-1.1.2/css/buttons.dataTables.min.css" rel="stylesheet">
+    <!-- Sweet Alert -->
+    <link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
 {% endblock %}
 
 {% block nav %}
@@ -205,9 +207,12 @@
 									<td>{{ l.created|datetimeformat }}</td>
 									<td>{{ l.status }}</td>
 									<td>
-										<a href="/failed?ed={{ l.id }}&page={{ page }}"><i class="icon-edit"></i></a>
+                                        <button type="button" class="btn btn-white btn-xs details_btn" id="{{l.id}}" data-toggle="modal"
+                                                data-target="#myModal2">
+                                                 <i title="Details" class="fa fa-list-alt"></i>
+                                        </button>
 										&nbsp;&nbsp;&nbsp;
-										<a href="/failed?d_id={{ l.id }}&page={{ page }}" onclick="return confirm('Are you sure you want to delete?')"><i class="icon-remove">
+                                        <button type="button" class="btn btn-danger btn-xs delete_btn" id={{ l.id}}><i class="fa fa-trash-o"></i></button>
 									</td>
 								</tr>
 							{% endfor%}
@@ -221,6 +226,24 @@
     </div>
     <!-- END DATA TABLE -->
     </form>
+    <div class="modal inmodal" id="myModal2" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">Request Details</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="modal_res">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
@@ -239,13 +262,48 @@
         <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/buttons.html5.min.js"></script>
         <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/buttons.print.min.js"></script>
         <script src="/static/js/plugins/bootstrap-validator/dist/validator.min.js"></script>
+        <!-- Sweet alert -->
+        <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>
         <script src="/static/js/mtrackpro/adminunits.js"></script>
 
 		<!-- Data picker -->
         <script src="/static/js/plugins/datapicker/bootstrap-datepicker.js"></script>
         <script>
            $(document).ready(function() {
-
+            $('.delete_btn').click(function () {
+                del_id = $(this).attr('id');
+                table_row = $(this).closest('tr');
+                swal({
+                        title: "Are you sure?",
+                        text: "Your will not be able to recover all request details",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Yes, delete it!",
+                        cancelButtonText: "No, cancel please!",
+                        closeOnConfirm: false,
+                        closeOnCancel: false },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            $.get(
+                                '/requests_del',
+                                {d_id: del_id, caller: 'api'},
+                                function(data){
+                                    if (data.message == "success"){
+                                        /* remove row from table */
+                                        table_row.remove();
+                                    };
+                                },
+                                'json'
+                            );
+                            swal("Deleted!", "Request has been deleted." + del_id, "success");
+                            return false;
+                        } else {
+                            swal("Cancelled", "Request details are safe!", "error");
+                            return false;
+                        }
+                    });
+            });
 			$('#mydata').DataTable({
                     dom: 'Bfrtip',
                     buttons: [
