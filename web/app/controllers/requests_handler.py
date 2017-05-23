@@ -17,7 +17,7 @@ class Requests:
         limit = PAGE_LIMIT
         start = (page - 1) * limit if page > 0 else 0
 
-        dic = lit(relations='requests', fields="*", criteria="", order="id desc", limit=limit, offset=start)
+        dic = lit(relations='requests_view', fields="*", criteria="", order="id desc", limit=limit, offset=start)
         res = doquery(db, dic)
         count = countquery(db, dic)
         pagination_str = getPaginationString(default(page, 0), count, limit, 2, "requests", "?page=")

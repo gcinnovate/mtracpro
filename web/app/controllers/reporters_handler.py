@@ -116,7 +116,7 @@ class Reporters:
                     relations='reporters_view',
                     fields=(
                         "id, firstname, lastname, telephone, district_id, "
-                        "facility, role, total_reports, last_reporting_date "),
+                        "facility, role, total_reports, last_reporting_date, uuid "),
                     criteria=criteria,
                     order="facility, firstname, lastname",
                     limit=limit, offset=start)
@@ -125,7 +125,7 @@ class Reporters:
                     relations='reporters_view',
                     fields=(
                         "id, firstname, lastname, telephone, district_id, "
-                        "facility, role, total_reports, last_reporting_date "),
+                        "facility, role, total_reports, last_reporting_date, uuid "),
                     criteria=criteria,
                     order="",
                     limit=limit, offset=start)
@@ -139,7 +139,7 @@ class Reporters:
                     relations='reporters_view',
                     fields=(
                         "id, firstname, lastname, telephone, district_id, "
-                        "facility, role, total_reports, last_reporting_date "),
+                        "facility, role, total_reports, last_reporting_date, uuid"),
                     criteria=criteria % {'search': params.search},
                     order="facility, firstname, lastname",
                     limit=limit, offset=start)
@@ -149,7 +149,7 @@ class Reporters:
                     relations='reporters_view',
                     fields=(
                         "id, firstname, lastname, telephone, district_id, "
-                        "facility, role, total_reports, last_reporting_date "),
+                        "facility, role, total_reports, last_reporting_date, uuid "),
                     criteria=criteria,
                     order="facility, firstname, lastname",
                     limit=limit, offset=start)

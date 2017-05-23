@@ -191,7 +191,7 @@
                             </thead>
                             <tbody>
                             {% for reporter in reporters %}
-                                <tr class="">
+                                <tr id="{{ reporter.uuid}}">
                                     <td><input name="reqid" class="topromote" value="{{ reporter.id }}" type="checkbox"/></td>
                                     <td><a href="/messagehistory/{{ reporter.telephone }}/" target="_blank"> {{ reporter.firstname }} &nbsp; {{ reporter.lastname }}</a></td>
                                     <td><small>{{ reporter.telephone }}</small></td>
@@ -202,6 +202,11 @@
                                     <td>
                                         <a href="/reporters?ed={{ reporter.id }}" class="btn btn-primary btn-xs" value={{ reporter.id }}>
                                             <i class="fa fa-edit"></i></a>
+                                                            &nbsp;&nbsp;&nbsp;
+                                        <button type="button" class="btn btn-white btn-xs sms_btn" id="{{reporter.id}}" data-toggle="modal"
+											data-target="#myModal3">
+												<i title="SMS" class="fa fa-envelope-o"></i>
+										</button>
                                                             &nbsp;&nbsp;&nbsp;
                                         <button class="btn btn-danger btn-xs delete_btn" id={{ reporter.id}}><i class="fa fa-trash-o"></i></button>
                                     </td>
@@ -216,6 +221,51 @@
         </div>
     </div>
     <!-- END DATA TABLE -->
+    <form role="form" action="" method="post" id="form2" class="form-horizontal">
+    <div class="modal inmodal" id="myModal3" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">Send SMS</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="modal_res2">
+                    </div>
+                    <div class="row">
+						<div class="col-lg-12">
+							<div class="form-group"><label class="col-lg-3 control-label">To:</label>
+                                <input type="hidden" name="uuid" id="uuid"i/>
+								<div class="col-lg-9" id="reporter_name">
+									<p>Gwe</p>
+								</div>
+							</div>
+							<br/>
+							<br/>
+							<div class="form-group"><label for="remarks" class="col-lg-3 control-label">Message:</label>
+								<div class="col-lg-9">
+									<textarea name="sms" id="sms" type="text"  rows="4" class="form-control"></textarea>
+								</div>
+							</div>
+                            <br/>
+                            <br/>
+                            <div class="form-group" style="margin-top:5px;">
+								<div class="col-lg-2 col-lg-offset-10">
+									<input type="text" name="counter" size="7" id="counter" readonly/>
+								</div>
+							</div>
+						</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" type="submit" id="sendsms">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
 {% endblock %}
 
 {% block scripts %}
@@ -262,7 +312,7 @@
                         showCancelButton: true,
                         confirmButtonColor: "#DD6B55",
                         confirmButtonText: "Yes, delete it!",
-                        cancelButtonText: "No, cancel plx!",
+                        cancelButtonText: "No, cancel please!",
                         closeOnConfirm: false,
                         closeOnCancel: false },
                     function (isConfirm) {
@@ -293,6 +343,50 @@
             $(".topromote").click(function () {
                 if (!$(this).is(':checked'))
                 $("#selecctall").prop('checked', false);
+            });
+            $('#sms').keyup(function(){
+                var obj = $('#sms');
+                var cc = $('#counter');
+                var x = obj.val();
+                var l = obj.val().length;
+                cc.val(l);
+                if(x.length >= 160){
+                        var y = obj.val().substring(0,160);
+                        obj.val(y);
+                        cc.val(160);
+                }
+    		});
+
+
+            $('.sms_btn').click(function(){
+                $('#sms').val("");
+                $('#counter').val("");
+                $('#modal_res2').html("");
+                var currentRow = $(this).closest("tr");
+                var reporteruuid = currentRow.attr('id');
+                $('#uuid').val(reporteruuid);
+                var name = currentRow.find("td:eq(1)").text();
+                var reporter = currentRow.find("td:eq(2)").text();
+                var tag = name + " (" + reporter + ")"
+                $('#reporter_name').html("<strong>" + tag + "</strong>");
+            });
+            $('#sendsms').click(function(){
+                $('#modal_res2').css({'color': 'green'});
+                txt = $('#sms').val();
+                uuid = $('#uuid').val();
+                $.post(
+                    '/api/v1/sendsms',
+                    {uuid:uuid, sms:txt},
+                    function(data){
+                        if (data == "Success") {
+                            $('#modal_res2').html("<h4>Successfully Sent SMS</h4>");
+                        }else {
+                            $('#modal_res2').css({'color': 'red'});
+                            $('#modal_res2').html("<h4>Failed to Send SMS</h4>");
+                        }
+                    }
+                );
+                return false;
             });
 
         });

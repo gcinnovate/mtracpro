@@ -235,6 +235,7 @@
     		    });
 
                 $('.sms_btn').click(function(){
+                    $('#modal_res2').html("");
                     var currentRow = $(this).closest("tr");
                     var facilityid = currentRow.attr('id');
                     $('#facilityid').val(facilityid);

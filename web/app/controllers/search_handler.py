@@ -22,14 +22,13 @@ class Search:
         servers2 = doquery(db, dic)
 
         dic = lit(
-            relations='requests', fields="*",
+            relations='requests_view', fields="*",
             criteria=session.criteria,
             order="id desc",
             limit=limit, offset=start)
         res = doquery(db, dic)
         count = countquery(db, dic)
         pagination_str = getPaginationString(default(page, 0), count, limit, 2, "search", "?page=")
-        print ">>>>>", pagination_str
 
         l = locals()
         del l['self']
@@ -90,14 +89,13 @@ class Search:
         if len(criteria) > 5:
             session.criteria = criteria
         dic = lit(
-            relations='requests', fields="*",
+            relations='requests_view', fields="*",
             criteria=criteria,
             order="id desc",
             limit=limit, offset=start)
         res = doquery(db, dic)
         count = countquery(db, dic)
         pagination_str = getPaginationString(default(page, 0), count, limit, 2, "search", "?page=")
-        print ">>>>>", pagination_str
 
         l = locals()
         del l['self']

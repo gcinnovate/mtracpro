@@ -282,7 +282,10 @@ class FacilitySMS:
         for r in res:
             contact_uuids.append(r['uuid'])
         post_data = json.dumps({'contacts': contact_uuids, 'text': params.sms})
-        post_request(post_data, '%sbroadcasts.json' % config['api_url'])
+        try:
+            post_request(post_data, '%sbroadcasts.json' % config['api_url'])
+        except:
+            return "<h4>Failed to Send SMS!</h4>"
         return "<h4>Successfully Sent SMS!</h4>"
 
 
@@ -290,5 +293,32 @@ class SendSMS:
     def POST(self):
         params = web.input(uuid="", sms="")
         post_data = json.dumps({'contacts': [params.uuid], 'text': params.sms})
-        post_request(post_data, '%sbroadcasts.json' % config['api_url'])
+        try:
+            resp = post_request(post_data, '%sbroadcasts.json' % config['api_url'])
+            code = "%s" % resp.status_code
+        except:
+            code = "400"
+        if code.startswith("4"):
+            return "Failed"
         return "Success"
+
+
+class RequestDetails:
+    def GET(self, request_id):
+        rs = db.query(
+            "SELECT source, destination, pp_json(body::json, 't', '    ') as body, "
+            "raw_msg, status, week, month, year, facility_name, msisdn "
+            "FROM requests_view WHERE id = $request_id", {'request_id': request_id})
+
+        html_str = '<table class="table table-striped table-bordered table-hover">'
+        html_str += "<thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>"
+        if rs:
+            ret = rs[0]
+            html_str += "<tr><td>Facility</td><td>%s</td></tr>" % ret['facility_name']
+            html_str += "<tr><td>Reporter</td><td>%s</td></tr>" % ret['msisdn']
+            html_str += "<tr><td>Report</td><td>%s</td></tr>" % ret['raw_msg']
+            html_str += "<tr><td>Week</td><td>%sW%s</td></tr>" % (ret['year'], ret['week'])
+            html_str += "<tr><td>Body</td><td><pre><code class='language-js'>%s<code></pre></td></tr>" % ret['body']
+
+        html_str += "</tbody></table>"
+        return html_str

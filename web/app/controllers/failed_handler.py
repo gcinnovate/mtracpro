@@ -23,7 +23,7 @@ class Failed:
         amonthAgo = '%s-%s-%s' % (t.tm_year, t.tm_mon, t.tm_mday)
 
         dic = lit(
-            relations='requests', fields="*",
+            relations='requests_view', fields="*",
             criteria="status='failed' AND created > '%s'" % (amonthAgo),
             order="id desc",
             limit=limit, offset=start)

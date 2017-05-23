@@ -21,7 +21,7 @@ class Completed:
         start = (page - 1) * limit if page > 0 else 0
 
         dic = lit(
-            relations='requests', fields="*",
+            relations='requests_view', fields="*",
             criteria="status='completed'",
             order="id desc",
             limit=limit, offset=start)

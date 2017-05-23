@@ -52,7 +52,7 @@
 							{% for l in res %}
 								<tr>
 									<td><input name="reqid" class="topromote" value="{{ l.id }}" type="checkbox"/></td>
-									<td>{{ l.facility }}</td>
+									<td>{{ l.facility_name }}</td>
 									<td>{{ l.msisdn }}</td>
 									<td>{{ l.raw_msg}}{{l.body|formatmsg}}</td>
 									<td>{{ l.year|string + "W" + l.week}}</td>
@@ -169,6 +169,15 @@
             $(".topromote").click(function () {
                 if (!$(this).is(':checked'))
                     $("#selecctall").prop('checked', false);
+            });
+            $('.details_btn').click(function(){
+                id_val = $(this).attr('id');
+                $.get(
+					'/api/v1/request_details/' + id_val,
+					{},
+					function(data){
+							$('#modal_res').html(data);
+				});
             });
 
         });
