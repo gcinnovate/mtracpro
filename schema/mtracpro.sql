@@ -555,6 +555,12 @@ AS $function$
     END;
 $function$;
 
+CREATE FUNCTION pp_json(j JSON, sort_keys BOOLEAN = TRUE, indent TEXT = '    ')
+RETURNS TEXT AS $$
+  import simplejson as json
+  return json.dumps(json.loads(j), sort_keys=sort_keys, indent=indent)
+$$ LANGUAGE plpythonu;
+
 CREATE VIEW reporters_view AS
     SELECT a.id, a.firstname, a.lastname, a.telephone, a.alternate_tel, a.email,
         a.reporting_location, a.created_by, a.district_id, a.total_reports, a.last_reporting_date, a.is_active, a.uuid,
