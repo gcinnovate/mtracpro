@@ -318,7 +318,7 @@ class RequestDetails:
             html_str += "<tr><td>Reporter</td><td>%s</td></tr>" % ret['msisdn']
             html_str += "<tr><td>Report</td><td>%s</td></tr>" % ret['raw_msg']
             html_str += "<tr><td>Week</td><td>%sW%s</td></tr>" % (ret['year'], ret['week'])
-            html_str += "<tr><td>Body</td><td><pre><code class='language-js'>%s<code></pre></td></tr>" % ret['body']
+            html_str += "<tr><td>Body</td><td><pre class='language-js'><code class='language-js'>%s<code></pre></td></tr>" % ret['body']
 
         html_str += "</tbody></table>"
         return html_str
