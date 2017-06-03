@@ -269,14 +269,14 @@ class Dhis2Queue:
                     if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                         dataValues.append(
                             {
-                                'dataElement': MAPPING[slug]['dhis2_uuid'],
+                                'dataElement': MAPPING[slug]['dhis2_id'],
                                 'categoryOptionCombo': MAPPING[slug]['dhis2_combo_id'],
                                 'value': val})
                     else:
                         dataValues += (
                             "<dataValue dataElement='%s' categoryOptionCombo="
                             "'%s' value='%s' />\n" %
-                            (MAPPING[slug]['dhis2_uuid'], MAPPING[slug]['dhis2_combo_id'], val))
+                            (MAPPING[slug]['dhis2_id'], MAPPING[slug]['dhis2_combo_id'], val))
 
             if not dataValues and params.form in ('cases', 'death'):
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':
