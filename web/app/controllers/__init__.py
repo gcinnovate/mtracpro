@@ -66,6 +66,11 @@ for r in rs:
     roles.append({'id': r['id'], 'name': r['name']})
     rolesById[r['id']] = r['name']
 
+userRolesByName = {}
+rs = db.query("SELECT id, name from user_roles order by name")
+for r in rs:
+    userRolesByName[r['name']] = r['id']
+
 
 def put_app(app):
     global APP

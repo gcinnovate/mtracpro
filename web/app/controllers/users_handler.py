@@ -1,5 +1,5 @@
 import web
-from . import csrf_protected, db, get_session, require_login, render
+from . import csrf_protected, db, get_session, require_login, render, userRolesByName
 from app.tools.pagination2 import doquery, countquery, getPaginationString
 from app.tools.utils import default, lit
 from settings import PAGE_LIMIT
@@ -21,7 +21,7 @@ class Users:
         if params.ed:
             r = db.query(
                 "SELECT a.id, a.firstname, a.lastname, a.username, a.email, a.telephone, "
-                "a.is_active, b.id as role "
+                "a.is_active, b.id as role, b.name role_name "
                 "FROM users a, user_roles b "
                 "WHERE a.id = $id AND a.user_role = b.id", {'id': params.ed})
             if r and (session.role == 'Administrator' or '%s' % session.sesid == edit_val):
@@ -32,6 +32,7 @@ class Users:
                 email = u.email
                 username = u.username
                 user_role = u.role
+                role_name = u.role_name
                 is_active = u.is_active
                 is_super = True if u.role == 'Administrator' else False
 
@@ -40,12 +41,13 @@ class Users:
                 db.query("DELETE FROM users WHERE id=$id", {'id': params.d_id})
 
         roles = db.query("SELECT id, name FROM user_roles ORDER by name")
+        current_role_id = userRolesByName[session.role]
         criteria = ""
         if session.role == 'Administrator':
             dic = lit(
                 relations='users a, user_roles b',
                 fields="a.id, a.firstname, a.lastname, a.username, a.email, a.telephone, b.name as role ",
-                criteria="a.user_role = b.id",
+                criteia="a.user_role = b.id",
                 order="a.firstname, a.lastname",
                 limit=limit, offset=start)
         else:
