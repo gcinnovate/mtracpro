@@ -555,10 +555,12 @@ AS $function$
     END;
 $function$;
 
-CREATE FUNCTION pp_json(j JSON, sort_keys BOOLEAN = TRUE, indent TEXT = '    ')
+CREATE OR REPLACE FUNCTION pp_json(j JSON, sort_keys BOOLEAN = TRUE, indent TEXT = '    ')
 RETURNS TEXT AS $$
-  import simplejson as json
-  return json.dumps(json.loads(j), sort_keys=sort_keys, indent=indent)
+    import simplejson as json
+    if not j:
+        j = []
+    return json.dumps(json.loads(j), sort_keys=sort_keys, indent=indent)
 $$ LANGUAGE plpythonu;
 
 CREATE VIEW reporters_view AS
