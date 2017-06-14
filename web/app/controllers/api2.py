@@ -308,7 +308,7 @@ class RequestDetails:
         rs = db.query(
             "SELECT source, destination, body_pprint(body) as body, "
             "xml_is_well_formed_document(body) as is_xml, "
-            "raw_msg, status, week, month, year, facility_name, msisdn "
+            "raw_msg, status, week, month, year, facility_name, msisdn, statuscode, errors "
             "FROM requests_view WHERE id = $request_id", {'request_id': request_id})
 
         html_str = '<table class="table table-striped table-bordered table-hover">'
@@ -319,9 +319,15 @@ class RequestDetails:
             html_str += "<tr><td>Reporter</td><td>%s</td></tr>" % ret['msisdn']
             html_str += "<tr><td>Report</td><td>%s</td></tr>" % ret['raw_msg']
             html_str += "<tr><td>Week</td><td>%sW%s</td></tr>" % (ret['year'], ret['week'])
-
+            html_str += "<tr><td>Status</td><td>%s</td></tr>" % (ret['status'])
+            html_str += "<tr><td>StatusCode</td><td>%s</td></tr>" % (ret['statuscode'],)
+            html_str += "<tr><td>Errors</td>"
+            if ret['errors']:
+                html_str += "<td><textarea rows='4' cols='25' wrap='off' readonly>%s</textarea></td></tr>" % (ret['errors'])
+            else:
+                html_str += "<td></td></tr>"
             if ret['is_xml']:
-                html_str += "<tr><td>Body</td><td><textarea rows='15' cols='40' "
+                html_str += "<tr><td>Body</td><td><textarea rows='10' cols='40' "
                 html_str += "wrap='off' readonly>%s</textarea></td></tr>" % ret['body']
 
             else:
