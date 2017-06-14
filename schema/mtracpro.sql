@@ -555,13 +555,40 @@ AS $function$
     END;
 $function$;
 
-CREATE OR REPLACE FUNCTION pp_json(j JSON, sort_keys BOOLEAN = TRUE, indent TEXT = '    ')
+CREATE OR REPLACE FUNCTION pp_json(j TEXT, sort_keys BOOLEAN = TRUE, indent TEXT = '    ')
 RETURNS TEXT AS $$
     import simplejson as json
     if not j:
         j = []
     return json.dumps(json.loads(j), sort_keys=sort_keys, indent=indent)
 $$ LANGUAGE plpythonu;
+
+-- Dispatcher-2.1 comes with thes as well
+CREATE EXTENSION IF NOT EXISTS xml2;
+CREATE OR REPLACE FUNCTION xml_pretty(xml text)
+RETURNS xml AS $$
+        SELECT xslt_process($1,
+'<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:strip-space elements="*" />
+<xsl:output method="xml" indent="yes" />
+<xsl:template match="node() | @*">
+<xsl:copy>
+<xsl:apply-templates select="node() | @*" />
+</xsl:copy>
+</xsl:template>
+</xsl:stylesheet>')::xml
+$$ LANGUAGE SQL IMMUTABLE STRICT;
+
+CREATE OR REPLACE FUNCTION body_pprint(body text)
+    RETURNS TEXT AS $$
+    BEGIN
+        IF xml_is_well_formed_document(body) THEN
+            return xml_pretty(body)::text;
+        ELSE
+            return pp_json(body, 't', '    ');
+        END IF;
+    END;
+$$ LANGUAGE plpgsql;
 
 CREATE VIEW reporters_view AS
     SELECT a.id, a.firstname, a.lastname, a.telephone, a.alternate_tel, a.email,

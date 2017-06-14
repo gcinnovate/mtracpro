@@ -306,7 +306,8 @@ class SendSMS:
 class RequestDetails:
     def GET(self, request_id):
         rs = db.query(
-            "SELECT source, destination, pp_json(body::json, 't', '    ') as body, "
+            "SELECT source, destination, body_pprint(body) as body, "
+            "xml_is_well_formed_document(body) as is_xml, "
             "raw_msg, status, week, month, year, facility_name, msisdn "
             "FROM requests_view WHERE id = $request_id", {'request_id': request_id})
 
@@ -318,7 +319,14 @@ class RequestDetails:
             html_str += "<tr><td>Reporter</td><td>%s</td></tr>" % ret['msisdn']
             html_str += "<tr><td>Report</td><td>%s</td></tr>" % ret['raw_msg']
             html_str += "<tr><td>Week</td><td>%sW%s</td></tr>" % (ret['year'], ret['week'])
-            html_str += "<tr><td>Body</td><td><pre class='language-js'><code class='language-js'>%s<code></pre></td></tr>" % ret['body']
+
+            if ret['is_xml']:
+                html_str += "<tr><td>Body</td><td><textarea rows='15' cols='40' "
+                html_str += "wrap='off' readonly>%s</textarea></td></tr>" % ret['body']
+
+            else:
+                html_str += "<tr><td>Body</td><td><pre class='language-js'>"
+                html_str += "<code class='language-js'>%s<code></pre></td></tr>" % ret['body']
 
         html_str += "</tbody></table>"
         return html_str
