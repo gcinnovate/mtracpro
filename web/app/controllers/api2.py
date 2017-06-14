@@ -337,7 +337,7 @@ class DeleteServer:
 class DeleteRequest:
     def GET(self, server_id):
         try:
-            db.query("DELETE FROM request WHERE server_id = $id", {'id': server_id})
+            db.query("DELETE FROM request WHERE id = $id", {'id': server_id})
         except:
             return json.dumps({"message": "failed"})
         return json.dumps({"message": "success"})
