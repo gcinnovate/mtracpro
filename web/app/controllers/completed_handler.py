@@ -54,11 +54,9 @@ class Completed:
                         db.delete('requests', where="id = %s" % val)
             db.transaction().commit()
 
-        t = cal.parse("2 month ago")[0]
-        amonthAgo = '%s-%s-%s' % (t.tm_year, t.tm_mon, t.tm_mday)
         dic = lit(
             relations='requests', fields="*",
-            criteria="status='completed' AND created > '%s'" % (amonthAgo),
+            criteria="status='completed'",
             order="id desc",
             limit=limit, offset=start)
         res = doquery(db, dic)

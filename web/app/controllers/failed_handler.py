@@ -1,6 +1,6 @@
 import web
 import parsedatetime
-from . import csrf_protected, db, require_login, get_session, render
+from . import db, require_login, render
 from app.tools.utils import audit_log, default, lit
 from app.tools.pagination2 import countquery, doquery, getPaginationString
 from settings import PAGE_LIMIT
@@ -57,11 +57,9 @@ class Failed:
             db.transaction().commit()
 
         # we start getting requests a month old
-        t = cal.parse("2 month ago")[0]
-        amonthAgo = '%s-%s-%s' % (t.tm_year, t.tm_mon, t.tm_mday)
         dic = lit(
             relations='requests', fields="*",
-            criteria="status='failed' AND created > '%s'" % (amonthAgo),
+            criteria="status='failed'",
             order="id desc",
             limit=limit, offset=start)
         res = doquery(db, dic)
