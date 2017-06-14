@@ -322,3 +322,22 @@ class RequestDetails:
 
         html_str += "</tbody></table>"
         return html_str
+
+
+class DeleteServer:
+    def GET(self, server_id):
+        try:
+            db.query("DELETE FROM server_allowed_sources WHERE server_id = $id", {'id': server_id})
+            db.query("DELETE FROM servers WHERE id = $id", {'id': server_id})
+        except:
+            return json.dumps({"message": "failed"})
+        return json.dumps({"message": "success"})
+
+
+class DeleteRequest:
+    def GET(self, server_id):
+        try:
+            db.query("DELETE FROM request WHERE server_id = $id", {'id': server_id})
+        except:
+            return json.dumps({"message": "failed"})
+        return json.dumps({"message": "success"})

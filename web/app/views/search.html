@@ -286,7 +286,7 @@
                     function (isConfirm) {
                         if (isConfirm) {
                             $.get(
-                                '/requests_del',
+                                '/api/v1/request_del/' + del_id,
                                 {d_id: del_id, caller: 'api'},
                                 function(data){
                                     if (data.message == "success"){
@@ -296,7 +296,7 @@
                                 },
                                 'json'
                             );
-                            swal("Deleted!", "Request has been deleted." + del_id, "success");
+                            swal("Deleted!", "Request [id:" + del_id + "] has been deleted.", "success");
                             return false;
                         } else {
                             swal("Cancelled", "Request details are safe!", "error");

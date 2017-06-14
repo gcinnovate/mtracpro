@@ -120,6 +120,40 @@
         <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>
         <script>
            $(document).ready(function() {
+            $('.delete_btn').click(function () {
+                del_id = $(this).attr('id');
+                table_row = $(this).closest('tr');
+                swal({
+                        title: "Are you sure?",
+                        text: "Your will not be able to recover all request details",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Yes, delete it!",
+                        cancelButtonText: "No, cancel please!",
+                        closeOnConfirm: false,
+                        closeOnCancel: false },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            $.get(
+                                '/api/v1/request_del/' + del_id,
+                                {d_id: del_id, caller: 'api'},
+                                function(data){
+                                    if (data.message == "success"){
+                                        /* remove row from table */
+                                        table_row.remove();
+                                    };
+                                },
+                                'json'
+                            );
+                            swal("Deleted!", "Request [id:" + del_id + "]has been deleted.", "success");
+                            return false;
+                        } else {
+                            swal("Cancelled", "Request details are safe!", "error");
+                            return false;
+                        }
+                    });
+            });
 
 			$('#mydata').DataTable({
                     dom: 'Bfrtip',
