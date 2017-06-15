@@ -124,8 +124,10 @@ else:
         orgunits_dict = json.loads(response)
         orgunits = orgunits_dict['organisationUnits']
     except:
+        orgunits = []
         logging.error("E02: Sync Service failed")
         # just keep quiet for now
+print URL
 print orgunits
 for orgunit in orgunits:
     subcounty, district, level, is_033b = get_facility_details(orgunit)
@@ -134,7 +136,7 @@ for orgunit in orgunits:
         "FROM facilities WHERE dhis2id = %s", [orgunit["id"]])
     res = cur.fetchone()
     if not res:  # we don't have an entry already
-        logging.debug("Sync Service: adding facility:%s to fsync" % orgunit["dhis2id"])
+        logging.debug("Sync Service: adding facility:%s to fsync" % orgunit["id"])
         cur.execute(
             "INSERT INTO facilities(name, dhis2id, district, subcounty, level, is_033b) "
             "VALUES (%s, %s, %s, %s, %s, %s)",
