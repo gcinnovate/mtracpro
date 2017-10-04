@@ -7,7 +7,7 @@ from app.tools.utils import get_basic_auth_credentials, auth_user, format_msisdn
 # from app.tools.utils import get_location_role_reporters, queue_schedule, log_schedule, update_queued_sms
 from app.tools.utils import parse_message, post_request_to_dispatcher2, get_reporting_week
 from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
-from settings import HMIS_033B_DATASET
+from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO
 
 
 def get_webhook_msg(params, label='msg'):
@@ -248,13 +248,15 @@ class Dhis2Queue:
 
     def POST(self):
         params = web.input(
-            facilitycode="", form="", district="", msisdn="", raw_msg="", report_type="")
+            facilitycode="", form="", district="", msisdn="",
+            raw_msg="", report_type="", facility="")
         values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
             dataValues = []
         else:
             dataValues = ""
-
+        print "FACILITYCODE:", params.facilitycode, "==>", params.facility
+        # print values
         if params.facilitycode:
             for v in values:
                 val = v.get('value')
@@ -263,7 +265,7 @@ class Dhis2Queue:
                 except:
                     pass
                 label = v.get('label')
-                if val and val.__str__().isdigit():
+                if val.__str__().isdigit():
                     slug = "%s_%s" % (params.form, label)
                     print "%s=>%s" % (slug, val), MAPPING[slug]
                     if PREFERED_DHIS2_CONTENT_TYPE == 'json':
@@ -293,6 +295,7 @@ class Dhis2Queue:
                 }
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                     args_dict['dataSet'] = HMIS_033B_DATASET
+                    args_dict['attributeOptionCombo'] = HMIS_033B_DATASET_ATTR_OPT_COMBO
                     payload = json.dumps(args_dict)
                 else:
                     payload = XML_TEMPLATE % args_dict
