@@ -267,6 +267,9 @@ class Dhis2Queue:
                 label = v.get('label')
                 if val.__str__().isdigit():
                     slug = "%s_%s" % (params.form, label)
+                    if not(val) and params.form in ['cases', 'death']:
+                        if label not in params.raw_msg.lower():
+                            continue  # skip zero values for cases and death
                     print "%s=>%s" % (slug, val), MAPPING[slug]
                     if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                         dataValues.append(
