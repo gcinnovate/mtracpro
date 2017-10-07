@@ -154,6 +154,7 @@ def get_reporting_week(date):
 
 def parse_message(msg, kw=""):
     msg = msg.strip().lower()
+    msg = msg.replace(',', '.')
     separators = []
     segments = []
     separator = DELIMITER or '\\s'
@@ -175,7 +176,18 @@ def parse_message(msg, kw=""):
         if len(segment):
             stripped_segments.append(segment)
 
+    segments = stripped_segments
     # do more cleaning here for stuff like ma2 instead of ma.2
+    # get stuff like ma2, split it accordingly and put it back in right position
+    outliers = filter(lambda x: not x.isalpha() and not x.isdigit(), segments)
+    for i in outliers:
+        idx = segments.index(i)
+        match_num = re.search('[0-9]', i)
+        if match_num:
+            command_segment = i[0:match_num.start()]
+            num_segment = i[match_num.start():match_num.end()]
+            segments.insert(idx, command_segment)
+            segments[idx + 1] = num_segment
 
     if not len(segments) % 2 == 0:
         return "not all commands have a value"
@@ -204,7 +216,8 @@ def post_request_to_dispatcher2(data, url=config['dispatcher2_queue_url'], ctype
     response = requests.post(
         url, data=data, headers={
             'Content-Type': 'text/xml' if ctype == "xml" else 'application/json',
-            'Authorization': 'Basic ' + coded}, verify=False, params=params, cert='/etc/dispatcher2/gcinnovate.com.pem'
+            'Authorization': 'Basic ' + coded},
+        verify=False, params=params, cert=config['dispatcher2_certkey_file']
     )
     return response
 
