@@ -28,9 +28,9 @@
                 <div class="ibox-title">
                     <h5>Requests</h5>
                     <div class="ibox-tools">
-                        <button class="btn btn-info delete_btn" id="yy"><i class="fa fa-repeat"></i> Retry Selected</button>
+                        <button class="btn btn-info retry_btn" name="abtn" value="Retry Selected"><i class="fa fa-repeat"></i> Retry Selected</button>
                         &nbsp;&nbsp;&nbsp;
-                        <button class="btn btn-danger delete_btn" id="yy"><i class="fa fa-thumbs-o-down"></i> Cancel Selected</button>
+                        <button class="btn btn-danger cancel_btn" name="abtn" value="Cancel Selected"><i class="fa fa-thumbs-o-down"></i> Cancel Selected</button>
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
@@ -66,7 +66,7 @@
                                                  <i title="Details" class="fa fa-list-alt"></i>
                                         </button>
 										&nbsp;&nbsp;&nbsp;
-                                        <button class="btn btn-danger btn-xs delete_btn" id={{ l.id}}><i class="fa fa-trash-o"></i></button>
+                                        <button type="button" class="btn btn-danger btn-xs delete_btn" id={{ l.id}}><i class="fa fa-trash-o"></i></button>
 									</td>
 								</tr>
 							{% endfor%}

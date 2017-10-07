@@ -1,8 +1,8 @@
 import web
 import parsedatetime
-from . import db, require_login, render
+from . import db, require_login, render, get_session
 from app.tools.pagination2 import doquery, countquery, getPaginationString
-from app.tools.utils import default, lit
+from app.tools.utils import default, lit, audit_log
 from settings import PAGE_LIMIT
 
 cal = parsedatetime.Calendar()
@@ -21,7 +21,7 @@ class Completed:
         start = (page - 1) * limit if page > 0 else 0
 
         dic = lit(
-            relations='requests_view', fields="*",
+            relations='requests', fields="*",
             criteria="status='completed'",
             order="id desc",
             limit=limit, offset=start)
@@ -35,6 +35,8 @@ class Completed:
 
     @require_login
     def POST(self):
+        session = get_session()
+        username = session.username
         params = web.input(page=1, reqid=[])
         try:
             page = int(params.page)
@@ -44,15 +46,31 @@ class Completed:
         start = (page - 1) * limit if page > 0 else 0
 
         with db.transaction():
-            if params.abtn == 'Retry Selected':
+            if params.abtn == 'Resend Selected':
                 if params.reqid:
                     for val in params.reqid:
-                        db.update('requests', where="id = %s" % val, status='ready')
+                        db.update(
+                            'requests', where="id = %s" % val, status='ready', updated='NOW()')
+                    log_dict = {
+                        'logtype': 'Web', 'action': 'Resend Requests', 'actor': username,
+                        'ip': web.ctx['ip'],
+                        'descr': 'User %s resent %s request(s)' % (username, len(params.reqid)),
+                        'user': session.sesid
+                    }
+                    audit_log(db, log_dict)
+                db.transaction().commit()
             if params.abtn == 'Delete Selected':
                 if params.reqid:
                     for val in params.reqid:
                         db.delete('requests', where="id = %s" % val)
-            db.transaction().commit()
+                    log_dict = {
+                        'logtype': 'Web', 'action': 'Delete Requests', 'actor': username,
+                        'ip': web.ctx['ip'],
+                        'descr': 'User %s deleted %s request(s)' % (username, len(params.reqid)),
+                        'user': session.sesid
+                    }
+                    audit_log(db, log_dict)
+                db.transaction().commit()
 
         dic = lit(
             relations='requests', fields="*",

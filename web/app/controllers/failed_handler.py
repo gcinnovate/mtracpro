@@ -1,6 +1,6 @@
 import web
 import parsedatetime
-from . import db, require_login, render
+from . import db, require_login, render, get_session
 from app.tools.utils import audit_log, default, lit
 from app.tools.pagination2 import countquery, doquery, getPaginationString
 from settings import PAGE_LIMIT
@@ -23,7 +23,7 @@ class Failed:
         amonthAgo = '%s-%s-%s' % (t.tm_year, t.tm_mon, t.tm_mday)
 
         dic = lit(
-            relations='requests_view', fields="*",
+            relations='requests', fields="*",
             criteria="status='failed' AND created > '%s'" % (amonthAgo),
             order="id desc",
             limit=limit, offset=start)
@@ -37,6 +37,8 @@ class Failed:
 
     @require_login
     def POST(self):
+        session = get_session()
+        username = session.username
         params = web.input(page=1, reqid=[])
         try:
             page = int(params.page)
@@ -49,12 +51,31 @@ class Failed:
             if params.abtn == 'Retry Selected':
                 if params.reqid:
                     for val in params.reqid:
-                        db.update('requests', where="id = %s" % val, status='ready')
+                        db.update(
+                            'requests', where="id = %s" % val, status='ready', updated='NOW()')
+                    log_dict = {
+                        'logtype': 'Web', 'action': 'Retry Requests', 'actor': username,
+                        'ip': web.ctx['ip'],
+                        'descr': 'User %s retried %s request(s)' % (username, len(params.reqid)),
+                        'user': session.sesid
+                    }
+                    audit_log(db, log_dict)
+
+                db.transaction().commit()
+                return web.seeother("/failed")
             if params.abtn == 'Delete Selected':
                 if params.reqid:
                     for val in params.reqid:
                         db.delete('requests', where="id = %s" % val)
-            db.transaction().commit()
+                    log_dict = {
+                        'logtype': 'Web', 'action': 'Delete Requests', 'actor': username,
+                        'ip': web.ctx['ip'],
+                        'descr': 'User %s deleted %s request(s)' % (username, len(params.reqid)),
+                        'user': session.sesid
+                    }
+                    audit_log(db, log_dict)
+                db.transaction().commit()
+                return web.seeother("/failed")
 
         # we start getting requests a month old
         dic = lit(
