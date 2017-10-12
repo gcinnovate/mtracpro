@@ -75,7 +75,7 @@
                                                 <select name="role" id="role" class="form-control" multiple="yes" size="6" required>
                                                     <option value="">Select Role</option>
                                                     {% for v in roles %}
-                                                    <option value="{{ v.id }}" {% if v.name == role %} selected="yes" {% endif %}>{{ v.name }}</option>
+                                                    <option value="{{ v.id }}" {% if v.name in role %} selected="yes" {% endif %}>{{ v.name }}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>

@@ -51,7 +51,7 @@ class Reporters:
                 lastname = r.lastname
                 telephone = r.telephone
                 email = r.email
-                role = r.role
+                role = r.role.split(',')
                 alt_telephone = r.alternate_tel
                 location = r.reporting_location
                 subcounty = ""
@@ -190,9 +190,21 @@ class Reporters:
                         'district_id': params.district
                     })
                 if r:
+                    for group_id in params.role:
+                        rx = db.query(
+                            "SELECT id FROM reporter_groups_reporters "
+                            "WHERE reporter_id = $id AND group_id =$gid ",
+                            {'gid': group_id, 'id': params.ed})
+                        if not rx:
+                            db.query(
+                                "INSERT INTO reporter_groups_reporters (group_id, reporter_id) "
+                                " VALUES ($group_id, $reporter_id)",
+                                {'group_id': group_id, 'reporter_id': params.ed})
+                    # delete other groups
                     db.query(
-                        "UPDATE reporter_groups_reporters SET group_id = $gid "
-                        " WHERE reporter_id = $id ", {'gid': params.role, 'id': params.ed})
+                        "DELETE FROM reporter_groups_reporters WHERE "
+                        "reporter_id=$id AND group_id NOT IN $roles",
+                        {'id': params.ed, 'roles': params.role})
                     log_dict = {
                         'logtype': 'Web', 'action': 'Update', 'actor': session.username,
                         'ip': web.ctx['ip'],
@@ -225,10 +237,12 @@ class Reporters:
                     })
                 if r:
                     reporter_id = r[0]['id']
-                    db.query(
-                        "INSERT INTO reporter_groups_reporters (group_id, reporter_id) "
-                        " VALUES ($role, $reporter_id)",
-                        {'role': params.role, 'reporter_id': reporter_id})
+                    for group_id in params.role:
+                        db.query(
+                            "INSERT INTO reporter_groups_reporters (group_id, reporter_id) "
+                            " VALUES ($role, $reporter_id)",
+                            {'role': group_id, 'reporter_id': reporter_id})
+
                     log_dict = {
                         'logtype': 'Web', 'action': 'Create', 'actor': session.username,
                         'ip': web.ctx['ip'],
