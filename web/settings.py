@@ -17,6 +17,7 @@ PAGE_LIMIT = 25
 SMS_OFFSET_TIME = 5
 
 HMIS_033B_DATASET = 'V1kJRs8CtW4'
+HMIS_033B_DATASET_ATTR_OPT_COMBO = 'gGhClrV5odI'  # DHIS2 v2.26 change
 PREFERRED_DHIS2_CONTENT_TYPE = 'xml'
 
 CASES_POSITIONS = {
@@ -28,6 +29,7 @@ KEYWORDS_DATA_LENGTH = {
     'cases': 16,
     'death': 18,
 }
+REPORTS_WITH_COMMANDS = ['cases', 'death']
 
 
 def absolute(path):
@@ -394,8 +396,8 @@ MAPPING = {
         'dhis2_combo_id': 'gGhClrV5odI',
         'dhis2_id': 'DgeykDdSLzI'
     },
-    'tra_ors': {
-        'descr': 'ORS (Scakets)',
+    'tra_ors_sackets': {
+        'descr': 'ORS (Sackets)',
         'dhis2_combo_id': 'gGhClrV5odI',
         'dhis2_id': 'zmimiDOJwaf'
     },
@@ -407,7 +409,7 @@ MAPPING = {
 }
 
 XML_TEMPLATE = """
-<dataValueSet xmlns="http://dhis2.org/schema/dxf/2.0" dataSet="V1kJRs8CtW4" completeDate="%(completeDate)s" period="%(period)s" orgUnit="%(orgUnit)s">
+<dataValueSet xmlns="http://dhis2.org/schema/dxf/2.0" dataSet="V1kJRs8CtW4" completeDate="%(completeDate)s" period="%(period)s" orgUnit="%(orgUnit)s" attributeOptionCombo="gGhClrV5odI">
 <dataValues>
     %(dataValues)s
 </dataValues>

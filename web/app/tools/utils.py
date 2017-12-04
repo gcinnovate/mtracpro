@@ -217,7 +217,7 @@ def post_request_to_dispatcher2(data, url=config['dispatcher2_queue_url'], ctype
         url, data=data, headers={
             'Content-Type': 'text/xml' if ctype == "xml" else 'application/json',
             'Authorization': 'Basic ' + coded},
-        verify=False, params=params, cert=config['dispatcher2_certkey_file']
+        verify=False, params=params  # , cert=config['dispatcher2_certkey_file']
     )
     return response
 
@@ -238,3 +238,26 @@ def queue_submission(db, serverid, post_xml, year, week):
     except:
         return False
     return True
+
+
+def generate_raw_message(db, form, data, add_commads=False):
+    """ Returns a mTrac-like coded SMS given form and data dictionary of indicators and
+    thier values """
+    res = db.query(
+        "SELECT slug, form_order, cmd FROM dhis2_mtrack_indicators_mapping "
+        "WHERE form =  $form", {'form': form})
+    values = ["0" for i in range(len(res))]
+    if add_commads:
+        ret = []
+    indicator_order_dict = {}
+    commands_dict = {}
+    for r in res:
+        indicator_order_dict[r['slug']] = r['form_order']
+        commands_dict[r['slug']] = r['cmd']
+    for k, v in data.iteritems():
+        values[indicator_order_dict[k]] = v
+        if add_commads:
+            ret.append("%s.%s" % (commands_dict[k], v))
+    if add_commads:
+        return '.'.join(ret)
+    return '.'.join(values)
