@@ -173,10 +173,8 @@ class ReporterAPI:
             "SELECT firstname || ' ' || lastname as name, telephone, "
             " get_district(district_id) as district, facilityid, facility, facilitycode, "
             "total_reports, last_reporting_date FROM reporters_view "
-            " WHERE telephone ilike '%%%%%s%%%%' OR alternate_tel ilike '%%%%%s%%%%'")
-        SQL = SQL % (phonenumber, phonenumber)
-        print SQL
-        res = db.query(SQL)
+            " WHERE telephone = $tel OR alternate_tel = $tel")
+        res = db.query(SQL, {'tel': phonenumber})
         ret = {}
         if res:
             r = res[0]
