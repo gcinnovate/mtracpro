@@ -166,6 +166,28 @@ class ReportersEndpoint:
         return json.dumps(ret)
 
 
+class ReporterAPI:
+    def GET(self, phonenumber):
+        web.header("Content-Type", "application/json; charset=utf-8")
+        SQL = (
+            "SELECT firstname || ' ' || lastname as name, telephone, "
+            " get_district(district_id) as district, facilityid, facility, facilitycode, "
+            "total_reports, last_reporting_date FROM reporters_view "
+            " WHERE telephone ilike '%%%%%s%%%%' OR alternate_tel ilike '%%%%%s%%%%'")
+        SQL = SQL % (phonenumber, phonenumber)
+        print SQL
+        res = db.query(SQL)
+        ret = {}
+        if res:
+            r = res[0]
+            ret = {
+                'name': r.name, 'phoneNumber': r.telephone,
+                'district': r.district, 'facility': r.facility,
+                'facilityId': r.facilitycode, 'totalReports': r.total_reports,
+                'lastReportingDate': r.last_reporting_date}
+        return json.dumps(ret)
+
+
 class ReportsThisWeek:
     def GET(self, facilitycode):
         year, week = get_current_week()

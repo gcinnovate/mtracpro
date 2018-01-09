@@ -8,7 +8,7 @@ from app.controllers.main_handler import Index, Logout
 from app.controllers.api import Location, LocationChildren, SubcountyLocations
 from app.controllers.api import DistrictFacilities, LocationFacilities, FacilityReporters
 from app.controllers.api import Cases, Deaths, Dhis2Queue, Test, ReportsThisWeek
-from app.controllers.api import QueueForDhis2InstanceProcessing
+from app.controllers.api import QueueForDhis2InstanceProcessing, ReporterAPI
 from app.controllers.api2 import LocationsEndpoint, ReportersXLEndpoint
 from app.controllers.api2 import CreateFacility, ReportForms, IndicatorHtml
 from app.controllers.api2 import FacilitySMS, SendSMS, RequestDetails
@@ -92,4 +92,5 @@ URLS = (
     r'/api/v1/server_del/(\d+)/?', DeleteServer,
     r'/api/v1/editreport/(\d+)/?', EditReport,  # for retrospective report edits
     r'/api/v1/reportingweek/?', ReportingWeek,
+    r'/api/v1/reporter/(\w+)/?', ReporterAPI,
 )
