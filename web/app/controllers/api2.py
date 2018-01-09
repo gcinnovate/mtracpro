@@ -1,6 +1,6 @@
 import json
 import logging
-from . import db
+from . import db, Indicators, IndicatorsByFormOrder
 import web
 from app.tools.utils import post_request
 from settings import config
@@ -246,26 +246,60 @@ class ReportForms:
 
 class IndicatorHtml:
     def GET(self, report):
+        params = web.input(request_id="")
+        # res = db.query(
+        #     "SELECT slug, description FROM dhis2_mtrack_indicators_mapping "
+        #     "WHERE form=$report ORDER BY form_order", {'report': report})
+        # for r in res:
+
+        # XXX Crazy hacks to get values from json body if request_id is passed
+        json_body = {}
         htmlStr = ""
-        res = db.query(
-            "SELECT slug, description FROM dhis2_mtrack_indicators_mapping "
-            "WHERE form=$report ORDER BY form_order", {'report': report})
-        for r in res:
-            htmlStr += '<div class="form-group"><label for="%(slug)s" class="col-lg-6 control-label">' % r
+        if params.request_id:
+            res = db.query(
+                "SELECT body, facility, week, year FROM requests_view WHERE id= $request_id",
+                {'request_id': params.request_id})
+            if res:
+                rpt = res[0]
+                htmlStr += """<input name="report" type="hidden" value="%s"/>""" % report
+                htmlStr += """<input name="request_id" id="request_id" type="hidden" value="%s"/>""" % params.request_id
+                htmlStr += """<input name="facilitycode" type="hidden" value="%s"/>""" % rpt['facility']
+                htmlStr += """<input name="week" type="hidden" value="%sW%s"/>""" % (rpt['year'], rpt['week'])
+                try:
+                    json_body = json.loads(rpt['body'])
+                except:
+                    pass
+        # import pprint; pprint.pprint(json_body)
+        for r in IndicatorsByFormOrder[report]:  # use indicators preloaded in __init__.py
+            value = ""
+            if json_body:
+                for val in json_body['dataValues']:
+                    if val['dataElement'] in Indicators[report]:
+                        if r['slug'] == Indicators[report][val['dataElement']]['slug']:
+                            value = val['value']
+                            # print ">>>>>>>>>>>>>>>>>>>>>>", value
+            # XXX Crazy hacks end here
+
+            htmlStr += '<div class="row"><div class="form-group"><label for="%(slug)s" class="col-lg-6 control-label">' % r
             htmlStr += r['description'] + ":</label>"
             htmlStr += """
                             <div class="col-lg-6">
-                                <input name="%(slug)s" id="%(slug)s" type="text" class="form-control"/>
+                                <input name="%(slug)s" id="%(slug)s" value="%(value)s" type="text" class="form-control"/>
                             </div>
                         </div>
-            """ % r
-        htmlStr += """
-                       <div class="form-group">
-                            <div class="col-lg-offset-6 col-lg-3">
-                                <button class="btn btn-sm btn-primary" type="submit">Save Report</button>
+                    </div>
+                    <br/>
+            """ % {'slug': r['slug'], 'value': value}
+        if not params.request_id:
+            htmlStr += """
+                        <div class="row">
+                        <div class="form-group">
+                                <div class="col-lg-offset-6 col-lg-3">
+                                    <button class="btn btn-sm btn-primary report_edit_btn" type="submit">Save Report</button>
+                                </div>
                             </div>
                         </div>
-        """
+            """
         return htmlStr
 
 

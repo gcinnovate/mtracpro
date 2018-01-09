@@ -84,6 +84,27 @@ for r in rs:
     if x:
         serverApps[r['id']] = x[0]['allowed_sources']
 
+Indicators = {}  # Form: {'cases': {'dataelement': {'slug': 'cases_ma'}, 'dataelement', {'slug': 'cases_me'}}}
+IndicatorsByFormOrder = {}  # {'cases': [{'slug': 'cases_ma', 'description': 'Malaria Cases'}, {}, {}, ...]}
+rs = db.query(
+    "SELECT form, slug, description, dataelement FROM dhis2_mtrack_indicators_mapping "
+    "ORDER BY form, form_order")
+for r in rs:
+    if r['form'] not in Indicators:
+        Indicators[r['form']] = {}
+        Indicators[r['form']][r['dataelement']] = {'slug': r['slug']}
+    else:
+        Indicators[r['form']][r['dataelement']] = {'slug': r['slug']}
+
+    if r['form'] not in IndicatorsByFormOrder:
+        IndicatorsByFormOrder[r['form']] = []
+        IndicatorsByFormOrder[r['form']].append({'slug': r['slug'], 'description': r['description']})
+    else:
+        IndicatorsByFormOrder[r['form']].append({'slug': r['slug'], 'description': r['description']})
+# import pprint
+# pprint.pprint(Indicators)
+# pprint.pprint(IndicatorsByFormOrder)
+
 
 def put_app(app):
     global APP

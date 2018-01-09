@@ -15,6 +15,7 @@ class MessageHistory:
             "SELECT id, uuid, firstname || ' ' || lastname as name "
             "FROM reporters WHERE replace(telephone, '+', '') = $tel "
             "OR replace(alternate_tel, '+', '') = $tel LIMIT 1", {'tel': phone})
+        print res
         if res:
             telephone = phone
             reporter = res[0]
@@ -23,7 +24,9 @@ class MessageHistory:
             try:
                 resp = get_request(config['api_url'] + "messages.json?contact=%s" % uuid)
                 messages = json.loads(resp.text)
-            except:
+                print messages
+            except Exception, e:
+                print str(e)
                 messages = {}
             if 'results' in messages:
                 msgs = list(messages['results'])

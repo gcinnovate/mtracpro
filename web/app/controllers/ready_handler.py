@@ -18,7 +18,7 @@ class Ready:
         start = (page - 1) * limit if page > 0 else 0
 
         dic = lit(
-            relations='requests', fields="*",
+            relations='requests_view', fields="*",
             criteria="status='ready'",
             order="id desc",
             limit=limit, offset=start)

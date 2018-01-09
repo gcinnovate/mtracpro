@@ -559,7 +559,7 @@ CREATE OR REPLACE FUNCTION pp_json(j TEXT, sort_keys BOOLEAN = TRUE, indent TEXT
 RETURNS TEXT AS $$
     import simplejson as json
     if not j:
-        j = []
+        return ''
     return json.dumps(json.loads(j), sort_keys=sort_keys, indent=indent)
 $$ LANGUAGE plpythonu;
 
@@ -602,6 +602,7 @@ CREATE VIEW reporters_view AS
 CREATE VIEW requests_view AS
     SELECT a.id, a.source, a.destination, a.body, a.ctype, a.status, a.statuscode, a.errors,
         a.submissionid, a.week, a.month, a.year, a.msisdn, a.facility, a.district, a.report_type, a.raw_msg,
+        a.edited_raw_msg, a.is_edited,
         a.created, b.name facility_name
     FROM requests a, healthfacilities b
-    WHERE a.facility = b.code;
+    WHERE a.facility = b.code AND body_is_query_param = 'f';

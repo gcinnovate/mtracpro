@@ -53,6 +53,8 @@ config = {
     'dispatcher2_queue_url': 'https://localhost:8003/queue?source=mtrack&destination=dhis2',
     'dispatcher2_username': 'admin',
     'dispatcher2_password': 'admin',
+    'dispatcher2_source': 'mtrackpro',
+    'dispatcher2_destination': 'dhis2',
     'dispatcher2_certkey_file': '/etc/dispatcher2/ca-cert.pem',
 
     # DHIS2 Confs

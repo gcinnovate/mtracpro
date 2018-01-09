@@ -25,6 +25,8 @@
 				<button class="btn btn-outline btn-success  dim" type="button"><i class="fa fa-download"></i></button><br/>
 				</div>
 				<small>Reporters Download</small>
+                <br/>
+                <br/>
 			</div>
    		</div>
 	</div>
@@ -33,7 +35,50 @@
 			<div class="ibox-title"><h5>Facilities</h5></div>
 			<div class="ibox-content">
 				<div>
+   					<button class="btn btn-outline btn-success  dim">
+                    <a href="/api/v1/facility_xlendpoint"><i class="fa fa-download"></i></a>
+                    </button>
 				</div>
+				<small>Facilities Excel download</small>
+                <br/>
+                <br/>
+			</div>
+   		</div>
+	</div>
+    <div class="col-lg-3">
+		<div class="ibox float-e-margins">
+			<div class="ibox-title"><h5>Reports</h5></div>
+			<div class="ibox-content">
+				<div>
+   					<button class="btn btn-outline btn-success  dim">
+                    <a href="/api/v1/facility_xlendpoint"><i class="fa fa-download"></i></a>
+                    </button>
+				</div>
+				<small>All Reports Excel download</small>
+                <br/>
+                <br/>
+			</div>
+   		</div>
+	</div>
+    <div class="col-lg-3">
+		<div class="ibox float-e-margins">
+			<div class="ibox-title"><h5>Polls</h5></div>
+			<div class="ibox-content">
+				<div class="form-group"><label for="district" class="col-lg-3 control-label">Poll:</label>
+					<div class="col-lg-9">
+						<select name="poll" id="poll" class="form-control" required>
+								<option value="">Select Poll</option>
+								{% for d in polls %}
+								<option value="{{ d.id}}" {% if d.id == district.id %} selected="yes" {% endif %}>{{ d.name}}</option
+								{% endfor %}
+						</select>
+					</div>
+                </div>
+				<div>
+                    <button name="download" class="btn btn-outline btn-success  dim" type="submit" value="Poll">
+                    <i class="fa fa-download"></i>
+                    </button>
+                </div>
 			</div>
    		</div>
 	</div>

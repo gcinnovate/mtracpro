@@ -161,7 +161,7 @@ class Reporters:
         del l['self']
         return render.reporters(**l)
 
-    @csrf_protected
+    #@csrf_protected
     @require_login
     def POST(self):
         session = get_session()

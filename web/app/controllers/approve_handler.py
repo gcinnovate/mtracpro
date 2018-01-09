@@ -20,7 +20,9 @@ class Approve:
 
         dic = lit(
             relations='requests_view',
-            fields="id, facility, facility_name, district, msisdn, body, raw_msg, year, week, created",
+            fields=(
+                "id, facility, facility_name, district, msisdn, body, "
+                "raw_msg, year, week, created, report_type, is_edited, edited_raw_msg"),
             criteria="status='pending'",
             order="id desc",
             limit=limit, offset=start)
@@ -46,13 +48,15 @@ class Approve:
             if params.abtn == 'Approve Selected':
                 if params.reqid:
                     for val in params.reqid:
-                        db.update('requests', status='ready', where="id = %s" % val)
+                        db.update(
+                            'requests', status='ready', updated='NOW()', where="id = %s" % val)
                 db.transaction().commit()
                 return web.seeother("/approve")
             if params.abtn == 'Cancel Selected':
                 if params.reqid:
                     for val in params.reqid:
-                        db.update('requests', status='canceled', where="id = %s" % val)
+                        db.update(
+                            'requests', status='canceled', updated='NOW()', where="id = %s" % val)
                 db.transaction().commit()
                 return web.seeother("/approve")
 

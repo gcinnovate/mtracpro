@@ -2,8 +2,8 @@ import json
 import web
 import datetime
 from . import db, get_current_week
-# from settings import config, SMS_OFFSET_TIME
-from app.tools.utils import get_basic_auth_credentials, auth_user, format_msisdn
+from settings import config
+from app.tools.utils import get_basic_auth_credentials, auth_user
 # from app.tools.utils import get_location_role_reporters, queue_schedule, log_schedule, update_queued_sms
 from app.tools.utils import parse_message, post_request_to_dispatcher2, get_reporting_week
 from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
@@ -236,6 +236,8 @@ class Deaths:
 
 class Test:
     def GET(self):
+        web.header('Content-Type', 'application/json')
+        return json.dumps(MAPPING)
         return json.dumps({"message": "1.2.3"})
 
     def POST(self):
@@ -307,15 +309,38 @@ class Dhis2Queue:
                 extra_params = {
                     'week': week, 'year': year, 'msisdn': params.msisdn,
                     'facility': params.facilitycode, 'raw_msg': params.raw_msg,
-                    'distrcit': params.district, 'report_type': params.report_type}
+                    'distrcit': params.district, 'report_type': params.report_type,
+                    'source': config['dispatcher2_source'],
+                    'destination': config['dispatcher2_destination']}
                 # now ready to queue to DB for pushing to DHIS2
                 # resp = queue_submission(serverid, post_xml, year, week)
                 print extra_params
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                     resp = post_request_to_dispatcher2(
-                        payload, params=extra_params, ctype='application/json')
+                        payload, params=extra_params, ctype='json')
                 else:
                     resp = post_request_to_dispatcher2(payload, params=extra_params)
                 print "Resp:", resp
+
+        return json.dumps({"status": "success"})
+
+
+class QueueForDhis2InstanceProcessing:
+    def GET(self):
+        """Please specify source and destination call in your call to this API"""
+        params = web.input(
+            msisdn="", raw_msg="", report_type="", source="", destination="", is_qparams="t")
+        year, week = get_current_week()
+        payload = "message=%s&originator=%s" % (params.raw_msg, params.msisdn)
+        extra_params = {
+            'week': week, 'year': year, 'msisdn': params.msisdn,
+            'facility': '', 'raw_msg': params.raw_msg,
+            'distrcit': '', 'report_type': params.report_type,
+            'source': params.source, 'destination': params.destination,
+            'is_qparams': "t"}
+        print extra_params
+
+        resp = post_request_to_dispatcher2(payload, ctype="text", params=extra_params)
+        print "Resp:", resp
 
         return json.dumps({"status": "success"})

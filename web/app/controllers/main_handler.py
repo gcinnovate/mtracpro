@@ -41,9 +41,9 @@ class Index:
             l = locals()
             del l['self']
             if info.role == 'District User':
-                return web.seeother("/dashboard")
+                return web.seeother("/approve")
             else:
-                return web.seeother("/dashboard")
+                return web.seeother("/approve")
         else:
             session.loggedin = False
             session.logon_err = r[1]

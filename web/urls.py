@@ -8,10 +8,12 @@ from app.controllers.main_handler import Index, Logout
 from app.controllers.api import Location, LocationChildren, SubcountyLocations
 from app.controllers.api import DistrictFacilities, LocationFacilities, FacilityReporters
 from app.controllers.api import Cases, Deaths, Dhis2Queue, Test, ReportsThisWeek
+from app.controllers.api import QueueForDhis2InstanceProcessing
 from app.controllers.api2 import LocationsEndpoint, ReportersXLEndpoint
 from app.controllers.api2 import CreateFacility, ReportForms, IndicatorHtml
 from app.controllers.api2 import FacilitySMS, SendSMS, RequestDetails
 from app.controllers.api2 import DeleteRequest, DeleteServer
+from app.controllers.api3 import EditReport, ReportingWeek
 from app.controllers.reporters_handler import Reporters
 from app.controllers.users_handler import Users
 from app.controllers.groups_handler import Groups
@@ -35,6 +37,7 @@ from app.controllers.adminunits_handler import AdminUnits
 from app.controllers.fsync_handler import FSync
 from app.controllers.messagehistory_handler import MessageHistory
 from app.controllers.facilityreports_handler import FacilityReports
+from app.controllers.hotline_handler import Hotline
 
 URLS = (
     r'^/', Index,
@@ -43,6 +46,7 @@ URLS = (
     r'/downloads', Downloads,
     r'/reporters', Reporters,
     r'/approve', Approve,
+    r'/hotline', Hotline,
     r'/facilities', Facilities,
     r'/auditlog', AuditLog,
     r'/settings', Settings,
@@ -68,6 +72,7 @@ URLS = (
     r'/cases', Cases,  # cases flow
     r'/deaths', Deaths,  # deaths flow
     r'/dhis2queue', Dhis2Queue,  # queue reports in dispatcher2
+    r'/dhis2instancequeue', QueueForDhis2InstanceProcessing,  # queue reports in dispatcher2
     r'/test', Test,
     r'/api/v1/loc_children/(\d+)/?', LocationChildren,
     r'/api/v1/district_facilities/(\d+)/?', DistrictFacilities,
@@ -85,4 +90,6 @@ URLS = (
     r'/api/v1/request_details/(\d+)/?', RequestDetails,
     r'/api/v1/request_del/(\d+)/?', DeleteRequest,
     r'/api/v1/server_del/(\d+)/?', DeleteServer,
+    r'/api/v1/editreport/(\d+)/?', EditReport,  # for retrospective report edits
+    r'/api/v1/reportingweek/?', ReportingWeek,
 )

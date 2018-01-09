@@ -213,9 +213,15 @@ def parse_message(msg, kw=""):
 def post_request_to_dispatcher2(data, url=config['dispatcher2_queue_url'], ctype="xml", params={}):
     coded = base64.b64encode(
         "%s:%s" % (config['dispatcher2_username'], config['dispatcher2_password']))
+    if ctype == 'xml':
+        ct = 'text/xml'
+    elif ctype == 'json':
+        ct = 'application/json'
+    else:
+        ct = 'text/plain'
     response = requests.post(
         url, data=data, headers={
-            'Content-Type': 'text/xml' if ctype == "xml" else 'application/json',
+            'Content-Type': ct,
             'Authorization': 'Basic ' + coded},
         verify=False, params=params  # , cert=config['dispatcher2_certkey_file']
     )
