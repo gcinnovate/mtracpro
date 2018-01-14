@@ -89,7 +89,8 @@ class AppSettings:
                         'name': params.name, 'username': params.username,
                         'password': params.cpasswd, 'url': params.url, 'auth_method': params.auth_method,
                         'start': params.start, 'end': params.end,
-                        'certkey': params.ssl_client_certkey_file, 'use_ssl': params.use_ssl,
+                        'certkey': params.ssl_client_certkey_file,
+                        'use_ssl': 'f' if not params.use_ssl else params.use_ssl,
                         'xml_xpath': params.xml_xpath, 'json_xpath': params.json_xpath})
 
                 if res:

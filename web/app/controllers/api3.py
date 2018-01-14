@@ -1,7 +1,7 @@
 import web
 import datetime
 import json
-from . import db, require_login
+from . import db, require_login, serversByName, formatMsgForAndroid
 from app.tools.utils import generate_raw_message, get_reporting_week
 from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, REPORTS_WITH_COMMANDS
@@ -80,3 +80,33 @@ class ReportingWeek:
     def GET(self):
         web.header('Content-Type', 'application/json')
         return json.dumps({"period": get_reporting_week(datetime.datetime.now())})
+
+
+class ReporterHistoryApi:
+    def GET(self, phonenumber):
+        params = web.input(sdate="", report_type="")
+        web.header('Content-Type', 'application/json')
+        ret = []
+        SQL = (
+            "SELECT id, raw_msg, week, year, to_char(created, 'yyyy-mm-dd HH:MI') as created, "
+            "body FROM requests_view WHERE msisdn = $phone AND source = $source ")
+        if params.sdate:
+            SQL += " AND created >= $sdate "
+        if params.report_type:
+            SQL += " AND report_type = $report_type "
+        SQL += " ORDER BY id DESC LIMIT 10"
+        ret = []
+        res = db.query(
+            SQL,
+            {
+                'phone': phonenumber, 'sdate': params.sdate,
+                'report_type': params.report_type, 'source': serversByName['mTracPro_android']})
+        if res:
+            for r in res:
+                ret.append({
+                    "id": r.id,
+                    "rawMsg": r.raw_msg,
+                    "date": r.created,
+                    "details": formatMsgForAndroid(r.body),
+                    "period": "%sW%s" % (r.year, r.week)})
+        return json.dumps(ret)

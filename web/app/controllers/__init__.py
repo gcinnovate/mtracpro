@@ -73,10 +73,12 @@ for r in rs:
 
 ourServers = []
 serversById = {}
+serversByName = {}
 serverApps = {}
 rs = db.query("SELECT id, name FROM servers order BY name")
 for r in rs:
     serversById[r['id']] = r['name']
+    serversByName[r['name']] = r['id']
     ourServers.append({'id': r['id'], 'name': r['name']})
     x = db.query(
         "SELECT allowed_sources FROM server_allowed_sources WHERE server_id=$id",
@@ -136,8 +138,29 @@ def formatmsg(msg):
     if body:
         datavalues = body['dataValues']
         for d in datavalues:
-            ret += "<li><small>%s" % d['value'] + " " + dataElements[d['dataElement']] + "</small></li>"
+            try:  # XXX for cases where we dont have the key
+                ret += "<li><small>%s" % d['value'] + " " + dataElements[d['dataElement']] + "</small></li>"
+            except:
+                pass
     ret += "</ul>"
+    return ret
+
+
+def formatMsgForAndroid(msg):
+    ret = "You reported:\n"
+    try:
+        body = json.loads(msg)
+    except:
+        body = {}
+    if body:
+        datavalues = body['dataValues']
+        for d in datavalues:
+            try:  # XXX for cases where we dont have the key
+                ret += "%s" % d['value'] + " " + dataElements[d['dataElement']] + "\n"
+            except:
+                pass
+    else:
+        return ""
     return ret
 
 
