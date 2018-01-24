@@ -62,7 +62,7 @@
                                         {% else %}
                                             {{ report.raw_msg }}
                                         {% endif%}
-                                        {{ report.body|formatmsg}}
+                                        {{ report.body|formatmsg(report.report_type)}}
                                     </td>
                                     <td>{{ report.year|string + "W" + report.week}}</td>
                                     <td>{{ report.created|datetimeformat }}</td>

@@ -41,9 +41,11 @@ SESSION = ''
 APP = None
 
 dataElements = {}
-rs = db.query("SELECT dataelement, description FROM dhis2_mtrack_indicators_mapping")
+categoryOptionCombos = {}
+rs = db.query("SELECT dataelement, description, category_combo FROM dhis2_mtrack_indicators_mapping")
 for r in rs:
     dataElements[r['dataelement']] = r['description']
+    categoryOptionCombos[r['category_combo']] = r['description']
 
 ourDistricts = []
 allDistricts = {}
@@ -89,7 +91,7 @@ for r in rs:
 Indicators = {}  # Form: {'cases': {'dataelement': {'slug': 'cases_ma'}, 'dataelement', {'slug': 'cases_me'}}}
 IndicatorsByFormOrder = {}  # {'cases': [{'slug': 'cases_ma', 'description': 'Malaria Cases'}, {}, {}, ...]}
 rs = db.query(
-    "SELECT form, slug, description, dataelement FROM dhis2_mtrack_indicators_mapping "
+    "SELECT form, slug, description, dataelement, category_combo FROM dhis2_mtrack_indicators_mapping "
     "ORDER BY form, form_order")
 for r in rs:
     if r['form'] not in Indicators:
@@ -129,7 +131,7 @@ def datetimeformat(value, fmt='%Y-%m-%d'):
     return value.strftime(fmt)
 
 
-def formatmsg(msg):
+def formatmsg(msg, form='cases'):
     ret = "<ul>"
     try:
         body = json.loads(msg)
@@ -139,14 +141,17 @@ def formatmsg(msg):
         datavalues = body['dataValues']
         for d in datavalues:
             try:  # XXX for cases where we dont have the key
-                ret += "<li><small>%s" % d['value'] + " " + dataElements[d['dataElement']] + "</small></li>"
+                if form == 'mat':  # the mat form is a special case
+                    ret += "<li><small>%s" % d['value'] + " " + categoryOptionCombos[d['categoryOptionCombo']] + "</small></li>"
+                else:
+                    ret += "<li><small>%s" % d['value'] + " " + dataElements[d['dataElement']] + "</small></li>"
             except:
                 pass
     ret += "</ul>"
     return ret
 
 
-def formatMsgForAndroid(msg):
+def formatMsgForAndroid(msg, form='cases'):
     ret = "You reported:\n"
     try:
         body = json.loads(msg)
@@ -156,7 +161,10 @@ def formatMsgForAndroid(msg):
         datavalues = body['dataValues']
         for d in datavalues:
             try:  # XXX for cases where we dont have the key
-                ret += "%s" % d['value'] + " " + dataElements[d['dataElement']] + "\n"
+                if form == 'mat':
+                    ret += "%s" % d['value'] + " " + categoryOptionCombos[d['categoryOptionCombo']] + "\n"
+                else:
+                    ret += "%s" % d['value'] + " " + dataElements[d['dataElement']] + "\n"
             except:
                 pass
     else:

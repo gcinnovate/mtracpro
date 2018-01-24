@@ -89,7 +89,7 @@ class ReporterHistoryApi:
         ret = []
         SQL = (
             "SELECT id, raw_msg, week, year, to_char(created, 'yyyy-mm-dd HH:MI') as created, "
-            "body FROM requests_view WHERE msisdn = $phone AND source = $source ")
+            "body, report_type FROM requests_view WHERE msisdn = $phone AND source = $source ")
         if params.sdate:
             SQL += " AND created >= $sdate "
         if params.report_type:
@@ -107,6 +107,6 @@ class ReporterHistoryApi:
                     "id": r.id,
                     "rawMsg": r.raw_msg,
                     "date": r.created,
-                    "details": formatMsgForAndroid(r.body),
+                    "details": formatMsgForAndroid(r.body, r.report_type),
                     "period": "%sW%s" % (r.year, r.week)})
         return json.dumps(ret)
