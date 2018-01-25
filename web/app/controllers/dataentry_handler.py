@@ -27,7 +27,7 @@ class DataEntry:
         rweek = get_reporting_week(datetime.datetime.now())
         year, week = rweek.split('W')
         reporting_weeks = []
-        for i in range(1, int(week)):
+        for i in range(1, int(week) + 1):
             reporting_weeks.append("%sW%s" % (year, i))
 
         l = locals()
@@ -102,7 +102,7 @@ class DataEntry:
             extra_params = {
                 'week': _week, 'year': year, 'msisdn': params.reporter,
                 'facility': facilitycode, 'raw_msg': msg,
-                'distrcit': params.district, 'report_type': params.report}
+                'district': params.district, 'report_type': params.report}
             # now ready to queue to DB for pushing to DHIS2
             # resp = queue_submission(serverid, post_xml, year, week)
             print extra_params
