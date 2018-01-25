@@ -118,7 +118,7 @@ class Reporters:
                         "id, firstname, lastname, telephone, district_id, "
                         "facility, role, total_reports, last_reporting_date, uuid "),
                     criteria=criteria,
-                    order="facility, firstname, lastname",
+                    order="id desc, facility, firstname, lastname",
                     limit=limit, offset=start)
             else:
                 dic = lit(
@@ -127,7 +127,7 @@ class Reporters:
                         "id, firstname, lastname, telephone, district_id, "
                         "facility, role, total_reports, last_reporting_date, uuid "),
                     criteria=criteria,
-                    order="",
+                    order="id desc, facility, firstname, lastname",
                     limit=limit, offset=start)
         else:
             criteria = "TRUE "
@@ -161,13 +161,13 @@ class Reporters:
         del l['self']
         return render.reporters(**l)
 
-    #@csrf_protected
+    # @csrf_protected
     @require_login
     def POST(self):
         session = get_session()
         params = web.input(
             firstname="", lastname="", telephone="", email="", location="",
-            role=[], alt_telephone="", page="1", ed="", d_id="", district="")
+            role=[], alt_telephone="", page="1", ed="", d_id="", district="", facility="")
 
         allow_edit = False
         try:
@@ -242,6 +242,10 @@ class Reporters:
                             "INSERT INTO reporter_groups_reporters (group_id, reporter_id) "
                             " VALUES ($role, $reporter_id)",
                             {'role': group_id, 'reporter_id': reporter_id})
+                    db.query(
+                        "INSERT INTO reporter_healthfacility (reporter_id, facility_id) "
+                        "VALUES ($reporter_id, $facility_id)", {
+                            'reporter_id': reporter_id, 'facility_id': params.facility})
 
                     log_dict = {
                         'logtype': 'Web', 'action': 'Create', 'actor': session.username,
