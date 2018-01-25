@@ -41,9 +41,9 @@ class DataEntry:
         week = params.week
         facility = params.facility
         facilitycode = ""
-        res = db.query("SELECT dhis2id FROM facilities WHERE id = $id", {'id': facility})
+        res = db.query("SELECT code FROM healthfacilities WHERE id = $id", {'id': facility})
         if res:
-            facilitycode = res[0]['dhis2id']
+            facilitycode = res[0]['code']
 
         report = params.report
         dataDict = {}
