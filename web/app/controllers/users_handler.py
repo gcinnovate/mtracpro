@@ -47,7 +47,7 @@ class Users:
             dic = lit(
                 relations='users a, user_roles b',
                 fields="a.id, a.firstname, a.lastname, a.username, a.email, a.telephone, b.name as role ",
-                criteia="a.user_role = b.id",
+                criteria="a.user_role = b.id",
                 order="a.firstname, a.lastname",
                 limit=limit, offset=start)
         else:
