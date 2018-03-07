@@ -5,21 +5,9 @@ from . import db, get_current_week
 from settings import config
 from app.tools.utils import get_basic_auth_credentials, auth_user
 # from app.tools.utils import get_location_role_reporters, queue_schedule, log_schedule, update_queued_sms
-from app.tools.utils import parse_message, post_request_to_dispatcher2, get_reporting_week
+from app.tools.utils import parse_message, post_request_to_dispatcher2, get_reporting_week, get_webhook_msg
 from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO
-
-
-def get_webhook_msg(params, label='msg'):
-    """Returns value of given lable from rapidpro webhook data"""
-    values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
-    msg_list = [v.get('value') for v in values if v.get('label') == label]
-    if msg_list:
-        msg = msg_list[0].strip()
-        if msg.startswith('.'):
-            msg = msg[1:]
-        return msg
-    return ""
 
 
 class LocationChildren:
@@ -224,14 +212,9 @@ class Cases:
         return json.dumps({"message": "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0"})
 
     def POST(self):
-        params = web.input()
-        values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
-        msg_list = [v.get('value') for v in values if v.get('label') == 'msg']
-        if msg_list:
-            msg = msg_list[0]
-            if msg.startswith('.'):
-                msg = msg[1:]
-        # print msg
+        # params = web.input()
+        payload = json.loads(web.data())
+        msg = get_webhook_msg(payload, 'msg')
         message = parse_message(msg, 'cases')
 
         return json.dumps({"message": message})
@@ -273,7 +256,9 @@ class Dhis2Queue:
         params = web.input(
             facilitycode="", form="", district="", msisdn="",
             raw_msg="", report_type="", facility="")
-        values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
+        # values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
+        values = json.loads(web.data())
+        results = values.get('results', {})
         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
             dataValues = []
         else:
@@ -281,13 +266,13 @@ class Dhis2Queue:
         print "FACILITYCODE:", params.facilitycode, "==>", params.facility
         # print values
         if params.facilitycode:
-            for v in values:
+            for key, v in results.iteritems():
                 val = v.get('value')
                 try:
                     val = int(float(val))
                 except:
                     pass
-                label = v.get('label')
+                label = v.get('name')
                 if val.__str__().isdigit():
                     slug = "%s_%s" % (params.form, label)
                     if not(val) and params.form in ['cases', 'death']:

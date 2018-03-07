@@ -27,7 +27,7 @@ def lit(**keywords):
     return keywords
 
 
-def get_webhook_msg(params, label='msg'):
+def get_webhook_msg_old(params, label='msg'):
     """Returns value of given lable from rapidpro webhook data"""
     values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
     msg_list = [v.get('value') for v in values if v.get('label') == label]
@@ -36,6 +36,18 @@ def get_webhook_msg(params, label='msg'):
         if msg.startswith('.'):
             msg = msg[1:]
         return msg
+    return ""
+
+
+def get_webhook_msg(payload, label='msg'):
+    """Returns value of given lable from rapidpro webhook data"""
+    results = payload.get('results', {})
+    msg_list = results.get(label, {})
+    if msg_list:
+        msg = msg_list.get('value', '').strip()
+        if msg.startswith('.'):
+            msg = msg[1:]
+            return msg
     return ""
 
 
@@ -241,6 +253,18 @@ def queue_submission(db, serverid, post_xml, year, week):
         db.query(
             "INSERT INTO requests (serverid, request_body, week, year) "
             "VALUES(%s, %s, %s, %s)", (serverid, post_xml, week, year))
+    except:
+        return False
+    return True
+
+
+def queue_request(db, params):
+    try:
+        db.query(
+            "INSERT INTO requests (source, destination, body, week, year, district, facility, "
+            "msisdn, raw_msg) "
+            "VALUES($source, $destination, $body, $week, $year, $district, $facility, "
+            "$msisdn, $raw_msg)", params)
     except:
         return False
     return True
