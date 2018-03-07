@@ -1,8 +1,10 @@
 import web
 import datetime
 import json
-from . import csrf_protected, db, require_login, render, get_session
-from app.tools.utils import get_reporting_week, post_request_to_dispatcher2, generate_raw_message
+from . import csrf_protected, db, require_login, render, get_session, serversByName
+from settings import config
+from app.tools.utils import get_reporting_week, generate_raw_message  # ,post_request_to_dispatcher2
+from app.tools.utils import queue_request
 from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, REPORTS_WITH_COMMANDS
 
@@ -37,7 +39,7 @@ class DataEntry:
     @csrf_protected
     @require_login
     def POST(self):
-        params = web.input()
+        params = web.input(districtname="")
         week = params.week
         facility = params.facility
         facilitycode = ""
@@ -102,16 +104,23 @@ class DataEntry:
             extra_params = {
                 'week': _week, 'year': year, 'msisdn': params.reporter,
                 'facility': facilitycode, 'raw_msg': msg,
-                'district': params.district, 'report_type': params.report}
+                'district': params.districtname, 'report_type': params.report,
+                'source': serversByName[config['dispatcher2_source']],
+                'destination': serversByName[config['dispatcher2_destination']],
+                'body': payload}
             # now ready to queue to DB for pushing to DHIS2
             # resp = queue_submission(serverid, post_xml, year, week)
             print extra_params
             if PREFERED_DHIS2_CONTENT_TYPE == 'json':
-                resp = post_request_to_dispatcher2(
-                    payload, params=extra_params, ctype='application/json')
+                extra_params['ctype'] = 'json'
+                # resp = post_request_to_dispatcher2(
+                #    payload, params=extra_params, ctype='application/json')
+                queue_request(db, extra_params)
             else:
-                resp = post_request_to_dispatcher2(payload, params=extra_params)
-            print "Resp:", resp
+                extra_params['ctype'] = 'xml'
+                queue_request(db, extra_params)
+                # resp = post_request_to_dispatcher2(payload, params=extra_params)
+            # print "Resp:", resp
 
         with db.transaction():
             pass

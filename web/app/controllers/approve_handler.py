@@ -1,5 +1,5 @@
 import web
-from . import csrf_protected, db, require_login, render
+from . import csrf_protected, db, require_login, render, get_session
 from app.tools.pagination2 import doquery, countquery, getPaginationString
 from app.tools.utils import default, lit
 from settings import PAGE_LIMIT
@@ -10,6 +10,7 @@ class Approve:
     def GET(self):
         params = web.input(page=1, ed="", d_id="")
         edit_val = params.ed
+        session = get_session()
         try:
             page = int(params.page)
         except:
@@ -18,14 +19,26 @@ class Approve:
         limit = PAGE_LIMIT
         start = (page - 1) * limit if page > 0 else 0
 
-        dic = lit(
-            relations='requests_view',
-            fields=(
-                "id, facility, facility_name, district, msisdn, body, "
-                "raw_msg, year, week, created, report_type, is_edited, edited_raw_msg"),
-            criteria="status='pending'",
-            order="id desc",
-            limit=limit, offset=start)
+        if session.role == 'District User':
+            district = '%s' % session.username.capitalize()
+            criteria = "district='%s'" % district
+            dic = lit(
+                relations='requests_view',
+                fields=(
+                    "id, facility, facility_name, district, msisdn, body, "
+                    "raw_msg, year, week, created, report_type, is_edited, edited_raw_msg"),
+                criteria=criteria + " AND status='pending'",
+                order="id desc",
+                limit=limit, offset=start)
+        else:
+            dic = lit(
+                relations='requests_view',
+                fields=(
+                    "id, facility, facility_name, district, msisdn, body, "
+                    "raw_msg, year, week, created, report_type, is_edited, edited_raw_msg"),
+                criteria="status='pending'",
+                order="id desc",
+                limit=limit, offset=start)
 
         reports = doquery(db, dic)
         count = countquery(db, dic)

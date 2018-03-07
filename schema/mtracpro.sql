@@ -548,7 +548,7 @@ AS $function$
     BEGIN
         r := '';
         FOR p IN SELECT distinct report_type FROM requests WHERE facility = facilitycode
-            AND year = yr AND week = wk AND status IN ('inprogress', 'ready', 'completed') LOOP
+            AND year = yr AND week = wk AND status IN ('inprogress', 'pending', 'ready', 'failed', 'completed') LOOP
             r := r || p || ',';
         END LOOP;
         RETURN rtrim(r,',');
@@ -564,6 +564,16 @@ RETURNS TEXT AS $$
 $$ LANGUAGE plpythonu;
 
 -- Dispatcher-2.1 comes with thes as well
+CREATE OR REPLACE FUNCTION is_valid_json(p_json text)
+  RETURNS BOOLEAN
+AS $$
+	BEGIN
+		return (p_json::json is not null);
+		EXCEPTION WHEN OTHERS THEN
+			return false;
+	END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
 CREATE EXTENSION IF NOT EXISTS xml2;
 CREATE OR REPLACE FUNCTION xml_pretty(xml text)
 RETURNS xml AS $$
@@ -584,8 +594,10 @@ CREATE OR REPLACE FUNCTION body_pprint(body text)
     BEGIN
         IF xml_is_well_formed_document(body) THEN
             return xml_pretty(body)::text;
-        ELSE
+        ELSIF is_valid_json(body) THEN
             return pp_json(body, 't', '    ');
+        ELSE
+            return body;
         END IF;
     END;
 $$ LANGUAGE plpgsql;

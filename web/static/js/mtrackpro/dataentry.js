@@ -3,6 +3,7 @@ $(function(){
         var districtid = $(this).val();
         if (districtid == '0' || districtid == "")
             return;
+        $('#districtname').val($('option:selected',this).text());
         $('#facility').empty();
         $('#facility').append("<option value='' selected='selected'>Select Health Facility</option>");
         $.get(
