@@ -101,7 +101,7 @@ if res:
     for r in res:
         district = r["district"]
         fields = {
-            "reporting location": r['loc_name'],
+            "reporting_location": r['loc_name'],
             "facilitycode": r['facilitycode'],
             "facility": r['facility']
         }
@@ -112,7 +112,7 @@ if res:
         if phone:
             data = {
                 "name": r['name'],
-                "phone": phone,
+                "urns": ["tel:" + phone],
                 "email": r['email'],
                 "groups": r['role'].split(','),
                 "fields": fields
@@ -120,9 +120,9 @@ if res:
             post_data = json.dumps(data)
             resp = post_request(post_data)
             # print post_data
-            response_dict = json.loads(resp.text)
-            print response_dict
             try:
+                response_dict = json.loads(resp.text)
+                print response_dict
                 contact_uuid = response_dict["uuid"]
                 cur.execute("UPDATE reporters SET uuid = %s WHERE id=%s", [contact_uuid, r["id"]])
                 conn.commit()
