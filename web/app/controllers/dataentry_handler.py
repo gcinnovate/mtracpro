@@ -7,6 +7,7 @@ from app.tools.utils import get_reporting_week, generate_raw_message  # ,post_re
 from app.tools.utils import queue_request
 from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, REPORTS_WITH_COMMANDS
+from settings import TEXT_INDICATORS
 
 
 class DataEntry:
@@ -61,7 +62,7 @@ class DataEntry:
         for key, val in params.iteritems():
             if key in ('week', 'facility', 'district', 'report', 'report_type', 'reporter', 'csrf_token'):
                 continue
-            if val.__str__().isdigit():
+            if val.__str__().isdigit() or key in TEXT_INDICATORS:
                     slug = key
                     print "%s=>%s" % (slug, val), MAPPING[slug]
                     dataDict[slug] = val

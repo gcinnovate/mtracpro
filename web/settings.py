@@ -18,6 +18,8 @@ SMS_OFFSET_TIME = 5
 
 HMIS_033B_DATASET = 'V1kJRs8CtW4'
 HMIS_033B_DATASET_ATTR_OPT_COMBO = 'gGhClrV5odI'  # DHIS2 v2.26 change
+CARAMAL_DATASET = 'kzIS9qjcF6W'
+CARAMAL_DATASET_ATTR_OPT_COMBO = 'bjDvmb4bfuf'  # DHIS2 v2.26 change
 PREFERRED_DHIS2_CONTENT_TYPE = 'xml'
 
 CASES_POSITIONS = {
@@ -407,6 +409,46 @@ MAPPING = {
         'descr': 'Malaria RDTs',
         'dhis2_combo_id': 'gGhClrV5odI',
         'dhis2_id': 'CzsKMvQDwMV'
+    },
+    'car_patients_seen': {
+        'descr': 'Patients Seen',
+        'dhis2_combo_id': '',
+        'dhis2_id': 'iIO5V7PJJwe'
+    },
+    'car_patients_with_fever': {
+        'descr': 'Patients with fever',
+        'dhis2_combo_id': 'bjDvmb4bfuf',
+        'dhis2_id': 'phxagKD2YUi'
+    },
+    'car_rdt_positive': {
+        'descr': 'Number of RDT +ve patients',
+        'dhis2_combo_id': 'bjDvmb4bfuf',
+        'dhis2_id': 'y3khdxvLfpG'
+    },
+    'car_patients_with_danger_signs': {
+        'descr': 'Patients with danger signs',
+        'dhis2_combo_id': 'bjDvmb4bfuf',
+        'dhis2_id': 'mY5azRcJKpw'
+    },
+    'car_patients_receiving_ras': {
+        'descr': 'Patients receiving RAS',
+        'dhis2_combo_id': 'bjDvmb4bfuf',
+        'dhis2_id': 'NFSEQwngr5o'
+    },
+    'ras_patient_id': {
+        'descr': 'Patient ID',
+        'dhis2_combo_id': 'bjDvmb4bfuf',
+        'dhis2_id': 'n9ZzKfqxIAk'
+    },
+    'ras_patient_age': {
+        'descr': 'Patient Age',
+        'dhis2_combo_id': 'bjDvmb4bfuf',
+        'dhis2_id': 'admpnpCyyyS'
+    },
+    'ras_patient_sex': {
+        'descr': 'Patient Sex',
+        'dhis2_combo_id': 'bjDvmb4bfuf',
+        'dhis2_id': 'IM4qZpgowPm'
     }
 }
 
@@ -446,9 +488,14 @@ HMIS_REPORTS = [
     {
         'name': 'HMIS 033B Report',
         'keywords': ['act', 'opd', 'test', 'treat', 'rdt', 'qun', 'cases', 'death']
+    },
+    {
+        'name': 'CARAMAL Report',
+        'keywords': ['car', 'ras']
     }
 ]
 COMPLETE_REPORTS_KEYWORDS = ['cases', 'death', 'tra', 'mat', 'arv', 'apt']
+TEXT_INDICATORS = []
 
 try:
     from local_settings import *

@@ -262,9 +262,9 @@ def queue_request(db, params):
     try:
         db.query(
             "INSERT INTO requests (source, destination, body, week, year, district, facility, "
-            "msisdn, raw_msg) "
+            "msisdn, raw_msg, report_type) "
             "VALUES($source, $destination, $body, $week, $year, $district, $facility, "
-            "$msisdn, $raw_msg)", params)
+            "$msisdn, $raw_msg, $report_type)", params)
     except:
         return False
     return True

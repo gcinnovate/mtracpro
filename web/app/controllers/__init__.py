@@ -90,8 +90,10 @@ for r in rs:
 
 Indicators = {}  # Form: {'cases': {'dataelement': {'slug': 'cases_ma'}, 'dataelement', {'slug': 'cases_me'}}}
 IndicatorsByFormOrder = {}  # {'cases': [{'slug': 'cases_ma', 'description': 'Malaria Cases'}, {}, {}, ...]}
+DataElementPosition = {}
 rs = db.query(
-    "SELECT form, slug, description, dataelement, category_combo FROM dhis2_mtrack_indicators_mapping "
+    "SELECT form, slug, description, dataelement, category_combo, form_order "
+    " FROM dhis2_mtrack_indicators_mapping "
     "ORDER BY form, form_order")
 for r in rs:
     if r['form'] not in Indicators:
@@ -105,9 +107,11 @@ for r in rs:
         IndicatorsByFormOrder[r['form']].append({'slug': r['slug'], 'description': r['description']})
     else:
         IndicatorsByFormOrder[r['form']].append({'slug': r['slug'], 'description': r['description']})
+    DataElementPosition[r['dataelement']] = r['form_order']
 # import pprint
 # pprint.pprint(Indicators)
 # pprint.pprint(IndicatorsByFormOrder)
+# pprint.pprint(DataElementPosition)
 
 
 def put_app(app):
@@ -133,6 +137,7 @@ def datetimeformat(value, fmt='%Y-%m-%d'):
 
 def formatmsg(msg, form='cases'):
     ret = "<ul>"
+    ret_list = ['' for i in range(20)]  # make 12 here MAX_INDICATORS
     try:
         body = json.loads(msg)
     except:
@@ -142,17 +147,25 @@ def formatmsg(msg, form='cases'):
         for d in datavalues:
             try:  # XXX for cases where we dont have the key
                 if form == 'mat':  # the mat form is a special case
-                    ret += "<li><small>%s" % d['value'] + " " + categoryOptionCombos[d['categoryOptionCombo']] + "</small></li>"
+                    # ret += "<li><small>%s" % d['value'] + " " + categoryOptionCombos[d['categoryOptionCombo']] + "</small></li>"
+                    ret_list[DataElementPosition[d['dataElement']]] = (
+                        "<li><small>%s %s</small></li>") % (
+                            d['value'], categoryOptionCombos[d['categoryOptionCombo']])
                 else:
-                    ret += "<li><small>%s" % d['value'] + " " + dataElements[d['dataElement']] + "</small></li>"
+                    # ret += "<li><small>%s" % d['value'] + " " + dataElements[d['dataElement']] + "</small></li>"
+                    ret_list[DataElementPosition[d['dataElement']]] = (
+                        "<li><small>%s %s</small></li>") % (
+                            d['value'], dataElements[d['dataElement']])
             except:
                 pass
+        ret += ''.join(ret_list)
     ret += "</ul>"
     return ret
 
 
 def formatMsgForAndroid(msg, form='cases'):
     ret = "You reported:\n"
+    ret_list = ['' for i in range(20)]  # make 12 here MAX_INDICATORS
     try:
         body = json.loads(msg)
     except:
@@ -162,11 +175,16 @@ def formatMsgForAndroid(msg, form='cases'):
         for d in datavalues:
             try:  # XXX for cases where we dont have the key
                 if form == 'mat':
-                    ret += "%s" % d['value'] + " " + categoryOptionCombos[d['categoryOptionCombo']] + "\n"
+                    # ret += "%s" % d['value'] + " " + categoryOptionCombos[d['categoryOptionCombo']] + "\n"
+                    ret_list[DataElementPosition[d['dataElement']]] = (
+                        "%s %s\n") % (d['value'], categoryOptionCombos[d['categoryOptionCombo']])
                 else:
-                    ret += "%s" % d['value'] + " " + dataElements[d['dataElement']] + "\n"
+                    # ret += "%s" % d['value'] + " " + dataElements[d['dataElement']] + "\n"
+                    ret_list[DataElementPosition[d['dataElement']]] = (
+                        "%s %s\n") % (d['value'], dataElements[d['dataElement']])
             except:
                 pass
+        ret += ''.join(ret_list)
     else:
         return ""
     return ret

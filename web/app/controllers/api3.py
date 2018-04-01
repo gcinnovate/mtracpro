@@ -5,6 +5,7 @@ from . import db, require_login, serversByName, formatMsgForAndroid
 from app.tools.utils import generate_raw_message, get_reporting_week
 from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, REPORTS_WITH_COMMANDS
+from settings import TEXT_INDICATORS
 
 
 class EditReport:
@@ -29,7 +30,7 @@ class EditReport:
         for key, val in params.iteritems():
             if key in ('xweek', 'facility', 'district', 'report', 'report_type', 'reporter', 'request_id'):
                 continue
-            if val.__str__().isdigit():
+            if val.__str__().isdigit() or key in TEXT_INDICATORS:
                     slug = key
                     print "%s=>%s" % (slug, val), MAPPING[slug]
                     dataDict[slug] = val

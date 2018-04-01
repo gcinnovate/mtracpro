@@ -7,7 +7,7 @@ from app.tools.utils import get_basic_auth_credentials, auth_user
 # from app.tools.utils import get_location_role_reporters, queue_schedule, log_schedule, update_queued_sms
 from app.tools.utils import parse_message, post_request_to_dispatcher2, get_reporting_week, get_webhook_msg
 from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
-from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO
+from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS
 
 
 class LocationChildren:
@@ -273,8 +273,8 @@ class Dhis2Queue:
                 except:
                     pass
                 label = v.get('name')
-                if val.__str__().isdigit():
-                    slug = "%s_%s" % (params.form, label)
+                slug = "%s_%s" % (params.form, label)
+                if val.__str__().isdigit() or slug in TEXT_INDICATORS:
                     if not(val) and params.form in ['cases', 'death']:
                         if label not in params.raw_msg.lower():
                             continue  # skip zero values for cases and death
