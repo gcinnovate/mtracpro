@@ -4,7 +4,6 @@
 import os
 import sys
 import web
-import urllib
 import logging
 # import requests
 from web.contrib.template import render_jinja
@@ -13,13 +12,8 @@ filedir = os.path.dirname(__file__)
 sys.path.append(os.path.join(filedir))
 
 
-class AppURLopener(urllib.FancyURLopener):
-    version = "LLIN /1.0"
-
-urllib._urlopener = AppURLopener()
-
 logging.basicConfig(
-    format='%(asctime)s:%(levelname)s:%(message)s', filename='/tmp/llin_sms.log',
+    format='%(asctime)s:%(levelname)s:%(message)s', filename='/tmp/test.log',
     datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG
 )
 urls = (

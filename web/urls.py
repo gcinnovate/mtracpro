@@ -38,6 +38,7 @@ from app.controllers.fsync_handler import FSync
 from app.controllers.messagehistory_handler import MessageHistory
 from app.controllers.facilityreports_handler import FacilityReports
 from app.controllers.hotline_handler import Hotline
+from app.controllers.caramal_handler import CaramalReports
 
 URLS = (
     r'^/', Index,
@@ -47,6 +48,7 @@ URLS = (
     r'/reporters', Reporters,
     r'/approve', Approve,
     r'/hotline', Hotline,
+    r'/caramalreports', CaramalReports,
     r'/facilities', Facilities,
     r'/auditlog', AuditLog,
     r'/settings', Settings,

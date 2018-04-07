@@ -1,0 +1,172 @@
+{% extends "layout.html" %}
+{% from 'layout.html' import navbar, myscripts %}
+
+{% block title %}mTracPro.::.Caramal{% endblock%}
+{% block stylesheets %}
+    <!-- Data Tables -->
+    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+	<link href="/static/js/plugins/Buttons-1.1.2/css/buttons.dataTables.min.css" rel="stylesheet">
+
+{% endblock %}
+
+{% block nav %}
+    {% call navbar() %}
+
+    {% endcall %}
+{% endblock %}
+
+{% block content %}
+	<!-- DATA TABLE -->
+    <form class="form-horizontal" role="form" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Caramal Reports</h5>
+                    <div class="ibox-tools">
+                        <button class="btn btn-primary delete_btn" name="abtn" value="Approve Selected"><i class="fa fa-thumbs-o-up"></i> Approve Selected</button>
+                        &nbsp;&nbsp;&nbsp;
+                        <button class="btn btn-danger delete_btn" name="abtn" value="Cancel Selected"><i class="fa fa-thumbs-o-down"></i> Cancel Selected</button>
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover dataTables-example" id="mydata">
+                            <thead>
+                                <tr>
+                                    <th><input id="selecctall" class=".chkmark" type="checkbox"/></th>
+                                    <th>Facility</th>
+                                    <th>Reporter</th>
+                                    <th>Report</th>
+                                    <th>Week#</th>
+                                    <th>Date</th>
+                                    <!--<th>Approved</th>-->
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for report in reports %}
+                                <tr class="">
+                                    <td><input name="reqid" class="topromote" value="{{ report.id }}" type="checkbox"/></td>
+                                    <td>{{ report.facility_name }}</td>
+                                    <td><a href="/messagehistory/{{ report.msisdn }}/" target="_blank">{{report.msisdn}}</a></td>
+                                    <td>{% if report.is_edited == True %}
+                                            {{ report.edited_raw_msg }}
+                                            &nbsp;&nbsp;<i class="fa fa-pencil"></i>
+                                        {% else %}
+                                            {{ report.raw_msg }}
+                                        {% endif%}
+                                        {{ report.body|formatmsg(report.report_type)}}
+                                    </td>
+                                    <td>{{ report.year|string + "W" + report.week}}</td>
+                                    <td>{{ report.created|datetimeformat }}</td>
+									<!--<td>Yes</td>-->
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-xs edit_btn"
+                                            id={{ report.id}} report="{{ report.report_type }}" data-toggle="modal" data-target="#myModal4"><i class="fa fa-edit"></i> Edit</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+                        {{ pagination_str }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+    <!-- END DATA TABLE -->
+    <div class="modal inmodal" id="myModal4" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">Edit Report</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div id="modal_res2"></div>
+                    </div>
+
+	                <form class="form-horizontal" role="form" id="report_form" data-toggle="validator">
+                        <div id="modal_res4">
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary report_edit_btn" type="submit">Save Report</button>
+                    <button class="btn btn-white" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {% call myscripts() %}
+        <!-- Data Tables -->
+        <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+        <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+        <script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+        <script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+		<script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/dataTables.buttons.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/buttons.flash.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/jszip.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/pdfmake.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/vfs_fonts.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/buttons.html5.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/buttons.print.min.js"></script>
+        <script src="/static/js/plugins/bootstrap-validator/dist/validator.min.js"></script>
+        <script src="/static/js/mtrackpro/approve.js"></script>
+        <script>
+        	$(document).ready(function() {
+				$('#mydata').DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ],
+                    pageLength: 25,
+                    bPaginate: false,
+                    info: false
+
+                });
+
+               	$('#selecctall').click(function (event) {
+                // $('input:checkbox').prop('checked', this.checked);
+                $('.topromote:input:checkbox').prop('checked', this.checked);
+				});
+				$(".topromote").click(function () {
+					if (!$(this).is(':checked'))
+						$("#selecctall").prop('checked', false);
+				});
+                $('.edit_btn').click(function(){
+                    id_val = $(this).attr('id');
+                    report = $(this).attr('report');
+                    $('#modal_res2').html("");
+                    $('#modal_res2').removeClass("alert-success");
+                    $('#modal_res2').removeClass("alert");
+                    $.get(
+                        '/api/v1/indicatorhtml/' + report,
+                        {request_id: id_val},
+                        function(data){
+                            $('#modal_res4').html(data);
+                    });
+                });
+
+
+        	});
+        </script>
+    {% endcall %}
+{% endblock %}
+
+
