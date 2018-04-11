@@ -21,6 +21,7 @@ HMIS_033B_DATASET_ATTR_OPT_COMBO = 'gGhClrV5odI'  # DHIS2 v2.26 change
 CARAMAL_DATASET = 'kzIS9qjcF6W'
 CARAMAL_DATASET_ATTR_OPT_COMBO = 'bjDvmb4bfuf'  # DHIS2 v2.26 change
 PREFERRED_DHIS2_CONTENT_TYPE = 'xml'
+USE_OLD_WEBHOOKS = False
 
 CASES_POSITIONS = {
     'ma': 0, 'dy': 1, 'sa': 2, 'af': 3, 'ae': 4, 'ab': 5, 'mg': 6, 'ch': 7, 'gw': 8,

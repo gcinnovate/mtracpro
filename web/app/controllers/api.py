@@ -1,13 +1,15 @@
 import json
 import web
 import datetime
-from . import db, get_current_week
+from . import db, get_current_week, serversByName
 from settings import config
-from app.tools.utils import get_basic_auth_credentials, auth_user
+from app.tools.utils import get_basic_auth_credentials, auth_user, get_webhook_msg_old
+from app.tools.utils import queue_request
 # from app.tools.utils import get_location_role_reporters, queue_schedule, log_schedule, update_queued_sms
 from app.tools.utils import parse_message, post_request_to_dispatcher2, get_reporting_week, get_webhook_msg
 from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS
+from settings import USE_OLD_WEBHOOKS
 
 
 class LocationChildren:
@@ -212,9 +214,13 @@ class Cases:
         return json.dumps({"message": "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0"})
 
     def POST(self):
-        # params = web.input()
-        payload = json.loads(web.data())
-        msg = get_webhook_msg(payload, 'msg')
+        params = web.input()
+        if USE_OLD_WEBHOOKS:
+            msg = get_webhook_msg_old(params, 'msg')
+        else:
+            payload = json.loads(web.data())
+            msg = get_webhook_msg(payload, 'msg')
+
         message = parse_message(msg, 'cases')
 
         return json.dumps({"message": message})
@@ -226,13 +232,12 @@ class Deaths:
 
     def POST(self):
         params = web.input()
-        values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
-        msg_list = [v.get('value') for v in values if v.get('label') == 'msg']
-        if msg_list:
-            msg = msg_list[0]
-            if msg.startswith('.'):
-                msg = msg[1:]
-        # print msg
+        if USE_OLD_WEBHOOKS:
+            msg = get_webhook_msg_old(params, 'msg')
+        else:
+            payload = json.loads(web.data())
+            msg = get_webhook_msg(payload, 'msg')
+
         message = parse_message(msg, 'death')
 
         return json.dumps({"message": message})
@@ -257,39 +262,65 @@ class Dhis2Queue:
             facilitycode="", form="", district="", msisdn="",
             raw_msg="", report_type="", facility="")
         # values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
-        values = json.loads(web.data())
-        results = values.get('results', {})
         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
             dataValues = []
         else:
             dataValues = ""
         print "FACILITYCODE:", params.facilitycode, "==>", params.facility
-        # print values
         if params.facilitycode:
-            for key, v in results.iteritems():
-                val = v.get('value')
-                try:
-                    val = int(float(val))
-                except:
-                    pass
-                label = v.get('name')
-                slug = "%s_%s" % (params.form, label)
-                if val.__str__().isdigit() or slug in TEXT_INDICATORS:
-                    if not(val) and params.form in ['cases', 'death']:
-                        if label not in params.raw_msg.lower():
-                            continue  # skip zero values for cases and death
-                    print "%s=>%s" % (slug, val), MAPPING[slug]
-                    if PREFERED_DHIS2_CONTENT_TYPE == 'json':
-                        dataValues.append(
-                            {
-                                'dataElement': MAPPING[slug]['dhis2_id'],
-                                'categoryOptionCombo': MAPPING[slug]['dhis2_combo_id'],
-                                'value': val})
-                    else:
-                        dataValues += (
-                            "<dataValue dataElement='%s' categoryOptionCombo="
-                            "'%s' value='%s' />\n" %
-                            (MAPPING[slug]['dhis2_id'], MAPPING[slug]['dhis2_combo_id'], val))
+            if not USE_OLD_WEBHOOKS:
+                values = json.loads(web.data())
+                results = values.get('results', {})
+                for key, v in results.iteritems():
+                    val = v.get('value')
+                    try:
+                        val = int(float(val))
+                    except:
+                        pass
+                    label = v.get('name')
+                    slug = "%s_%s" % (params.form, label)
+                    if val.__str__().isdigit() or slug in TEXT_INDICATORS:
+                        if not(val) and params.form in ['cases', 'death']:
+                            if label not in params.raw_msg.lower():
+                                continue  # skip zero values for cases and death
+                        print "%s=>%s" % (slug, val), MAPPING[slug]
+                        if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+                            dataValues.append(
+                                {
+                                    'dataElement': MAPPING[slug]['dhis2_id'],
+                                    'categoryOptionCombo': MAPPING[slug]['dhis2_combo_id'],
+                                    'value': val})
+                        else:
+                            dataValues += (
+                                "<dataValue dataElement='%s' categoryOptionCombo="
+                                "'%s' value='%s' />\n" %
+                                (MAPPING[slug]['dhis2_id'], MAPPING[slug]['dhis2_combo_id'], val))
+            else:
+                values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
+                for v in values:
+                    val = v.get('value')
+                    try:
+                        val = int(float(val))
+                    except:
+                        pass
+                    label = v.get('label')
+                    slug = "%s_%s" % (params.form, label)
+                    if val.__str__().isdigit() or slug in TEXT_INDICATORS:
+                        if not(val) and params.form in ['cases', 'death']:
+                            if label not in params.raw_msg.lower():
+                                continue  # skip zero values for cases and death
+                        print "%s=>%s" % (slug, val), MAPPING[slug]
+                        if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+                            dataValues.append(
+                                {
+                                    'dataElement': MAPPING[slug]['dhis2_id'],
+                                    'categoryOptionCombo': MAPPING[slug]['dhis2_combo_id'],
+                                    'value': val})
+                        else:
+                            dataValues += (
+                                "<dataValue dataElement='%s' categoryOptionCombo="
+                                "'%s' value='%s' />\n" %
+                                (MAPPING[slug]['dhis2_id'], MAPPING[slug]['dhis2_combo_id'], val))
 
             if not dataValues and params.form in ('cases', 'death'):
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':
@@ -315,18 +346,26 @@ class Dhis2Queue:
                 extra_params = {
                     'week': week, 'year': year, 'msisdn': params.msisdn,
                     'facility': params.facilitycode, 'raw_msg': params.raw_msg,
-                    'distrcit': params.district, 'report_type': params.report_type,
-                    'source': config['dispatcher2_source'],
-                    'destination': config['dispatcher2_destination']}
+                    'district': params.district, 'report_type': params.report_type,
+                    # 'source': config['dispatcher2_source'],
+                    # 'destination': config['dispatcher2_destination'],
+                    'source': serversByName[config['dispatcher2_source']],
+                    'destination': serversByName[config['dispatcher2_destination']]}
                 # now ready to queue to DB for pushing to DHIS2
                 # resp = queue_submission(serverid, post_xml, year, week)
                 print extra_params
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':
-                    resp = post_request_to_dispatcher2(
-                        payload, params=extra_params, ctype='json')
+                    extra_params['ctype'] = 'json'
+                    # resp = post_request_to_dispatcher2(
+                    #    payload, params=extra_params, ctype='json')
+                    extra_params['body'] = payload
+                    queue_request(db, extra_params)
                 else:
-                    resp = post_request_to_dispatcher2(payload, params=extra_params)
-                print "Resp:", resp
+                    extra_params['ctype'] = 'xml'
+                    # resp = post_request_to_dispatcher2(payload, params=extra_params)
+                    extra_params['body'] = payload
+                    queue_request(db, extra_params)
+                # print "Resp:", resp
 
         return json.dumps({"status": "success"})
 

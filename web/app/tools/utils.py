@@ -265,7 +265,8 @@ def queue_request(db, params):
             "msisdn, raw_msg, report_type) "
             "VALUES($source, $destination, $body, $week, $year, $district, $facility, "
             "$msisdn, $raw_msg, $report_type)", params)
-    except:
+    except Exception as e:
+        print ">>> FAILED <<<<", str(e)
         return False
     return True
 
