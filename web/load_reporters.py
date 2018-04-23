@@ -34,6 +34,7 @@ with open(filename, 'r') as f:
     for l in f:
         reporter = l.strip().split("#")
         name, phone, district, facility, roles, is_active, facility_code = tuple(reporter)
+        print tuple(reporter)
         names = name.split(' ', 1)
         if len(names) > 1:
             firstname = names[1]
@@ -57,7 +58,7 @@ with open(filename, 'r') as f:
                 cur.execute(
                     "UPDATE reporter_healthfacility SET facility_id = %s "
                     "WHERE reporter_id = %s", [f['id'], reporter_id])
-                cur.execute("DELETE FROM reporter_groups_reporters WHERE reporter_id = %s", reporter_id)
+                cur.execute("DELETE FROM reporter_groups_reporters WHERE reporter_id = %s", [reporter_id])
                 reporter_roles = roles.split(',')
                 for role in reporter_roles:
                     cur.execute(
