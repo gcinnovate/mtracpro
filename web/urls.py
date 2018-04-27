@@ -14,6 +14,7 @@ from app.controllers.api2 import CreateFacility, ReportForms, IndicatorHtml
 from app.controllers.api2 import FacilitySMS, SendSMS, RequestDetails
 from app.controllers.api2 import DeleteRequest, DeleteServer
 from app.controllers.api3 import EditReport, ReportingWeek, ReporterHistoryApi
+from app.controllers.api4 import ReportersUploadAPI
 from app.controllers.reporters_handler import Reporters
 from app.controllers.users_handler import Users
 from app.controllers.groups_handler import Groups
@@ -95,6 +96,7 @@ URLS = (
     r'/api/v1/editreport/(\d+)/?', EditReport,  # for retrospective report edits
     r'/api/v1/reportingweek/?', ReportingWeek,
     r'/api/v1/reporter/(\w+)/?', ReporterAPI,
+    r'/reportersupload', ReportersUploadAPI,
     r'/api/v1/reporterhistory/\+?(\w+)/?', ReporterHistoryApi,
 
 )

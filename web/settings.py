@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os
 """Default options for the application.
 """
 
@@ -11,6 +11,7 @@ HASH_KEY = ''
 VALIDATE_KEY = ''
 ENCRYPT_KEY = ''
 SECRET_KEY = ''
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 PAGE_LIMIT = 25
 

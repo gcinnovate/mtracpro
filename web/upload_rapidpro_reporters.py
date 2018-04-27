@@ -66,12 +66,13 @@ def format_msisdn(msisdn=None):
 
 def add_reporter_fields():
     our_fields = [
-        {'label': 'facility', 'value_type': 'text'},
-        {'label': 'facilitycode', 'value_type': 'text'},
-        {'label': 'district', 'value_type': 'district'},
-        {'label': 'Subcounty', 'value_type': 'text'},
-        {'label': 'village', 'value_type': 'text'},
-        {'label': 'reporting location', 'value_type': 'text'},
+        {'label': 'facility', 'value_type': 'T'},
+        {'label': 'facilitycode', 'value_type': 'T'},
+        {'label': 'district', 'value_type': 'D'},
+        {'label': 'Subcounty', 'value_type': 'T'},
+        {'label': 'village', 'value_type': 'T'},
+        {'label': 'type', 'value_type': 'T'},
+        {'label': 'reporting location', 'value_type': 'T'},
     ]
     fields = get_available_fields()
     for f in our_fields:
@@ -103,7 +104,8 @@ if res:
         fields = {
             "reporting_location": r['loc_name'],
             "facilitycode": r['facilitycode'],
-            "facility": r['facility']
+            "facility": r['facility'],
+            "type": "VHT" if 'VHT' in r['roles'] else "HC"
         }
         if district:
             fields["district"] = district
