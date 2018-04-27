@@ -8,6 +8,7 @@ from datetime import datetime
 from openpyxl import load_workbook
 from settings import config
 from settings import BASE_DIR
+from app.tools.utils import format_msisdn
 
 TEMPLATES_DIR = BASE_DIR + "/static/downloads/"
 
@@ -130,7 +131,12 @@ for d in data:
     if not _role:
         _role = 'VHT'
     _telephone = d[order['telephone']].strip()
+    if not format_msisdn(_telephone):
+        print "Phone Number not valid", _telephone
+        continue
     _alt_tel = d[order['alternate_tel']].strip()
+    if not format_msisdn(_alt_tel):
+        _alt_tel = ""
     _code = d[order['code']].strip()
     _gender = d[order['gender']].strip()
     _dob = d[order['date_of_birth']].strip()
@@ -168,7 +174,7 @@ for d in data:
             # print "WE CAN ADD THIS ONE YEY!"
             params = {
                 'firstname': _firstname, 'lastname': _lastname, 'gender': _gender,
-                'telephone': _telephone, 'alt_telephone': _alt_tel, 'role': rolesByName[_role],
+                'telephone': _telephone, 'alt_telephone': _alt_tel, 'role': [rolesByName[_role]],
                 'district': districtid, 'facility': facilityid, 'location': location,
                 'caller': 'api', 'date_of_birth': _dob, 'code': _code, 'user': user}
             # print "++++++++++++++++++++++=>", location

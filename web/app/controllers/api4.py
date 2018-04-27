@@ -10,7 +10,7 @@ class ReportersUploadAPI:
     def POST(self):
         params = web.input(
             firstname="", lastname="", gender="", telephone="", email="", location="",
-            role="", alt_telephone="", page="1", ed="", d_id="", district="", facility="",
+            role=[], alt_telephone="", page="1", ed="", d_id="", district="", facility="",
             code="", date_of_birth="", caller="", user="api_user")
         if params.caller != 'api':
             session = get_session()
@@ -144,7 +144,8 @@ class ReportersUploadAPI:
                     audit_log(db, log_dict)
 
                     sync_time = current_time + datetime.timedelta(seconds=60)
-                    queue_schedule(db, contact_params, sync_time, userid, 'push_contact')
+                    if contact_params['urns']:
+                        queue_schedule(db, contact_params, sync_time, userid, 'push_contact')
                 if params.caller == 'api':
                     return json.dumps({'message': 'success'})
                 else:
