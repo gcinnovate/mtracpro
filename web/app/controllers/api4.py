@@ -44,13 +44,14 @@ class ReportersUploadAPI:
                 urns.append("tel:" + telephone)
             except:
                 telephone = ''
+        groups = ['%s' % rolesById[int(i)] for i in params.role]
         contact_params = {
             'urns': urns,
             'name': params.firstname + ' ' + params.lastname,
-            'groups': ['%s' % rolesById[int(i)] for i in params.role],
+            'groups': groups,
             'fields': {
                 # 'email': params.email,
-                # 'gender': params.gender
+                'type': 'VHT' if 'VHT' in groups else 'HC'
             }
         }
 

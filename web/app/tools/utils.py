@@ -13,7 +13,8 @@ from settings import DELIMITER, CASES_POSITIONS, KEYWORDS_DATA_LENGTH
 
 def format_msisdn(msisdn=None):
     """ given a msisdn, return in E164 format """
-    assert msisdn is not None
+    if not msisdn and len(msisdn) < 10:
+        return None
     msisdn = msisdn.replace(' ', '')
     num = phonenumbers.parse(msisdn, getattr(config, 'country', 'UG'))
     is_valid = phonenumbers.is_valid_number(num)
