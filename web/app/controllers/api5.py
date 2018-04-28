@@ -27,7 +27,8 @@ class CaramalReminders:
                     # time to schedule reminder accordingly
                     msg = (
                         "Patient with ID %s, age of %s and sex %s is "
-                        "due for follow 3 days from now." % (patient_id, patient_age, patient_sex))
+                        "due for follow up 3 days from now." % (
+                            patient_id, int(float(patient_age)), patient_sex))
                     sms_params = {'text': msg, 'to': subcounty_team_contacts}
 
                     current_time = datetime.datetime.now()
