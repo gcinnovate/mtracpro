@@ -36,7 +36,7 @@ def sendsms(params):  # params has the sms params
     return res.text
 
 cur.execute(
-    "SELECT id, params::text, type FROM schedules WHERE to_char(run_time, 'yyyy-mm-dd HH:MI')"
+    "SELECT id, params::text, sched_type FROM schedules WHERE to_char(next_run_at, 'yyyy-mm-dd HH:MI')"
     " = to_char(now(), 'yyyy-mm-dd HH:MI') "
     " AND status = 'ready' FOR UPDATE NOWAIT")
 res = cur.fetchall()
@@ -47,14 +47,14 @@ for r in res:
     # cur.execute("SELECT id FROM schedules WHERE id = %s FOR UPDATE NOWAIT", [r["id"]])
     params = json.loads(r["params"])
     try:
-        if r['type'] == 'sms':
+        if r['sched_type'] == 'sms':
             response = sendsms(params)
             status = 'completed' if 'Accepted' in response else 'failed'
             cur.execute("UPDATE schedules SET status = %s WHERE id = %s", [status, r["id"]])
             conn.commit()
             logging.info(
                 "Scheduler run: [schedid:%s] [status:%s] [msg:%s]" % (r["id"], status, params["text"]))
-        elif r['type'] == 'push_contact':  # push RapidPro contacts
+        elif r['sched_type'] == 'push_contact':  # push RapidPro contacts
             resp = post_request(json.dumps(params))
             if resp.status_code in (200, 201, 203, 204):
                 status = 'completed'

@@ -122,7 +122,7 @@ def get_location_role_reporters(db, location_id, roles=[], include_alt=True):
 
 def queue_schedule(db, params, run_time, user=None, stype='sms'):  # params has the text, recipients and other params
     res = db.query(
-        "INSERT INTO schedules (params, run_time, type, created_by) "
+        "INSERT INTO schedules (params, next_run_at, sched_type, created_by) "
         " VALUES($params, $runtime, $type, $user) RETURNING id",
         {
             'params': psycopg2.extras.Json(params, dumps=simplejson.dumps),
