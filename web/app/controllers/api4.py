@@ -96,7 +96,7 @@ class ReportersUploadAPI:
 
                     sync_time = current_time + datetime.timedelta(seconds=60)
                     if urns:  # only queue if we have numbers
-                        queue_schedule(db, contact_params, sync_time, userid, 'push_contact')
+                        queue_schedule(db, contact_params, sync_time, userid, 'contact_push')
                 return web.seeother("/reporters")
             else:
                 location = params.location if params.location else None
@@ -146,7 +146,7 @@ class ReportersUploadAPI:
 
                     sync_time = current_time + datetime.timedelta(seconds=60)
                     if contact_params['urns']:
-                        queue_schedule(db, contact_params, sync_time, userid, 'push_contact')
+                        queue_schedule(db, contact_params, sync_time, userid, 'contact_push')
                 if params.caller == 'api':
                     return json.dumps({'message': 'success'})
                 else:
