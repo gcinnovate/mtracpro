@@ -54,7 +54,7 @@ for r in res:
             conn.commit()
             logging.info(
                 "Scheduler run: [schedid:%s] [status:%s] [msg:%s]" % (r["id"], status, params["text"]))
-        elif r['sched_type'] == 'push_contact':  # push RapidPro contacts
+        elif r['sched_type'] == 'contact_push':  # push RapidPro contacts
             resp = post_request(json.dumps(params))
             if resp.status_code in (200, 201, 203, 204):
                 status = 'completed'
@@ -63,7 +63,7 @@ for r in res:
             cur.execute("UPDATE schedules SET status = %s WHERE id = %s", [status, r["id"]])
             conn.commit()
             logging.info(
-                "Scheduler run: [schedid:%s] [status:%s] [push_contacts:%s]" % (r["id"], status, params["phone"]))
+                "Scheduler run: [schedid:%s] [status:%s] [contact_push:%s]" % (r["id"], status, params["phone"]))
     except Exception as e:
         logging.error("Scheduler Failed on [schedid:%s], [reason:%s]" % (r["id"], str(e)))
 conn.close()

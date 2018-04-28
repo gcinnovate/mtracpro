@@ -500,6 +500,21 @@ HMIS_REPORTS = [
 COMPLETE_REPORTS_KEYWORDS = ['cases', 'death', 'tra', 'mat', 'arv', 'apt']
 TEXT_INDICATORS = []
 
+# contacts for the caramal research team in the three pilot districts. used for reminders
+CARAMAL_RESEARCH_TEAM = {
+    'Kole': {
+        'Aboke': '',
+    },
+    'Oyam': {
+        'Aber': '',
+        'Abok': '',
+    },
+    'Apac': {
+        'Abongomola': '',
+        'Aduku': '',
+    },
+}
+
 try:
     from local_settings import *
 except ImportError:

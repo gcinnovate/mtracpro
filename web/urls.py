@@ -15,6 +15,7 @@ from app.controllers.api2 import FacilitySMS, SendSMS, RequestDetails
 from app.controllers.api2 import DeleteRequest, DeleteServer
 from app.controllers.api3 import EditReport, ReportingWeek, ReporterHistoryApi
 from app.controllers.api4 import ReportersUploadAPI
+from app.controllers.api5 import CaramalReminders
 from app.controllers.reporters_handler import Reporters
 from app.controllers.users_handler import Users
 from app.controllers.groups_handler import Groups
@@ -50,6 +51,7 @@ URLS = (
     r'/approve', Approve,
     r'/hotline', Hotline,
     r'/caramalreports', CaramalReports,
+    r'/caramalreminders', CaramalReminders,
     r'/facilities', Facilities,
     r'/auditlog', AuditLog,
     r'/settings', Settings,
