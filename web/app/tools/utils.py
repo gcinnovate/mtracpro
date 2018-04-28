@@ -137,7 +137,7 @@ def queue_schedule(db, params, run_time, user=None, stype='sms'):  # params has 
 
 def update_queued_sms(db, sched_id, params, run_time, user=None):
     db.query(
-        "UPDATE schedules SET params=$params, run_time=$runtime, updated_by=$user, "
+        "UPDATE schedules SET params=$params, next_run_at=$runtime, updated_by=$user, "
         " status='ready', updated=now() WHERE id=$id",
         {
             'params': psycopg2.extras.Json(params, dumps=simplejson.dumps),
@@ -263,9 +263,9 @@ def queue_request(db, params):
     try:
         db.query(
             "INSERT INTO requests (source, destination, body, week, year, district, facility, "
-            "msisdn, raw_msg, report_type) "
+            "msisdn, raw_msg, report_type, extras) "
             "VALUES($source, $destination, $body, $week, $year, $district, $facility, "
-            "$msisdn, $raw_msg, $report_type)", params)
+            "$msisdn, $raw_msg, $report_type, extras)", params)
     except Exception as e:
         print ">>> FAILED <<<<", str(e)
         return False

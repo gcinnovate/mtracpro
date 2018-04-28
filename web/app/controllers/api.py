@@ -260,7 +260,8 @@ class Dhis2Queue:
     def POST(self):
         params = web.input(
             facilitycode="", form="", district="", msisdn="",
-            raw_msg="", report_type="", facility="")
+            raw_msg="", report_type="", facility="", reporter_type="")
+        extras = {'reporter_type': params.reporter_type}
         # values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
             dataValues = []
@@ -350,7 +351,8 @@ class Dhis2Queue:
                     # 'source': config['dispatcher2_source'],
                     # 'destination': config['dispatcher2_destination'],
                     'source': serversByName[config['dispatcher2_source']],
-                    'destination': serversByName[config['dispatcher2_destination']]}
+                    'destination': serversByName[config['dispatcher2_destination']],
+                    'extras': json.dumps(extras)}
                 # now ready to queue to DB for pushing to DHIS2
                 # resp = queue_submission(serverid, post_xml, year, week)
                 print extra_params
