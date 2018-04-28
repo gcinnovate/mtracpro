@@ -352,7 +352,8 @@ class Dhis2Queue:
                     # 'destination': config['dispatcher2_destination'],
                     'source': serversByName[config['dispatcher2_source']],
                     'destination': serversByName[config['dispatcher2_destination']],
-                    'extras': json.dumps(extras)}
+                    'extras': json.dumps(extras),
+                    'status': config.get('default-queue-status', 'pending')}
                 # now ready to queue to DB for pushing to DHIS2
                 # resp = queue_submission(serverid, post_xml, year, week)
                 print extra_params

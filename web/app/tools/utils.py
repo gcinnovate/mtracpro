@@ -263,9 +263,9 @@ def queue_request(db, params):
     try:
         db.query(
             "INSERT INTO requests (source, destination, body, week, year, district, facility, "
-            "msisdn, raw_msg, report_type, extras) "
+            "msisdn, raw_msg, report_type, extras, status) "
             "VALUES($source, $destination, $body, $week, $year, $district, $facility, "
-            "$msisdn, $raw_msg, $report_type, extras)", params)
+            "$msisdn, $raw_msg, $report_type, $extras, $status)", params)
     except Exception as e:
         print ">>> FAILED <<<<", str(e)
         return False

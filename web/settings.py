@@ -60,6 +60,7 @@ config = {
     'dispatcher2_source': 'mtrackpro',
     'dispatcher2_destination': 'dhis2',
     'dispatcher2_certkey_file': '/etc/dispatcher2/ca-cert.pem',
+    'default-queue-status': 'pending',
 
     # DHIS2 Confs
     'dhis2_user': '',
