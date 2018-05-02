@@ -42,7 +42,7 @@ class CaramalReports:
 
         reports = doquery(db, dic)
         count = countquery(db, dic)
-        pagination_str = getPaginationString(default(page, 0), count, limit, 2, "ready", "?page=")
+        pagination_str = getPaginationString(default(page, 0), count, limit, 2, "caramalreports", "?page=")
 
         l = locals()
         del l['self']
