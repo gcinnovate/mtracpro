@@ -130,7 +130,7 @@ for d in data:
     _role = d[order['role']].strip()
     if not _role:
         _role = 'VHT'
-    _telephone = d[order['telephone']].strip()
+    _telephone = d[order['telephone']].strip().replace(' ', '')
     if not format_msisdn(_telephone):
         print "Phone Number not valid", _telephone
         continue
@@ -170,7 +170,11 @@ for d in data:
                 except:
                     pass
             # print subcountyid, _fac
-            facilityid = subcountyFacilitiesByName[subcountyid][_fac]
+            try:
+                facilityid = subcountyFacilitiesByName[subcountyid][_fac]
+            except:
+                print "Sub-county ID:", subcountyid, subcountyFacilitiesByName
+                sys.exit(1)
             # print "WE CAN ADD THIS ONE YEY!"
             params = {
                 'firstname': _firstname, 'lastname': _lastname, 'gender': _gender,

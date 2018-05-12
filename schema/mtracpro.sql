@@ -538,6 +538,40 @@ AS $function$
     END;
 $function$;
 
+CREATE OR REPLACE FUNCTION public.get_reporter_location(tel text)
+    RETURNS bigint
+    LANGUAGE plpgsql
+AS $function$
+    DECLARE
+        location_id bigint;
+    BEGIN
+        SELECT INTO location_id reporting_location FROM reporters
+        WHERE telephone = tel OR alternate_tel = tel;
+        IF location_id IS NULL THEN
+            RETURN 0;
+        END IF;
+        RETURN location_id;
+    END;
+$function$;
+
+CREATE OR REPLACE FUNCTION public.get_reporter_name(tel text)
+    RETURNS text
+    LANGUAGE plpgsql
+AS $function$
+    DECLARE
+        xname text;
+    BEGIN
+        SELECT INTO xname firstname || ' ' || lastname  FROM reporters
+        WHERE telephone = tel OR alternate_tel = tel;
+        IF xname IS NULL THEN
+            RETURN '';
+        END IF;
+        RETURN xname;
+    END;
+$function$;
+
+
+
 CREATE OR REPLACE FUNCTION public.get_facility_week_reports(facilitycode text, yr int, wk text)
  RETURNS text
  LANGUAGE plpgsql
@@ -615,6 +649,6 @@ CREATE VIEW requests_view AS
     SELECT a.id, a.source, a.destination, a.body, a.ctype, a.status, a.statuscode, a.errors,
         a.submissionid, a.week, a.month, a.year, a.msisdn, a.facility, a.district, a.report_type, a.raw_msg,
         a.edited_raw_msg, a.is_edited,
-        a.created, b.name facility_name
+        a.created, b.name facility_name, a.extras
     FROM requests a, healthfacilities b
     WHERE a.facility = b.code AND body_is_query_param = 'f';
