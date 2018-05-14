@@ -27,9 +27,24 @@
                 <div class="ibox-title">
                     <h5>Caramal Reports</h5>
                     <div class="ibox-tools">
-                        <button class="btn btn-primary delete_btn" name="abtn" value="Approve Selected"><i class="fa fa-thumbs-o-up"></i> Approve Selected</button>
+                        <a href="/static/downloads/CaramalHCReports{{ ses.username | capitalize }}.xlsx">
+                        <button class="btn btn-outline btn-success dim download_btn" name="abtn" value="HC Reports">
+                            <i class="fa fa-download"></i> Download HC Reports</button></a>
                         &nbsp;&nbsp;&nbsp;
-                        <button class="btn btn-danger delete_btn" name="abtn" value="Cancel Selected"><i class="fa fa-thumbs-o-down"></i> Cancel Selected</button>
+                        <a href="/static/downloads/CaramalVHTReports{{ ses.username | capitalize }}.xlsx">
+                        <button class="btn btn-outline btn-primary dim" name="abtn" value="VHT Reports">
+                            <i class="fa fa-download"></i> Download VHT Reports</button></a>
+                        &nbsp;&nbsp;&nbsp;
+                        <a href="/static/downloads/CaramalReports{{ ses.username| capitalize}}.xlsx">
+                        <button class="btn btn-outline btn-warning dim download_btn" name="abtn" type="button"
+                            value="Download Reports">
+                            <i class="fa fa-download"></i> Download All Reports</button></a>
+                        &nbsp;&nbsp;&nbsp;
+                        <!--
+                        <button class="btn btn-primary" name="abtn" value="Approve Selected"><i class="fa fa-thumbs-o-up"></i> Approve Selected</button>
+                        &nbsp;&nbsp;&nbsp;
+                        <button class="btn btn-danger" name="abtn" value="Cancel Selected"><i class="fa fa-thumbs-o-down"></i> Cancel Selected</button>
+                        -->
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
@@ -161,6 +176,12 @@
                         function(data){
                             $('#modal_res4').html(data);
                     });
+                });
+
+                $('.download_btn').click(function(){
+                    download = $(this).val();
+                    $.get('/static/downloads/' + download);
+                    console.log(download);
                 });
 
 

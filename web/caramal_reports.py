@@ -151,15 +151,20 @@ worksheet = workbook.add_worksheet()
 columns = ['' for i in range(18)]
 
 for idx, heading in enumerate(headings):
-    # worksheet.write(0, idx, heading, bold)
     columns[idx] = {'header': heading}
 
 for d in CARAMAL_INDICATROS.values():
-    # worksheet.write(0, d['position'], d['heading'], bold)
     columns[d['position']] = {'header': d['heading']}
 
-# worksheet.add_table('A2:R%s' % (2 + len(sheet_rows)), {'data': sheet_rows, 'header_row': False})
 worksheet.add_table('A1:R%s' % (1 + len(sheet_rows)), {'data': sheet_rows, 'columns': columns})
+worksheet.set_column("A:E", 18, text_format)
+worksheet.set_column("C:C", 25, text_format)
+worksheet.set_column("F:F", 22, text_format)
+worksheet.set_column("G:J", 20, text_format)
+worksheet.set_column("K:M", 33, text_format)
+worksheet.set_column("N:N", 32, text_format)
+worksheet.set_column("O:O", 28, text_format)
+worksheet.set_column("P:R", 15, text_format)
 
 workbook.close()
 
