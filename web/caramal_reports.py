@@ -50,7 +50,7 @@ for option, parameter in opts:
         sys.exit(1)
 
 headings = [
-    'Phone Number', 'Reporter Name', 'Report', 'Date', 'Week', 'Facility', 'District',
+    'Phone Number', 'Reporter Name', 'Report Type', 'Report', 'Date', 'Week', 'Facility', 'District',
     'Sub-County', 'Parish', 'Village']
 
 conn = psycopg2.connect(
@@ -78,7 +78,7 @@ pprint.pprint(headings)
 pprint.pprint(CARAMAL_INDICATROS)
 
 SQL = (
-    "SELECT msisdn, get_reporter_name(msisdn) as reporter_name, raw_msg AS report, "
+    "SELECT msisdn, get_reporter_name(msisdn) as reporter_name, report_type, raw_msg AS report, "
     "to_char(created, 'YYYY-MM-DD HH24:MI') as date, year || 'W' || week AS week, "
     "facility_name, district, get_reporter_location(msisdn) AS reporter_location, "
     "body::json->'dataValues' AS datavalues, "
@@ -87,9 +87,13 @@ SQL = (
 
 SQL = SQL % from_date
 if end_date:
-    SQL = SQL + " AND created <= '%s' " % end_date
+    SQL += " AND created <= '%s' " % end_date
 if reporter_type:
-    SQL = SQL + " AND reporter_type = '%s' " % reporter_type
+    SQL += " AND extras::json->>'reporter_type' = '%s' " % reporter_type
+if district:
+    SQL += " AND district = '%s' " % district
+
+SQL += " ORDER by id DESC"
 
 print SQL
 
@@ -113,17 +117,18 @@ for r in res:
         parish = locs['parish']
         village = locs['village']
 
-    row = ['' for i in range(18)]
+    row = ['' for i in range(19)]
     row[0] = r['msisdn']
     row[1] = r['reporter_name']
-    row[2] = r['report']
-    row[3] = r['date']
-    row[4] = r['week']
-    row[5] = r['facility_name']
-    row[6] = r['district']
-    row[7] = subcounty if subcounty is not None else ''
-    row[8] = parish if parish is not None else ''
-    row[9] = village if village is not None else ''
+    row[2] = r['report_type']
+    row[3] = r['report']
+    row[4] = r['date']
+    row[5] = r['week']
+    row[6] = r['facility_name']
+    row[7] = r['district']
+    row[8] = subcounty if subcounty is not None else ''
+    row[9] = parish if parish is not None else ''
+    row[10] = village if village is not None else ''
 
     datavalues = r['datavalues']
     for dv in datavalues:
@@ -148,7 +153,7 @@ bold = workbook.add_format({'bold': True})
 bold.set_font_size(14)
 
 worksheet = workbook.add_worksheet()
-columns = ['' for i in range(18)]
+columns = ['' for i in range(19)]
 
 for idx, heading in enumerate(headings):
     columns[idx] = {'header': heading}
@@ -156,15 +161,16 @@ for idx, heading in enumerate(headings):
 for d in CARAMAL_INDICATROS.values():
     columns[d['position']] = {'header': d['heading']}
 
-worksheet.add_table('A1:R%s' % (1 + len(sheet_rows)), {'data': sheet_rows, 'columns': columns})
-worksheet.set_column("A:E", 18, text_format)
-worksheet.set_column("C:C", 25, text_format)
-worksheet.set_column("F:F", 22, text_format)
-worksheet.set_column("G:J", 20, text_format)
-worksheet.set_column("K:M", 33, text_format)
-worksheet.set_column("N:N", 32, text_format)
-worksheet.set_column("O:O", 28, text_format)
-worksheet.set_column("P:R", 15, text_format)
+worksheet.add_table('A1:S%s' % (1 + len(sheet_rows)), {'data': sheet_rows, 'columns': columns})
+worksheet.set_column("A:F", 18, text_format)
+worksheet.set_column("D:D", 25, text_format)
+worksheet.set_column("G:G", 22, text_format)
+worksheet.set_column("H:K", 20, text_format)
+worksheet.set_column("L:L", 30, text_format)
+worksheet.set_column("M:N", 33, text_format)
+worksheet.set_column("O:O", 40, text_format)
+worksheet.set_column("P:P", 36, text_format)
+worksheet.set_column("Q:S", 15, text_format)
 
 workbook.close()
 
