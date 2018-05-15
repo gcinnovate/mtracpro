@@ -78,9 +78,10 @@ pprint.pprint(headings)
 pprint.pprint(CARAMAL_INDICATROS)
 
 SQL = (
-    "SELECT msisdn, get_reporter_name(msisdn) as reporter_name, report_type, raw_msg AS report, "
-    "to_char(created, 'YYYY-MM-DD HH24:MI') as date, year || 'W' || week AS week, "
-    "facility_name, district, get_reporter_location(msisdn) AS reporter_location, "
+    "SELECT msisdn, get_reporter_name(replace(msisdn, '+', '')) as reporter_name, "
+    "report_type, raw_msg AS report, to_char(created, 'YYYY-MM-DD HH24:MI') as date, "
+    "year || 'W' || week AS week, facility_name, district, "
+    "get_reporter_location(msisdn) AS reporter_location, "
     "body::json->'dataValues' AS datavalues, "
     "extras::json->>'reporter_type' AS reporter_type, report_type "
     "FROM requests_view WHERE report_type IN ('car', 'ras') AND created > '%s' ")
