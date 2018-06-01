@@ -44,7 +44,7 @@ for option, parameter in opts:
     if option == '-d':
         district = parameter
     if option == '-t':
-        reporter_type = "VHT"
+        reporter_type = parameter
     if option == '-h':
         print usage()
         sys.exit(1)
