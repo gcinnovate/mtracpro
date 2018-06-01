@@ -127,7 +127,7 @@ for d in data:
         continue
     _firstname = d[order['firstname']].strip()
     _lastname = d[order['lastname']].strip()
-    _role = d[order['role']].strip()
+    _role = d[order['role']].strip().replace("HW", "HC")
     if not _role:
         _role = 'VHT'
     _telephone = d[order['telephone']].strip().replace(' ', '')
