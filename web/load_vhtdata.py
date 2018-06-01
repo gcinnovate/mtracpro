@@ -131,9 +131,12 @@ for d in data:
     if not _role:
         _role = 'VHT'
     _telephone = d[order['telephone']].strip().replace(' ', '')
-    if not format_msisdn(_telephone):
-        print "Phone Number not valid", _telephone
-        continue
+    try:
+        if not format_msisdn(_telephone):
+            print "Phone Number not valid", _telephone
+            continue
+    except:
+        print "FAILED TO FORMATE TEL:", _telephone
     _alt_tel = d[order['alternate_tel']].strip()
     if not format_msisdn(_alt_tel):
         _alt_tel = ""
