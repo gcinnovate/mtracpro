@@ -137,6 +137,7 @@ for d in data:
             continue
     except:
         print "FAILED TO FORMATE TEL:", _telephone
+        continue
     _alt_tel = d[order['alternate_tel']].strip()
     if not format_msisdn(_alt_tel):
         _alt_tel = ""
