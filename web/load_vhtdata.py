@@ -173,8 +173,10 @@ for d in data:
             try:
                 facilityid = subcountyFacilitiesByName[subcountyid][_fac]
             except:
-                print "Sub-county ID:", subcountyid, subcountyFacilitiesByName
-                sys.exit(1)
+                # print "Sub-county ID:", subcountyid, subcountyFacilitiesByName
+                print "Facility ID for [%s]could not be got" % _fac, "subcountyid:", subcountyid
+                # sys.exit(1)
+                continue
             # print "WE CAN ADD THIS ONE YEY!"
             params = {
                 'firstname': _firstname, 'lastname': _lastname, 'gender': _gender,
@@ -184,8 +186,11 @@ for d in data:
             # print "++++++++++++++++++++++=>", location
             # import pprint
             # pprint.pprint(params)
-            requests.post(config.get(
-                'reporters_upload_endpoint',
-                'http://localhost:8080/reportersupload'), data=params)
+            try:
+                requests.post(config.get(
+                    'reporters_upload_endpoint',
+                    'http://localhost:8080/reportersupload'), data=params)
+            except:
+                print "Reporter Upload Endpoint returned an error"
 
 conn.close()
