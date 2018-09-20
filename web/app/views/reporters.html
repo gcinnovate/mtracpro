@@ -39,7 +39,7 @@
                                 <!-- LEFT-->
                                 <div class="col-lg-6">
                                     <div class="row">
-                                        <input type="hidden" name="location" id="location"/>
+                                        <input type="hidden" name="location" id="location" value="{{ location }}"/>
                                         <div class="form-group"><label for="district" class="col-lg-3 control-label">District:</label>
                                             <div class="col-lg-9">
                                                 <select name="district" id="district" class="form-control" required>
@@ -65,7 +65,7 @@
                                                 <select name="facility" id="facility" class="form-control" required>
                                                     <option value="">Select Health Facility</option>
                                                     {% for f in facilities %}
-                                                    <option value="{{ f.id }}" {% if f.id == facility.id %} selected="yes" {% endif %}>{{ f.name}}</option>
+                                                    <option value="{{ f.id }}" {% if f.id == facilityid %} selected="yes" {% endif %}>{{ f.name}}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>

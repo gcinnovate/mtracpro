@@ -309,6 +309,9 @@ CREATE TABLE reporters(
     total_reports INTEGER NOT NULL DEFAULT 0,
     last_reporting_date DATE,
     created_by INTEGER REFERENCES users(id), -- like actor id
+    facilityid INTEGER REFERENCES healthfacilities(id),
+    groups INTEGER [],
+    jparents JSON DEFAULT '{}',
     created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -652,3 +655,16 @@ CREATE VIEW requests_view AS
         a.created, b.name facility_name, a.extras
     FROM requests a, healthfacilities b
     WHERE a.facility = b.code AND body_is_query_param = 'f';
+
+DROP VIEW IF EXISTS reporters_view1;
+CREATE view reporters_view1 AS
+SELECT a.id,
+    a.firstname, a.lastname, (a.firstname || ' '::text) || a.lastname AS name,
+    a.telephone, a.alternate_tel, a.email, a.reporting_location, a.created_by, a.district_id,
+    a.uuid, a.total_reports, a.last_reporting_date, get_reporter_groups2(a.id) AS role, a.created,
+    b.name AS loc_name, b.code AS location_code, d.name AS facility, a.facilityid,
+    a.jparents->>'p' as parishid, a.jparents->>'s' as subcountyid, d.code AS facilitycode
+   FROM reporters a,
+    locations b,
+    healthfacilities d
+  WHERE a.reporting_location = b.id AND d.id = a.facilityid;
