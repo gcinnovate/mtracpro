@@ -41,6 +41,7 @@ from app.controllers.messagehistory_handler import MessageHistory
 from app.controllers.facilityreports_handler import FacilityReports
 from app.controllers.hotline_handler import Hotline
 from app.controllers.caramal_handler import CaramalReports
+from app.controllers.archive_handler import Archive
 
 URLS = (
     r'^/', Index,
@@ -64,6 +65,7 @@ URLS = (
     r'/create', CreateFacility,
     r'/dataentry', DataEntry,
     r'/polling', Polls,
+    r'/archive', Archive,
     r'/messagehistory/\+?(\w+)/?', MessageHistory,
     r'/facilityreports/(\w+)/?', FacilityReports,
     # Dispatcher2 URIs
