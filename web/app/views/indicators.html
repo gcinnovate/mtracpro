@@ -1,0 +1,223 @@
+{% extends "layout.html" %}
+{% from 'layout.html' import navbar, myscripts, err %}
+
+{% block title %}mTracPro.::.DHIS2 Indicators{% endblock%}
+{% block stylesheets %}
+    <!-- Data Tables -->
+    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block nav %}
+    {% call navbar() %}
+
+    {% endcall %}
+{% endblock %}
+
+{% block content %}
+    {{ err(ses.idata_err)}}
+    <form class="form-horizontal" role="form" method="post">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <div class="row">
+        <!-- LEFT-->
+        <div class="col-lg-6">
+            <div class="ibox float-e-margins">
+               <div class="ibox-title">
+                    <h5>mTrac - DHIS Indicators</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+
+				<div class="ibox-content">
+					<div class="form-group">
+						<label for="name" class="col-lg-4 control-label">Name:</label>
+						<div class="col-lg-8">
+                            <input name="name" id="name" type="text" value="{{ name }}" class="form-control"/>
+						</div>
+					</div>
+			        <div class="form-group">
+						<label for="form" class="col-lg-4 control-label">Form:</label>
+						<div class="col-lg-8">
+                            <input name="form" id="form" type="text" value="{{ form }}" class="form-control"/>
+						</div>
+					</div>
+		            <div class="form-group">
+						<label for="slug" class="col-lg-4 control-label">Slug:</label>
+						<div class="col-lg-8">
+                            <input name="slug" id="slug" type="text" value="{{ slug }}" class="form-control"/>
+						</div>
+					</div>
+                    <div class="form-group">
+						<label for="cmd" class="col-lg-4 control-label">Command:</label>
+						<div class="col-lg-8">
+                            <input name="cmd" id="msidn" type="text" value="{{ cmd }}" class="form-control"/>
+						</div>
+					</div>
+
+                    <div class="form-group">
+					    <label for="start" class="col-lg-4 control-label">Start of Submission Period:</label>
+                        <div class="col-lg-8">
+                            <select name="form_order" id="form_order" class="form-control">
+								<option value="">Select Form Order</option>
+								{% for y in range(0, 35) %}
+                        			<option value="{{ y }}" {% if y == form_order %} selected="yes" {% endif%}>{{ y }}</option>
+                    			{% endfor %}
+							</select>
+					    </div>
+                    </div>
+
+				</div>
+            </div>
+        </div>
+        <!-- END LEFT-->
+
+        <!-- RIGHT-->
+        <div class="col-lg-6">
+            <div class="ibox float-e-margins">
+				<div class="ibox-title">
+                    <h5>mTrac - DHIS2 Indicators</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+
+				<div class="ibox-content">
+
+                    <div class="form-group">
+						<label for="end" class="col-lg-5 control-label">DHIS 2 DataSet:</label>
+						<div class="col-lg-7">
+                            <input name="dataset" id="dataset" value="{{ dataset }}" type="text" class="form-control"/>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="xml_xpath" class="col-lg-5 control-label">DHIS 2 DataElement:</label>
+						<div class="col-lg-7">
+                            <input name="dataelement" id="dataelement" value="{{ dataelement}}" type="text" class="form-control"/>
+						</div>
+					</div>
+                    <div class="form-group">
+						<label for="json_xpath" class="col-lg-5 control-label">DHIS 2 Category Combo:</label>
+						<div class="col-lg-7">
+                            <input name="category_combo" id="category_combo" value="{{ category_combo }}" type="text" class="form-control"/>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="col-lg-offset-5 col-lg-5">
+							<button class="btn btn-sm btn-primary" type="submit">Save</button>
+						</div>
+                    </div>
+                    <br/>
+                    <br/>
+                    <br/>
+				</div>
+            </div>
+        </div>
+        <!-- END RIGHT-->
+    </div>
+</form>
+
+<!-- DATA TABLE -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>mTrac - DHIS 2 Indicator Mappings</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table id="mydata" class="table table-striped table-bordered table-hover dataTables-example" >
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Form</th>
+                                    <th>Order</th>
+                                    <th>Slug</th>
+                                    <th>Command</th>
+                                    <th>DataSet</th>
+                                    <th>DataElement</th>
+                                    <th>Category Combo</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for mapping in mappings %}
+                                <tr>
+                                    <td>{{ mapping.id }}</td>
+                                    <td>{{ mapping.description }}</td>
+                                    <td>{{ mapping.form }}</td>
+                                    <td>{{ mapping.form_order }}</td>
+                                    <td>{{ mapping.slug }}</td>
+                                    <td>{{ mapping.cmd }}</td>
+                                    <td>{{ mapping.dataset}}</td>
+                                    <td>{{ mapping.dataelement}}</td>
+                                    <td>{{ mapping.category_combo}}</td>
+                                    <td>
+                                        <!--
+                                        <button type="button" class="btn btn-white btn-xs details_btn" id="{{mapping.id}}" data-toggle="modal"
+                                                data-target="#myModal2">
+                                                 <i title="Details" class="fa fa-list-alt"></i>
+                                        </button>
+										&nbsp;&nbsp;
+                                        -->
+										<a href="/indicators?ed={{ mapping.id }}&page={{ page}}" class="btn btn-primary btn-xs" value={{ mapping.id }}>
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        &nbsp;&nbsp;
+                                        <button class="btn btn-danger btn-xs delete_btn" id={{ mapping.id}}><i class="fa fa-trash-o"></i></button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {{ pagination_str }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END DATA TABLE -->
+{% endblock %}
+
+{% block scripts %}
+    {% call myscripts() %}
+        <!-- Data Tables -->
+        <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+        <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+        <script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+        <script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+        <script src="/static/js/plugins/bootstrap-validator/dist/validator.min.js"></script>
+        <script src="/static/js/mtrackpro/dpoints.js"></script>
+        <script>
+           $(document).ready(function() {
+            $('.dataTables-example').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                pageLength: 25,
+                bPaginate: false,
+                info: false
+
+            });
+
+        });
+        </script>
+    {% endcall %}
+{% endblock %}
+
+
