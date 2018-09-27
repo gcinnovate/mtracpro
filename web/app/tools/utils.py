@@ -272,6 +272,19 @@ def queue_request(db, params):
     return True
 
 
+def queue_rejected_reports(db, params):
+    try:
+        db.query(
+            "INSERT INTO rejected_reports (source, destination, body, response, week, year, "
+            "district, facility, msisdn, raw_msg, report_type, extras, status) "
+            "VALUES($source, $destination, $body, $response, $week, $year, $district, $facility, "
+            "$msisdn, $raw_msg, $report_type, $extras, $status)", params)
+    except Exception as e:
+        print ">>> FAILED <<<<", str(e)
+        return False
+    return True
+
+
 def generate_raw_message(db, form, data, add_commads=False):
     """ Returns a mTrac-like coded SMS given form and data dictionary of indicators and
     thier values """

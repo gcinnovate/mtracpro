@@ -26,12 +26,18 @@ USE_OLD_WEBHOOKS = False
 
 CASES_POSITIONS = {
     'ma': 0, 'dy': 1, 'sa': 2, 'af': 3, 'ae': 4, 'ab': 5, 'mg': 6, 'ch': 7, 'gw': 8,
-    'me': 9, 'nt': 10, 'vf': 11, 'pl': 12, 'tf': 13, 'yf': 14, 'tb': 15, 'md': 16, 'pd': 17
+    'me': 9, 'nt': 10, 'vf': 11, 'pl': 12, 'tf': 13, 'yf': 14, 'tb': 15, 'md': 16, 'pd': 17,
+    # other condition follow - luckily codes are unique
+    'cg': 0, 'dg': 1, 'il': 2, 'ax': 3, 'hp': 4, 'dc': 5, 'lp': 6, 'oc': 7, 'bu': 8,
+    'lf': 9, 'no': 10, 'hn': 11, 'ss': 12, 'sp': 13, 'dd': 14, 'pn': 15, 'tx': 16, 'tr': 17,
+    'sc': 18, 'dp': 19, 'wc': 20, 'bc': 21, 'ka': 22, 'ns': 24, 'ar': 15
 }
 DELIMITER = '.'
 KEYWORDS_DATA_LENGTH = {
     'cases': 16,
     'death': 18,
+    'epc': 26,
+    'epd': 26
 }
 REPORTS_WITH_COMMANDS = ['cases', 'death']
 
@@ -421,12 +427,12 @@ MAPPING = {
     'car_patients_with_fever': {
         'descr': 'Patients with fever',
         'dhis2_combo_id': 'bjDvmb4bfuf',
-        'dhis2_id': 'phxagKD2YUi'
+        'dhis2_id': 'y3khdxvLfp'
     },
     'car_rdt_positive': {
         'descr': 'Number of RDT +ve patients',
         'dhis2_combo_id': 'bjDvmb4bfuf',
-        'dhis2_id': 'y3khdxvLfpG'
+        'dhis2_id': 'phxagKD2YUi'
     },
     'car_patients_with_danger_signs': {
         'descr': 'Patients with danger signs',

@@ -26,7 +26,7 @@ class Reporters:
 
         districts = db.query(districts_SQL)
         district = {}
-        roles = db.query("SELECT id, name from reporter_groups order by name")
+        # roles = db.query("SELECT id, name from reporter_groups order by name")
         allow_edit = False
 
         try:

@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from 'layout.html' import navbar, myscripts %}
 
-{% block title %}mTracPro.::.Archive{% endblock%}
+{% block title %}mTracPro.::.Rejected{% endblock%}
 {% block stylesheets %}
     <!-- Data Tables -->
     <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
@@ -25,9 +25,9 @@
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>Reports Archive</h5>
+                    <h5>Rejected Reports</h5>
                     <div class="ibox-tools">
-                        <a href="/static/downloads/{{ ses.username| capitalize}}Reports.xlsx">
+                        <a href="/static/downloads/{{ ses.username| capitalize}}Rejected.xlsx">
                         <button class="btn btn-outline btn-warning dim download_btn" name="abtn" type="button"
                             value="Download Reports">
                             <i class="fa fa-download"></i> Download All Reports</button></a>
@@ -46,9 +46,9 @@
                             <thead>
                                 <tr>
                                     <th><input id="selecctall" class=".chkmark" type="checkbox"/></th>
-                                    <th>Facility</th>
-                                    <th>Reporter</th>
+                                    <th>Facility & Reporter</th>
                                     <th>Report</th>
+                                    <th>Response</th>
                                     <th>Week#</th>
                                     <th>Date</th>
                                     <!--<th>Approved</th>-->
@@ -59,19 +59,25 @@
                             {% for report in reports %}
                                 <tr class="">
                                     <td><input name="reqid" class="topromote" value="{{ report.id }}" type="checkbox"/></td>
-                                    <td>{{ report.facility_name }}</td>
-                                    <td><a href="/messagehistory/{{ report.msisdn }}/" target="_blank">{{report.msisdn}}</a></td>
-                                    <td>{% if report.is_edited == True %}
+                                    <td>
+                                        {{ report.facility_name }}
+                                        <ul>
+                                            <li><a href="/messagehistory/{{ report.msisdn }}/" target="_blank">{{report.msisdn}}</a></li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        {% if report.is_edited == True %}
                                             {{ report.edited_raw_msg }}
                                             &nbsp;&nbsp;<i class="fa fa-pencil"></i>
                                         {% else %}
                                             {{ report.raw_msg }}
                                         {% endif%}
                                         {{ report.body|formatmsg(report.report_type)}}
+                                        <!-- {{ report.raw_msg }} -->
                                     </td>
+									<td>{{ report.response }}</td>
                                     <td>{{ report.year|string + "W" + report.week}}</td>
                                     <td>{{ report.created|datetimeformat }}</td>
-									<!--<td>Yes</td>-->
                                     <td>
                                         <button type="button" class="btn btn-primary btn-xs edit_btn"
                                             id={{ report.id}} report="{{ report.report_type }}" data-toggle="modal" data-target="#myModal4"><i class="fa fa-edit"></i> Edit</button>
@@ -102,6 +108,7 @@
                     </div>
 
 	                <form class="form-horizontal" role="form" id="report_form" data-toggle="validator">
+                        <input name="has_errors" type="hidden" value="true"/>
                         <div id="modal_res4">
                         </div>
                     </form>
@@ -132,7 +139,6 @@
         <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/buttons.html5.min.js"></script>
         <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/buttons.print.min.js"></script>
         <script src="/static/js/plugins/bootstrap-validator/dist/validator.min.js"></script>
-        <script src="/static/js/mtrackpro/approve.js"></script>
         <script>
         	$(document).ready(function() {
 				$('#mydata').DataTable({
@@ -162,12 +168,26 @@
                     $('#modal_res2').removeClass("alert");
                     $.get(
                         '/api/v1/indicatorhtml/' + report,
-                        {request_id: id_val},
+                        {request_id: id_val, has_errors: true},
                         function(data){
                             $('#modal_res4').html(data);
                     });
                 });
 
+                $('.report_edit_btn').click(function(event){
+                    event.preventDefault();
+                    $('#modal_res2').css({'color': 'green'});
+                    $('#modal_res2').addClass('alert');
+                    $('#modal_res2').addClass('alert-success');
+                    request_id = $('#request_id').val();
+                    $.post(
+                        '/api/v1/editreport/' + request_id,
+                        $('#report_form').serializeArray(),
+                        function(data){
+                            $('#modal_res2').html(data);
+                        });
+                    return false;
+                });
 
         	});
         </script>

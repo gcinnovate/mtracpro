@@ -8,6 +8,7 @@ controllers of the app.
 import web
 import json
 import datetime
+import settings
 from web.contrib.template import render_jinja
 from settings import (absolute, config)
 from settings import COMPLETE_REPORTS_KEYWORDS
@@ -91,6 +92,8 @@ for r in rs:
 Indicators = {}  # Form: {'cases': {'dataelement': {'slug': 'cases_ma'}, 'dataelement', {'slug': 'cases_me'}}}
 IndicatorsByFormOrder = {}  # {'cases': [{'slug': 'cases_ma', 'description': 'Malaria Cases'}, {}, {}, ...]}
 DataElementPosition = {}
+CategoryComboPosition = {}  # position for category combo - combos are different for forms like mat
+IndicatorsCategoryCombos = {}
 rs = db.query(
     "SELECT form, slug, description, dataelement, category_combo, form_order "
     " FROM dhis2_mtrack_indicators_mapping "
@@ -108,9 +111,16 @@ for r in rs:
     else:
         IndicatorsByFormOrder[r['form']].append({'slug': r['slug'], 'description': r['description']})
     DataElementPosition[r['dataelement']] = r['form_order']
-# import pprint
+    CategoryComboPosition[r['category_combo']] = r['form_order']
+    if r['form'] not in IndicatorsCategoryCombos:
+        IndicatorsCategoryCombos[r['form']] = {}
+        IndicatorsCategoryCombos[r['form']][r['slug']] = r['category_combo']
+    else:
+        IndicatorsCategoryCombos[r['form']][r['slug']] = r['category_combo']
+import pprint
 # pprint.pprint(Indicators)
 # pprint.pprint(IndicatorsByFormOrder)
+pprint.pprint(IndicatorsCategoryCombos)
 # pprint.pprint(DataElementPosition)
 
 
@@ -146,9 +156,9 @@ def formatmsg(msg, form='cases'):
         datavalues = body['dataValues']
         for d in datavalues:
             try:  # XXX for cases where we dont have the key
-                if form == 'mat':  # the mat form is a special case
+                if form in getattr(settings, 'SPECIAL_FORMS', ['mat']):  # the mat form is a special case
                     # ret += "<li><small>%s" % d['value'] + " " + categoryOptionCombos[d['categoryOptionCombo']] + "</small></li>"
-                    ret_list[DataElementPosition[d['dataElement']]] = (
+                    ret_list[CategoryComboPosition[d['categoryOptionCombo']]] = (
                         "<li><small>%s %s</small></li>") % (
                             d['value'], categoryOptionCombos[d['categoryOptionCombo']])
                 else:

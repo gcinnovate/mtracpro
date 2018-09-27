@@ -3,6 +3,7 @@ import web
 import datetime
 from . import db, get_current_week, serversByName
 from settings import config
+import settings
 from app.tools.utils import get_basic_auth_credentials, auth_user, get_webhook_msg_old
 from app.tools.utils import queue_request
 # from app.tools.utils import get_location_role_reporters, queue_schedule, log_schedule, update_queued_sms
@@ -211,7 +212,7 @@ class ReportsThisWeek:
 
 class Cases:
     def GET(self):
-        return json.dumps({"message": "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0"})
+        return json.dumps({"message": "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0"})
 
     def POST(self):
         params = web.input()
@@ -228,7 +229,7 @@ class Cases:
 
 class Deaths:
     def GET(self):
-        return json.dumps({"message": "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0"})
+        return json.dumps({"message": "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0"})
 
     def POST(self):
         params = web.input()
@@ -281,7 +282,8 @@ class Dhis2Queue:
                     label = v.get('name')
                     slug = "%s_%s" % (params.form, label)
                     if val.__str__().isdigit() or slug in TEXT_INDICATORS:
-                        if not(val) and params.form in ['cases', 'death']:
+                        if not(val) and params.form in getattr(
+                                settings, 'IRREGULAR_FORMS', ['cases', 'death', 'epc', 'epd']):  # XXX irregular forms
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
                         print "%s=>%s" % (slug, val), MAPPING[slug]
@@ -307,7 +309,7 @@ class Dhis2Queue:
                     label = v.get('label')
                     slug = "%s_%s" % (params.form, label)
                     if val.__str__().isdigit() or slug in TEXT_INDICATORS:
-                        if not(val) and params.form in ['cases', 'death']:
+                        if not(val) and params.form in ['cases', 'death', 'epc', 'death']:
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
                         print "%s=>%s" % (slug, val), MAPPING[slug]

@@ -6,12 +6,13 @@ from app.tools.utils import generate_raw_message, get_reporting_week
 from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, REPORTS_WITH_COMMANDS
 from settings import TEXT_INDICATORS
+import settings
 
 
 class EditReport:
     @require_login
     def POST(self, request_id):
-        params = web.input(facilitycode="", report="", week="")
+        params = web.input(facilitycode="", report="", week="", has_errors="false")
         week = params.week
         facilitycode = params.facilitycode
         report = params.report
@@ -46,7 +47,8 @@ class EditReport:
                             "'%s' value='%s' />\n" %
                             (MAPPING[slug]['dhis2_id'], MAPPING[slug]['dhis2_combo_id'], val))
 
-        if not dataValues and report in ('cases', 'death'):
+        if not dataValues and report in getattr(
+                settings, 'IRREGULAR_FORMS', ('cases', 'death', 'epc', 'epd')):
             if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                 dataValues = []
             else:
@@ -68,9 +70,15 @@ class EditReport:
                 payload = json.dumps(args_dict)
             else:
                 payload = XML_TEMPLATE % args_dict
+            SQL = (
+                "UPDATE %s SET body = $body, is_edited = 't', edited_raw_msg = $msg, "
+                "updated = NOW(), status='ready' WHERE id = $id ")
+            if params.has_errors == "true":
+                SQL = SQL % 'rejected_reports'
+            else:
+                SQL = SQL % 'requests'
             db.query(
-                "UPDATE requests SET body = $body, is_edited = 't', edited_raw_msg = $msg, "
-                "updated = NOW(), status='ready' WHERE id = $id ",
+                SQL,
                 {'body': payload, 'id': request_id, 'msg': msg})
             return 'Report successfully edited to "%s"' % msg
 

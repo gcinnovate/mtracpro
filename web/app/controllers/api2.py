@@ -1,9 +1,10 @@
 import json
 import logging
-from . import db, Indicators, IndicatorsByFormOrder
+from . import db, Indicators, IndicatorsByFormOrder, IndicatorsCategoryCombos
 import web
 from app.tools.utils import post_request
 from settings import config
+import settings
 from app.tools.utils import get_basic_auth_credentials, auth_user, get_webhook_msg
 
 logging.basicConfig(
@@ -246,7 +247,7 @@ class ReportForms:
 
 class IndicatorHtml:
     def GET(self, report):
-        params = web.input(request_id="")
+        params = web.input(request_id="", has_errors="false")
         # res = db.query(
         #     "SELECT slug, description FROM dhis2_mtrack_indicators_mapping "
         #     "WHERE form=$report ORDER BY form_order", {'report': report})
@@ -256,8 +257,13 @@ class IndicatorHtml:
         json_body = {}
         htmlStr = ""
         if params.request_id:
+            view = "requests_view"
+            if params.has_errors == "true":
+                view = "rejected_reports_view"  # error messages go in different view
+
+            SQL = "SELECT body, facility, week, year FROM %s WHERE id= $request_id" % view
             res = db.query(
-                "SELECT body, facility, week, year FROM requests_view WHERE id= $request_id",
+                SQL,
                 {'request_id': params.request_id})
             if res:
                 rpt = res[0]
@@ -274,10 +280,16 @@ class IndicatorHtml:
             value = ""
             if json_body:
                 for val in json_body['dataValues']:
-                    if val['dataElement'] in Indicators[report]:
-                        if r['slug'] == Indicators[report][val['dataElement']]['slug']:
-                            value = val['value']
-                            # print ">>>>>>>>>>>>>>>>>>>>>>", value
+                    if report in getattr(settings, 'SPECIAL_FORMS', ['mat']):
+                        # for the case where a dataElement is shared across indicators, but the categoryOtpionCombo
+                        if val['dataElement'] in Indicators[report]:
+                            if val['categoryOptionCombo'] == IndicatorsCategoryCombos[report][r['slug']]:
+                                value = val['value']
+                    else:
+                        if val['dataElement'] in Indicators[report]:
+                            if r['slug'] == Indicators[report][val['dataElement']]['slug']:
+                                value = val['value']
+                                # print ">>>>>>>>>>>>>>>>>>>>>>", value
             # XXX Crazy hacks end here
 
             htmlStr += '<div class="row"><div class="form-group"><label for="%(slug)s" class="col-lg-6 control-label">' % r

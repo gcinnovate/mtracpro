@@ -16,7 +16,7 @@ from app.controllers.api2 import DeleteRequest, DeleteServer
 from app.controllers.api3 import EditReport, ReportingWeek, ReporterHistoryApi
 from app.controllers.api4 import ReportersUploadAPI
 from app.controllers.api5 import CaramalReminders
-from app.controllers.api6 import Errors
+from app.controllers.api6 import QueueRejectedReports
 from app.controllers.reporters_handler import Reporters
 from app.controllers.users_handler import Users
 from app.controllers.groups_handler import Groups
@@ -44,6 +44,7 @@ from app.controllers.hotline_handler import Hotline
 from app.controllers.caramal_handler import CaramalReports
 from app.controllers.archive_handler import Archive
 from app.controllers.indicators_handler import Indicators
+from app.controllers.rejected_handler import Rejected
 
 URLS = (
     r'^/', Index,
@@ -68,6 +69,7 @@ URLS = (
     r'/dataentry', DataEntry,
     r'/polling', Polls,
     r'/archive', Archive,
+    r'/rejected', Rejected,
     r'/messagehistory/\+?(\w+)/?', MessageHistory,
     r'/facilityreports/(\w+)/?', FacilityReports,
     # Dispatcher2 URIs
@@ -81,7 +83,7 @@ URLS = (
     # API stuff follows
     r'/cases', Cases,  # cases flow
     r'/deaths', Deaths,  # deaths flow
-    r'/errors', Errors,  # intended to save messages that ran into errors in rapidPro
+    r'/errors', QueueRejectedReports,  # intended to save messages that ran into errors in rapidPro
     r'/dhis2queue', Dhis2Queue,  # queue reports in dispatcher2
     r'/dhis2instancequeue', QueueForDhis2InstanceProcessing,  # queue reports in dispatcher2
     r'/test', Test,

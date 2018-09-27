@@ -126,6 +126,42 @@ CREATE VIEW locations_view AS
     SELECT a.*, b.level FROM locations a, locationtype b
     WHERE a.type_id = b.id;
 
+CREATE TABLE rejected_reports(
+    id bigserial PRIMARY KEY NOT NULL,
+    source INTEGER REFERENCES servers(id),
+    destination INTEGER REFERENCES servers(id),
+    body TEXT NOT NULL DEFAULT '',
+    response TEXT NOT NULL DEFAULT '',
+    status VARCHAR(32) NOT NULL DEFAULT 'error' CHECK(status IN('pending', 'ready', 'inprogress', 'failed', 'error', 'expired', 'completed', 'canceled')),
+    statuscode text DEFAULT '',
+    errors TEXT DEFAULT '', -- indicative response message
+    submissionid INTEGER NOT NULL DEFAULT 0,
+    week TEXT DEFAULT '', -- reporting week
+    month TEXT DEFAULT '', -- reporting month
+    year INTEGER, -- year of submission
+    msisdn TEXT NOT NULL DEFAULT '',
+    raw_msg TEXT NOT NULL DEFAULT '',
+    facility TEXT NOT NULL DEFAULT '',
+    district TEXT NOT NULL DEFAULT '',
+    report_type TEXT NOT NULL DEFAULT '',
+    extras TEXT NOT NULL DEFAULT '',
+    is_edited BOOLEAN NOT NULL DEFAULT 'f',
+    edited_raw_msg TEXT NOT NULL DEFAULT '',
+    created timestamptz DEFAULT current_timestamp,
+    updated timestamptz DEFAULT current_timestamp
+);
+
+CREATE INDEX rejected_reports_idx1 ON requests(submissionid);
+CREATE INDEX rejected_reports_idx2 ON requests(status);
+CREATE INDEX rejected_reports_idx3 ON requests(statuscode);
+CREATE INDEX rejected_reports_idx4 ON requests(week);
+CREATE INDEX rejected_reports_idx5 ON requests(month);
+CREATE INDEX rejected_reports_idx6 ON requests(year);
+CREATE INDEX rejected_reports_idx7 ON requests(ctype);
+CREATE INDEX rejected_reports_idx8 ON requests(msisdn);
+CREATE INDEX rejected_reports_idx9 ON requests(facility);
+CREATE INDEX rejected_reports_idx10 ON requests(district);
+
 --FUNCTIONS
 CREATE OR REPLACE FUNCTION public.get_children(loc_id integer)
  RETURNS SETOF locations_view AS
@@ -355,6 +391,7 @@ CREATE TABLE  dhis2_mtrack_indicators_mapping(
     dataset TEXT NOT NULL DEFAULT '',
     dataelement TEXT NOT NULL DEFAULT '',
     category_combo TEXT NOT NULL DEFAULT '',
+    threshold INTEGER,
     created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -655,6 +692,16 @@ CREATE VIEW requests_view AS
         a.created, b.name facility_name, a.extras
     FROM requests a, healthfacilities b
     WHERE a.facility = b.code AND body_is_query_param = 'f';
+
+CREATE VIEW rejected_reports_view AS
+    SELECT a.id, a.source, a.destination, a.body, a.response, a.status, a.statuscode, a.errors,
+        a.submissionid, a.week, a.month, a.year, a.msisdn, a.facility, a.district, a.report_type, a.raw_msg,
+        a.edited_raw_msg, a.is_edited,
+        a.created, b.name facility_name, a.extras
+    FROM rejected_reports a, healthfacilities b
+    WHERE a.facility = b.code;
+
+
 
 DROP VIEW IF EXISTS reporters_view1;
 CREATE view reporters_view1 AS
