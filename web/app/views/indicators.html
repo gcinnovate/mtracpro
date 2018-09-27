@@ -97,15 +97,21 @@
 					</div>
 
 					<div class="form-group">
-						<label for="xml_xpath" class="col-lg-5 control-label">DHIS 2 DataElement:</label>
+						<label for="dataelement" class="col-lg-5 control-label">DHIS 2 DataElement:</label>
 						<div class="col-lg-7">
                             <input name="dataelement" id="dataelement" value="{{ dataelement}}" type="text" class="form-control"/>
 						</div>
 					</div>
                     <div class="form-group">
-						<label for="json_xpath" class="col-lg-5 control-label">DHIS 2 Category Combo:</label>
+						<label for="category_combo" class="col-lg-5 control-label">DHIS 2 Category Combo:</label>
 						<div class="col-lg-7">
                             <input name="category_combo" id="category_combo" value="{{ category_combo }}" type="text" class="form-control"/>
+						</div>
+					</div>
+                    <div class="form-group">
+						<label for="threshold" class="col-lg-5 control-label">Threshold:</label>
+						<div class="col-lg-7">
+                            <input name="threshold" id="threshold" value="{{ threshold }}" type="text" class="form-control"/>
 						</div>
 					</div>
 
@@ -114,9 +120,6 @@
 							<button class="btn btn-sm btn-primary" type="submit">Save</button>
 						</div>
                     </div>
-                    <br/>
-                    <br/>
-                    <br/>
 				</div>
             </div>
         </div>
