@@ -48,7 +48,7 @@ class EditReport:
                             (MAPPING[slug]['dhis2_id'], MAPPING[slug]['dhis2_combo_id'], val))
 
         if not dataValues and report in getattr(
-                settings, 'IRREGULAR_FORMS', ('cases', 'death', 'epc', 'epd')):
+                settings, 'REPORTS_WITH_COMMANDS', ('cases', 'death', 'epc', 'epd')):
             if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                 dataValues = []
             else:

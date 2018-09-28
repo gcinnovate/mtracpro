@@ -13,17 +13,24 @@ ENCRYPT_KEY = ''
 SECRET_KEY = ''
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# No of items to show on each age
 PAGE_LIMIT = 25
 
+# The time it takes to send an SMS schedule after it is created. It gives a chance to edit
 SMS_OFFSET_TIME = 5
 
 HMIS_033B_DATASET = 'V1kJRs8CtW4'
 HMIS_033B_DATASET_ATTR_OPT_COMBO = 'gGhClrV5odI'  # DHIS2 v2.26 change
 CARAMAL_DATASET = 'kzIS9qjcF6W'
 CARAMAL_DATASET_ATTR_OPT_COMBO = 'bjDvmb4bfuf'  # DHIS2 v2.26 change
+
+# The preferred content type for queuing data in Dispatcher2
 PREFERRED_DHIS2_CONTENT_TYPE = 'xml'
+
+# Whether to use the older version of webhooks of RapidPro when extracting values from flows
 USE_OLD_WEBHOOKS = False
 
+# position of indicator in its message form.
 CASES_POSITIONS = {
     'ma': 0, 'dy': 1, 'sa': 2, 'af': 3, 'ae': 4, 'ab': 5, 'mg': 6, 'ch': 7, 'gw': 8,
     'me': 9, 'nt': 10, 'vf': 11, 'pl': 12, 'tf': 13, 'yf': 14, 'tb': 15, 'md': 16, 'pd': 17,
@@ -32,14 +39,18 @@ CASES_POSITIONS = {
     'lf': 9, 'no': 10, 'hn': 11, 'ss': 12, 'sp': 13, 'dd': 14, 'pn': 15, 'tx': 16, 'tr': 17,
     'sc': 18, 'dp': 19, 'wc': 20, 'bc': 21, 'ka': 22, 'ns': 24, 'ar': 15
 }
+# Preferred delimiter for the message forms
 DELIMITER = '.'
+
+# Dictionary with length of each message form
 KEYWORDS_DATA_LENGTH = {
     'cases': 16,
     'death': 18,
     'epc': 26,
     'epd': 26
 }
-REPORTS_WITH_COMMANDS = ['cases', 'death']
+# reports with commands - or irregular forms
+REPORTS_WITH_COMMANDS = ['cases', 'death', 'epc', 'epd']
 
 
 def absolute(path):
@@ -106,6 +117,8 @@ config = {
     'api_token': 'c8cde9dbbdda6f544018e9321d017e909b28ec51',
     'api_url': 'http://localhost:8000/api/v1/',
 }
+
+# Mapping of indicators to DHIS2 dataElements. as in dhis2_mtrack_indicators_mapping table
 
 MAPPING = {
     'apt_emtct_expected': {
@@ -461,6 +474,7 @@ MAPPING = {
     }
 }
 
+# XML template for submitting data values using DHIS 2 API
 XML_TEMPLATE = """
 <dataValueSet xmlns="http://dhis2.org/schema/dxf/2.0" dataSet="V1kJRs8CtW4" completeDate="%(completeDate)s" period="%(period)s" orgUnit="%(orgUnit)s" attributeOptionCombo="gGhClrV5odI">
 <dataValues>
@@ -474,6 +488,7 @@ DEFAULT_DATA_VALUES = {
     'death': "<dataValue dataElement='YXIu5CW9LPR' categoryOptionCombo='gGhClrV5odI' value='0' />"
 }
 
+# Json template for submitting data values using DHIS 2 API
 JSON_TEMPLATE = {
     'dataSet': 'V1kJRs8CtW4',
     'completeDate': '',
@@ -493,6 +508,8 @@ EXCEL_UPLOAD_ORDER = {
     'village': 6,
     'village_code': 7
 }
+
+# HMIS reports for Data Entry page
 HMIS_REPORTS = [
     {
         'name': 'HMIS 033B Report',
@@ -503,6 +520,8 @@ HMIS_REPORTS = [
         'keywords': ['car', 'ras']
     }
 ]
+
+# keyword/forms representing complete reports
 COMPLETE_REPORTS_KEYWORDS = ['cases', 'death', 'tra', 'mat', 'arv', 'apt']
 TEXT_INDICATORS = []
 

@@ -283,7 +283,7 @@ class Dhis2Queue:
                     slug = "%s_%s" % (params.form, label)
                     if val.__str__().isdigit() or slug in TEXT_INDICATORS:
                         if not(val) and params.form in getattr(
-                                settings, 'IRREGULAR_FORMS', ['cases', 'death', 'epc', 'epd']):  # XXX irregular forms
+                                settings, 'REPORTS_WITH_COMMANDS', ['cases', 'death', 'epc', 'epd']):  # XXX irregular forms
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
                         print "%s=>%s" % (slug, val), MAPPING[slug]
