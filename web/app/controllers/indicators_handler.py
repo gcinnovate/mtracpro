@@ -25,12 +25,13 @@ class Indicators:
 
         if params.ed and allow_edit:
             res = db.query(
-                "SELECT id, description, slug, cmd, form, form_order, dataset, dataelement, "
+                "SELECT id, description, shortname, slug, cmd, form, form_order, dataset, dataelement, "
                 "category_combo, threshold FROM dhis2_mtrack_indicators_mapping WHERE id = $id",
                 {'id': edit_val})
             if res:
                 r = res[0]
                 name = r.description
+                shortname = r.shortname
                 slug = r.slug
                 cmd = r.cmd
                 form = r.form
@@ -43,7 +44,7 @@ class Indicators:
         dic = lit(
             relations="dhis2_mtrack_indicators_mapping",
             fields=(
-                "id, description, slug, form, form_order, cmd, dataset, "
+                "id, description, shortname, slug, form, form_order, cmd, dataset, "
                 "dataelement, category_combo "),
             criteria="",
             order="dataset, form, form_order",
@@ -61,7 +62,7 @@ class Indicators:
     @require_login
     def POST(self):
         params = web.input(
-            name="", form="", form_order="", slug="", cmd="",
+            name="", shortname="", form="", form_order="", slug="", cmd="",
             dataset="", dataelement="", category_combo="", threshold="", page="1", ed="", d_id="")
 
         session = get_session()
@@ -76,12 +77,13 @@ class Indicators:
             if params.ed and allow_edit:
                 r = db.query(
                     "UPDATE dhis2_mtrack_indicators_mapping SET "
-                    "(description, form, form_order, slug, cmd, dataset, dataelement, category_combo, threshold) "
-                    "= ($descr, $form, $form_order, $slug, $cmd, $dataset, $dataelement, $category_combo, $threshold) "
+                    "(description, shortname, form, form_order, slug, cmd, dataset, dataelement, category_combo, threshold) "
+                    "= ($descr, $shortname, $form, $form_order, $slug, $cmd, $dataset, $dataelement, $category_combo, $threshold) "
                     "WHERE id = $id", {
-                        'descr': params.name, 'form': params.form,
+                        'descr': params.name, 'shortname': params.shortname, 'form': params.form,
                         'form_order': params.form_order, 'slug': params.slug,
-                        'cmd': params.cmd, 'dataset': params.dataset, 'threshold': params.threshold,
+                        'cmd': params.cmd, 'dataset': params.dataset,
+                        'threshold': None if not params.threshold else params.threshold,
                         'dataelement': params.dataelement, 'category_combo': params.category_combo,
                         'id': params.ed}
                 )
@@ -106,11 +108,11 @@ class Indicators:
                     )
                 session.idata_err = ""
                 r = db.query(
-                    "INSERT INTO dhis2_mtrack_indicators_mapping (description, form, form_order, "
+                    "INSERT INTO dhis2_mtrack_indicators_mapping (description, shortname, form, form_order, "
                     "slug, cmd, dataset, dataelement, category_combo, threshold) VALUES "
-                    "($descr, $form, $form_order, $slug, $cmd, $dataset, $dataelement, "
+                    "($descr, $shortname, $form, $form_order, $slug, $cmd, $dataset, $dataelement, "
                     "$category_combo, $threshold) RETURNING id", {
-                        'descr': params.name, 'form': params.form,
+                        'descr': params.name, 'shortname': params.shortname, 'form': params.form,
                         'form_order': params.form_order, 'slug': params.slug,
                         'cmd': params.cmd, 'dataset': params.dataset, 'threshold': params.threshold,
                         'dataelement': params.dataelement, 'category_combo': params.category_combo}

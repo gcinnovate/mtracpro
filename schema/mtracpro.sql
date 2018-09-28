@@ -388,6 +388,7 @@ CREATE TABLE  dhis2_mtrack_indicators_mapping(
     cmd TEXT NOT NULL DEFAULT '', -- mTrac commands e.g ma, ch, tf
     form_order INTEGER, -- order they appear in case of HTML form generation
     description TEXT NOT NULL DEFAULT '',
+    shortname TEXT NOT NULL DEFAULT '',
     dataset TEXT NOT NULL DEFAULT '',
     dataelement TEXT NOT NULL DEFAULT '',
     category_combo TEXT NOT NULL DEFAULT '',

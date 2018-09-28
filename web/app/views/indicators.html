@@ -39,6 +39,12 @@
                             <input name="name" id="name" type="text" value="{{ name }}" class="form-control"/>
 						</div>
 					</div>
+                    <div class="form-group">
+						<label for="shortname" class="col-lg-4 control-label">Short Name:</label>
+						<div class="col-lg-8">
+                            <input name="shortname" id="shortname" type="text" value="{{ shortname }}" class="form-control"/>
+						</div>
+					</div>
 			        <div class="form-group">
 						<label for="form" class="col-lg-4 control-label">Form:</label>
 						<div class="col-lg-8">
@@ -120,6 +126,8 @@
 							<button class="btn btn-sm btn-primary" type="submit">Save</button>
 						</div>
                     </div>
+                    <br/>
+                    <br/>
 				</div>
             </div>
         </div>
@@ -148,7 +156,7 @@
                                     <th>Name</th>
                                     <th>Form</th>
                                     <th>Order</th>
-                                    <th>Slug</th>
+                                    <th>Short Name</th>
                                     <th>Command</th>
                                     <th>DataSet</th>
                                     <th>DataElement</th>
@@ -163,7 +171,7 @@
                                     <td>{{ mapping.description }}</td>
                                     <td>{{ mapping.form }}</td>
                                     <td>{{ mapping.form_order }}</td>
-                                    <td>{{ mapping.slug }}</td>
+                                    <td>{{ mapping.shortname }}</td>
                                     <td>{{ mapping.cmd }}</td>
                                     <td>{{ mapping.dataset}}</td>
                                     <td>{{ mapping.dataelement}}</td>
