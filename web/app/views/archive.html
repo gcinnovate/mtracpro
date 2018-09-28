@@ -51,6 +51,7 @@
                                     <th>Report</th>
                                     <th>Week#</th>
                                     <th>Date</th>
+                                    <th>Approved</th>
                                     <!--<th>Approved</th>-->
                                     <th>Action</th>
                                 </tr>
@@ -70,7 +71,14 @@
                                         {{ report.body|formatmsg(report.report_type)}}
                                     </td>
                                     <td>{{ report.year|string + "W" + report.week}}</td>
-                                    <td>{{ report.created|datetimeformat }}</td>
+                                    <td>{{ report.created|datetimeformat2 }}</td>
+                                    <td>
+                                        {% if report.status == 'pending' %}
+                                            <i class="fa fa-thumbs-o-down" style="font-size: 20px; color:red;"></i>
+                                        {% else %}
+                                            <i class="fa fa-thumbs-o-up" style="font-size: 20px; color: green;"></i>
+                                        {% endif %}
+                                    </td>
 									<!--<td>Yes</td>-->
                                     <td>
                                         <button type="button" class="btn btn-primary btn-xs edit_btn"

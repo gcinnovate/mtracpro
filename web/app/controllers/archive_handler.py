@@ -1,4 +1,5 @@
 import web
+import settings
 from . import csrf_protected, db, require_login, render, get_session
 from app.tools.pagination2 import doquery, countquery, getPaginationString
 from app.tools.utils import default, lit
@@ -21,22 +22,26 @@ class Archive:
 
         if session.role == 'District User':
             district = '%s' % session.username.capitalize()
-            criteria = "district='%s'" % district
+            criteria = "district='%s' AND report_type IN %s" % (
+                district, getattr(settings, 'MTRAC_FORMS', str(
+                    ('cases', 'death', 'epc', 'epd', 'tra', 'arv', 'ip', 'tb', 'gp', 'apt', 'mat'))))
             dic = lit(
                 relations='requests_view',
                 fields=(
-                    "id, facility, facility_name, district, msisdn, body, "
+                    "id, facility, facility_name, district, msisdn, body, status,"
                     "raw_msg, year, week, created, report_type, is_edited, edited_raw_msg"),
                 criteria=criteria,
                 order="id desc",
                 limit=limit, offset=start)
         else:
+            criteria = "report_type IN %s" % (getattr(settings, 'MTRAC_FORMS', str(
+                ('cases', 'death', 'epc', 'epd', 'tra', 'arv', 'ip', 'tb', 'gp', 'apt', 'mat'))))
             dic = lit(
                 relations='requests_view',
                 fields=(
-                    "id, facility, facility_name, district, msisdn, body, "
+                    "id, facility, facility_name, district, msisdn, body, status, "
                     "raw_msg, year, week, created, report_type, is_edited, edited_raw_msg"),
-                # criteria="status='pending'",
+                criteria=criteria,
                 order="id desc",
                 limit=limit, offset=start)
 

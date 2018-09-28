@@ -145,6 +145,12 @@ def datetimeformat(value, fmt='%Y-%m-%d'):
     return value.strftime(fmt)
 
 
+def datetimeformat2(value, fmt='%Y-%m-%d %H:%M'):
+    if not value:
+        return ''
+    return value.strftime(fmt)
+
+
 def formatmsg(msg, form='cases'):
     ret = "<ul>"
     ret_list = ['' for i in range(20)]  # make 12 here MAX_INDICATORS
@@ -236,6 +242,7 @@ def server_apps(val):
 
 myFilters = {
     'datetimeformat': datetimeformat,
+    'datetimeformat2': datetimeformat2,
     'formatmsg': formatmsg,
     'facilityLevel': facilityLevel,
     'getDistrict': getDistrict,
