@@ -65,7 +65,7 @@
 					</div>
 
                     <div class="form-group">
-					    <label for="start" class="col-lg-4 control-label">Start of Submission Period:</label>
+					    <label for="start" class="col-lg-4 control-label">Form Order:</label>
                         <div class="col-lg-8">
                             <select name="form_order" id="form_order" class="form-control">
 								<option value="">Select Form Order</option>
@@ -117,7 +117,7 @@
                     <div class="form-group">
 						<label for="threshold" class="col-lg-5 control-label">Threshold:</label>
 						<div class="col-lg-7">
-                            <input name="threshold" id="threshold" value="{{ threshold }}" type="text" class="form-control"/>
+                            <input name="threshold" id="threshold" value="{% if threshold%} {{ threshold }} {% endif %}" type="text" class="form-control"/>
 						</div>
 					</div>
 
@@ -167,7 +167,7 @@
                             <tbody>
                                 {% for mapping in mappings %}
                                 <tr>
-                                    <td>{{ mapping.id }}</td>
+                                    <td>{{ loop.index }}</td>
                                     <td>{{ mapping.description }}</td>
                                     <td>{{ mapping.form }}</td>
                                     <td>{{ mapping.form_order }}</td>

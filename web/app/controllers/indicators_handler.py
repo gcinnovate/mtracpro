@@ -114,7 +114,8 @@ class Indicators:
                     "$category_combo, $threshold) RETURNING id", {
                         'descr': params.name, 'shortname': params.shortname, 'form': params.form,
                         'form_order': params.form_order, 'slug': params.slug,
-                        'cmd': params.cmd, 'dataset': params.dataset, 'threshold': params.threshold,
+                        'cmd': params.cmd, 'dataset': params.dataset,
+                        'threshold': None if not params.threshold else params.threshold,
                         'dataelement': params.dataelement, 'category_combo': params.category_combo}
                 )
 
