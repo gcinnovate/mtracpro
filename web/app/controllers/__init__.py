@@ -89,6 +89,7 @@ for r in rs:
     if x:
         serverApps[r['id']] = x[0]['allowed_sources']
 
+IndicatorMapping = {}  # {'slug': {'descr': 'Malaria Cases', 'dhis2_id': '', 'dhis2_combo_id': ''}}
 Indicators = {}  # Form: {'cases': {'dataelement': {'slug': 'cases_ma'}, 'dataelement', {'slug': 'cases_me'}}}
 IndicatorsByFormOrder = {}  # {'cases': [{'slug': 'cases_ma', 'description': 'Malaria Cases'}, {}, {}, ...]}
 DataElementPosition = {}
@@ -112,6 +113,8 @@ for r in rs:
         IndicatorsByFormOrder[r['form']].append({'slug': r['slug'], 'description': r['description']})
     DataElementPosition[r['dataelement']] = r['form_order']
     CategoryComboPosition[r['category_combo']] = r['form_order']
+    IndicatorMapping[r['slug']] = {
+        'descr': r['description'], 'dhis2_id': r['dataelement'], 'dhis2_combo_id': r['category_combo']}
     if r['form'] not in IndicatorsCategoryCombos:
         IndicatorsCategoryCombos[r['form']] = {}
         IndicatorsCategoryCombos[r['form']][r['slug']] = r['category_combo']
@@ -121,6 +124,7 @@ import pprint
 # pprint.pprint(Indicators)
 # pprint.pprint(IndicatorsByFormOrder)
 pprint.pprint(IndicatorsCategoryCombos)
+pprint.pprint(IndicatorMapping)
 # pprint.pprint(DataElementPosition)
 
 

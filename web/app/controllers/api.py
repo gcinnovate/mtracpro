@@ -1,7 +1,7 @@
 import json
 import web
 import datetime
-from . import db, get_current_week, serversByName
+from . import db, get_current_week, serversByName, IndicatorMapping
 from settings import config
 import settings
 from app.tools.utils import get_basic_auth_credentials, auth_user, get_webhook_msg_old
@@ -286,18 +286,18 @@ class Dhis2Queue:
                                 settings, 'REPORTS_WITH_COMMANDS', ['cases', 'death', 'epc', 'epd']):  # XXX irregular forms
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
-                        print "%s=>%s" % (slug, val), MAPPING[slug]
+                        print "%s=>%s" % (slug, val), IndicatorMapping[slug]
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
                                 {
-                                    'dataElement': MAPPING[slug]['dhis2_id'],
-                                    'categoryOptionCombo': MAPPING[slug]['dhis2_combo_id'],
+                                    'dataElement': IndicatorMapping[slug]['dhis2_id'],
+                                    'categoryOptionCombo': IndicatorMapping[slug]['dhis2_combo_id'],
                                     'value': val})
                         else:
                             dataValues += (
                                 "<dataValue dataElement='%s' categoryOptionCombo="
                                 "'%s' value='%s' />\n" %
-                                (MAPPING[slug]['dhis2_id'], MAPPING[slug]['dhis2_combo_id'], val))
+                                (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
             else:
                 values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
                 for v in values:
@@ -312,18 +312,18 @@ class Dhis2Queue:
                         if not(val) and params.form in ['cases', 'death', 'epc', 'death']:
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
-                        print "%s=>%s" % (slug, val), MAPPING[slug]
+                        print "%s=>%s" % (slug, val), IndicatorMapping[slug]
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
                                 {
-                                    'dataElement': MAPPING[slug]['dhis2_id'],
-                                    'categoryOptionCombo': MAPPING[slug]['dhis2_combo_id'],
+                                    'dataElement': IndicatorMapping[slug]['dhis2_id'],
+                                    'categoryOptionCombo': IndicatorMapping[slug]['dhis2_combo_id'],
                                     'value': val})
                         else:
                             dataValues += (
                                 "<dataValue dataElement='%s' categoryOptionCombo="
                                 "'%s' value='%s' />\n" %
-                                (MAPPING[slug]['dhis2_id'], MAPPING[slug]['dhis2_combo_id'], val))
+                                (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
 
             if not dataValues and params.form in ('cases', 'death'):
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':
