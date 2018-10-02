@@ -36,7 +36,7 @@ class Search:
 
     def POST(self):
         params = web.input(
-            page=1, reqid=[], submissionid="", body="", sdate="", edate="",
+            page=1, reqid=[], submissionid="", body="", sdate="", edate="", report_type="",
             status="", year="", week="", pbtn="", msisdn="", facility="")
         try:
             page = int(params.page)
@@ -74,13 +74,15 @@ class Search:
         if params.week:
             criteria += " AND week = '%s'" % params.week
         if params.body:
-            criteria += " AND body ILIKE '%%%s%%'" % params.body
+            criteria += " AND body ILIKE '%%%%%s%%%%'" % params.body
         if params.year:
             criteria += " AND year = '%s'" % params.year
         if params.msisdn:
-            criteria += " AND msisdn = '%s'" % params.msisdn
+            criteria += " AND msisdn LIKE '%%%%%s%%%%'" % params.msisdn
         if params.facility:
             criteria += " AND facility = '%s'" % params.facility
+        if params.report_type:
+            criteria += " AND report_type = '%s'" % params.report_type
         if params.formatting:
             if params.formatting == "xml":
                 criteria += " AND xml_is_well_formed_document(body)"
