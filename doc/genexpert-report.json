@@ -1,0 +1,679 @@
+{
+  "campaigns": [], 
+  "version": 10, 
+  "site": "https://app.rapidpro.io", 
+  "flows": [
+    {
+      "base_language": "base", 
+      "action_sets": [
+        {
+          "y": 201, 
+          "x": 888, 
+          "destination": "12f51731-e299-4ded-9b38-769aa4479e87", 
+          "uuid": "68a5bee1-ad0a-4775-90f4-5d265d3e5a23", 
+          "actions": [
+            {
+              "msg": {
+                "base": "There was an error with your report, or the system failed to process it. Please resend your report."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 1648, 
+          "x": 447, 
+          "destination": "7f5a7efe-e557-41ce-a18a-8695769384ff", 
+          "uuid": "fee1755f-11cd-4073-9075-63b1545d83a5", 
+          "actions": [
+            {
+              "msg": {
+                "base": "You reported @flow.samples @flow.samples.category, @flow.rejected @flow.rejected.category, @flow.mtb_detected @flow.mtb_detected.category, @flow.rifr @flow.rifr.category, @flow.errors @flow.errors.category & @flow.cartridges @flow.cartridges.category. If there is an error please resend"
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 318, 
+          "x": 34, 
+          "destination": "54f20c98-c3a0-42fb-8523-0a0512d951db", 
+          "uuid": "1dec7d40-07d4-4802-bb51-039d6b67a144", 
+          "actions": [
+            {
+              "msg": {
+                "base": "The number of samples rejected (@flow.rejected) should be less than or equal to the samples tested (@flow.samples). Please make a correction and resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 550, 
+          "x": 31, 
+          "destination": "54f20c98-c3a0-42fb-8523-0a0512d951db", 
+          "uuid": "78550d8e-a37f-472d-ab3d-1bc9e92ac803", 
+          "actions": [
+            {
+              "msg": {
+                "base": "The total MTB detected (@flow.mtb_detected) should be less than or equal to the samples tested (@flow.samples). Please make a correction and resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 774, 
+          "x": 31, 
+          "destination": "54f20c98-c3a0-42fb-8523-0a0512d951db", 
+          "uuid": "dea6802e-011c-452c-b67c-b6b294d7588e", 
+          "actions": [
+            {
+              "msg": {
+                "base": "The total number of Rifampicin Resistant (@flow.rifr) detected should be less than or equal to the total samples tested (@flow.samples). Correct and resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 1007, 
+          "x": 34, 
+          "destination": "54f20c98-c3a0-42fb-8523-0a0512d951db", 
+          "uuid": "fc1c1aff-71e5-4bf4-96b6-bdfd164ef7a2", 
+          "actions": [
+            {
+              "msg": {
+                "base": "The total number of errors/invalid results (@flow.errors) should be less than or equal to the samples tested (@flow.samples). Please make a correction and resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 899, 
+          "x": 582, 
+          "destination": "54f20c98-c3a0-42fb-8523-0a0512d951db", 
+          "uuid": "27dcc28d-99c4-4ab1-805d-f3ef9b32426b", 
+          "actions": [
+            {
+              "msg": {
+                "base": "The total number of Rif R (@flow.rifr) should be less than or equal to the total MTB detected (@flow.mtb_detected). Correct and resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }
+      ], 
+      "version": 10, 
+      "flow_type": "F", 
+      "entry": "ec1f02bc-30f9-49cb-943a-c9c291f80d9d", 
+      "rule_sets": [
+        {
+          "uuid": "ec1f02bc-30f9-49cb-943a-c9c291f80d9d", 
+          "rules": [
+            {
+              "category": {
+                "base": "All Responses"
+              }, 
+              "uuid": "cd22ea3b-c027-46ae-8033-cbee7f9d9bfb", 
+              "destination": "ec8cfcb5-3e40-4d17-a228-c7612c19690a", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "wait_message", 
+          "label": "Response 1", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 0, 
+          "x": 397, 
+          "config": {}
+        }, 
+        {
+          "uuid": "ec8cfcb5-3e40-4d17-a228-c7612c19690a", 
+          "rules": [
+            {
+              "category": {
+                "base": "All Responses"
+              }, 
+              "uuid": "d8426d0f-d98c-4441-bb39-54720f4783d4", 
+              "destination": "25640f67-ed2b-4402-9229-af07ff3902a5", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "expression", 
+          "label": "submission", 
+          "operand": "@(REMOVE_FIRST_WORD(SUBSTITUTE(step.value, \",\", \".\")))", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 101, 
+          "x": 335, 
+          "config": {}
+        }, 
+        {
+          "uuid": "25640f67-ed2b-4402-9229-af07ff3902a5", 
+          "rules": [
+            {
+              "category": {
+                "base": "Samples"
+              }, 
+              "uuid": "59c8cd13-8b94-48a2-a90e-783631736202", 
+              "destination": "418cda27-bb3e-46e2-9549-f7258bc9a728", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "68a5bee1-ad0a-4775-90f4-5d265d3e5a23", 
+              "uuid": "18ba80c5-ad47-4a8f-aec0-1bbc3fc079f7", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "samples", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 204, 
+          "x": 339, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 0
+          }
+        }, 
+        {
+          "uuid": "418cda27-bb3e-46e2-9549-f7258bc9a728", 
+          "rules": [
+            {
+              "category": {
+                "base": "Rejected"
+              }, 
+              "uuid": "bc5f4812-9732-4645-8fb9-961dbeb32857", 
+              "destination": "3d013dff-500f-4286-b6ab-e85b2fe38cbd", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "test": "@(flow.samples + 1)", 
+                "type": "lt"
+              }
+            }, 
+            {
+              "test": {
+                "test": "@flow.samples.", 
+                "type": "gt"
+              }, 
+              "category": {
+                "base": "> Samples Tested"
+              }, 
+              "destination": "1dec7d40-07d4-4802-bb51-039d6b67a144", 
+              "uuid": "d21d1875-ee2d-4350-ad39-cfff63c37c68", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "68a5bee1-ad0a-4775-90f4-5d265d3e5a23", 
+              "uuid": "980b4832-b94d-4594-9580-9b24a9c1e54a", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "rejected", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 321, 
+          "x": 321, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 1
+          }
+        }, 
+        {
+          "uuid": "3d013dff-500f-4286-b6ab-e85b2fe38cbd", 
+          "rules": [
+            {
+              "category": {
+                "base": "MTB detected"
+              }, 
+              "uuid": "4b78d768-f87b-4cc3-8039-805f14da7d72", 
+              "destination": "9cdade3b-f69f-4d26-b687-e2ac2234c17e", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "test": "@(flow.samples + 1)", 
+                "type": "lt"
+              }
+            }, 
+            {
+              "test": {
+                "test": "@flow.samples.", 
+                "type": "gt"
+              }, 
+              "category": {
+                "base": "> Samles Tested"
+              }, 
+              "destination": "78550d8e-a37f-472d-ab3d-1bc9e92ac803", 
+              "uuid": "a813bbcd-3efb-44b6-b577-163d7dcae5a7", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "68a5bee1-ad0a-4775-90f4-5d265d3e5a23", 
+              "uuid": "3b43c0b9-4e4f-4aee-a8fa-1b609393ec67", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "mtb_detected", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 444, 
+          "x": 416, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 2
+          }
+        }, 
+        {
+          "uuid": "9cdade3b-f69f-4d26-b687-e2ac2234c17e", 
+          "rules": [
+            {
+              "category": {
+                "base": "Rif R"
+              }, 
+              "uuid": "dc2327cc-526e-4d8f-9171-6ce8667c6c94", 
+              "destination": "7718323b-fa63-4e84-9c61-8bc7908420b9", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "test": "@(flow.samples + 1)", 
+                "type": "lt"
+              }
+            }, 
+            {
+              "test": {
+                "test": "@flow.samples.", 
+                "type": "gt"
+              }, 
+              "category": {
+                "base": "> Samples Tested"
+              }, 
+              "destination": "dea6802e-011c-452c-b67c-b6b294d7588e", 
+              "uuid": "b4ea1071-4924-4491-a5de-19a85dc9d1b9", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "68a5bee1-ad0a-4775-90f4-5d265d3e5a23", 
+              "uuid": "a2894f37-4828-4db0-9d6e-37fe30145bf1", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "rifr", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 652, 
+          "x": 435, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 3
+          }
+        }, 
+        {
+          "uuid": "3b256130-2d4c-401f-93c8-c2a7386076e9", 
+          "rules": [
+            {
+              "category": {
+                "base": "Invalid results"
+              }, 
+              "uuid": "b71a8953-fa44-4dd4-87a6-73c4a93197c6", 
+              "destination": "1848ea22-fab4-4a52-b852-e6887a20ea50", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "test": "@(flow.samples + 1)", 
+                "type": "lt"
+              }
+            }, 
+            {
+              "test": {
+                "test": "@flow.samples", 
+                "type": "gt"
+              }, 
+              "category": {
+                "base": "> Samples Tested"
+              }, 
+              "destination": "fc1c1aff-71e5-4bf4-96b6-bdfd164ef7a2", 
+              "uuid": "8be8b313-159a-44a1-9fe5-233afd15df88", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "68a5bee1-ad0a-4775-90f4-5d265d3e5a23", 
+              "uuid": "f2342fcc-7004-480b-8088-f011c1ed858e", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "errors", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1193, 
+          "x": 407, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 4
+          }
+        }, 
+        {
+          "uuid": "1848ea22-fab4-4a52-b852-e6887a20ea50", 
+          "rules": [
+            {
+              "category": {
+                "base": "Modules"
+              }, 
+              "uuid": "2e814e08-68e2-4c8f-8c11-aaa6b6b41032", 
+              "destination": "8ffe1b13-de72-403b-9ee6-6f6e6dce89cb", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "category": {
+                "base": "Other"
+              }, 
+              "uuid": "ebc524e9-ed65-402d-bf53-b5afbd37f92f", 
+              "destination": "68a5bee1-ad0a-4775-90f4-5d265d3e5a23", 
+              "label": null, 
+              "destination_type": "A", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "modules", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1391, 
+          "x": 371, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 5
+          }
+        }, 
+        {
+          "uuid": "8ffe1b13-de72-403b-9ee6-6f6e6dce89cb", 
+          "rules": [
+            {
+              "category": {
+                "base": "Cartridges"
+              }, 
+              "uuid": "4f60fa47-4d47-4aa1-a1c5-5371e717e685", 
+              "destination": "fee1755f-11cd-4073-9075-63b1545d83a5", 
+              "label": null, 
+              "destination_type": "A", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "category": {
+                "base": "Other"
+              }, 
+              "uuid": "cccd6da6-edf1-4e8b-bd07-558ccf94c5af", 
+              "destination": "68a5bee1-ad0a-4775-90f4-5d265d3e5a23", 
+              "label": null, 
+              "destination_type": "A", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "cartridges", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1540, 
+          "x": 442, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 6
+          }
+        }, 
+        {
+          "uuid": "7718323b-fa63-4e84-9c61-8bc7908420b9", 
+          "rules": [
+            {
+              "test": {
+                "test": "@(flow.mtb_detected + 1)", 
+                "type": "lt"
+              }, 
+              "category": {
+                "base": "RifR <= MTB detected"
+              }, 
+              "destination": "3b256130-2d4c-401f-93c8-c2a7386076e9", 
+              "uuid": "59283840-5ff3-42a8-93ab-6b40ccee961d", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "27dcc28d-99c4-4ab1-805d-f3ef9b32426b", 
+              "uuid": "1084369e-157f-4c73-89e2-7ef0cf843e36", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "flow_field", 
+          "label": "y", 
+          "operand": "@flow.rifr", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 776, 
+          "x": 338, 
+          "config": {}
+        }, 
+        {
+          "uuid": "54f20c98-c3a0-42fb-8523-0a0512d951db", 
+          "rules": [
+            {
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Success"
+              }, 
+              "uuid": "5359db7a-9ff7-4891-af84-2cfddccfb1f2"
+            }, 
+            {
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Failure"
+              }, 
+              "uuid": "6fa2b37b-0fbc-4922-9139-b4e9199a8aa7"
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Response 11", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1298, 
+          "x": 35, 
+          "config": {
+            "webhook": "http://localhost:9090/errors", 
+            "webhook_action": "GET", 
+            "webhook_headers": []
+          }
+        }, 
+        {
+          "uuid": "12f51731-e299-4ded-9b38-769aa4479e87", 
+          "rules": [
+            {
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Success"
+              }, 
+              "uuid": "2a3fdf67-fea3-4fe3-9ce2-f6dbc5c3ed85"
+            }, 
+            {
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Failure"
+              }, 
+              "uuid": "9c544976-7efb-4928-873b-2c2231085d7a"
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Response 12", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 383, 
+          "x": 873, 
+          "config": {
+            "webhook": "http://localhost:9090/errors", 
+            "webhook_action": "GET", 
+            "webhook_headers": []
+          }
+        }, 
+        {
+          "uuid": "7f5a7efe-e557-41ce-a18a-8695769384ff", 
+          "rules": [
+            {
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Success"
+              }, 
+              "uuid": "32662c1f-fcca-42de-99b6-6af3f046e7c6"
+            }, 
+            {
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Failure"
+              }, 
+              "uuid": "ff855c97-f031-4ad4-810d-d45f793b7610"
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Response 13", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2069, 
+          "x": 464, 
+          "config": {
+            "webhook": "http://localhost:9090/dhis2queue?form=gb&facilitycode=EsXcenXz99W&msisdn=@contact.tel_e164&facility=EsXcenXz99W&report_type=gp&raw_msg=@flow.report&district=@contact.district", 
+            "webhook_action": "GET", 
+            "webhook_headers": []
+          }
+        }
+      ], 
+      "metadata": {
+        "uuid": "92186f9d-520d-4048-8dc8-1d7d701bc023", 
+        "notes": [], 
+        "expires": 10080, 
+        "name": "Genexpert Report", 
+        "saved_on": "2018-10-01T20:15:02.535354Z", 
+        "revision": 83
+      }
+    }
+  ], 
+  "triggers": [
+    {
+      "trigger_type": "K", 
+      "flow": {
+        "name": "Genexpert Report", 
+        "uuid": "92186f9d-520d-4048-8dc8-1d7d701bc023"
+      }, 
+      "groups": [], 
+      "keyword": "gp", 
+      "channel": null
+    }
+  ]
+}

@@ -1,0 +1,2597 @@
+{
+  "campaigns": [], 
+  "version": 10, 
+  "site": "https://app.rapidpro.io", 
+  "flows": [
+    {
+      "base_language": "base", 
+      "action_sets": [
+        {
+          "y": 169, 
+          "x": 807, 
+          "destination": null, 
+          "uuid": "6dd7c0de-1bdc-4f92-8649-04946d47531e", 
+          "actions": [
+            {
+              "msg": {
+                "base": "There's an error with your report or system failed to process your report. Please resend your report."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 1079, 
+          "x": 705, 
+          "destination": null, 
+          "uuid": "15e24dad-1288-4224-a790-f873de48cb35", 
+          "actions": [
+            {
+              "msg": {
+                "base": "There's an error with your report or system failed to process your report. Please resend your report."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 1735, 
+          "x": 738, 
+          "destination": null, 
+          "uuid": "696ea360-dc68-487e-9c01-18f8d0ff54a4", 
+          "actions": [
+            {
+              "msg": {
+                "base": "There's an error with your report or system failed to process your report. Please resend your report."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 2558, 
+          "x": 711, 
+          "destination": null, 
+          "uuid": "f90d4a0c-2bc9-4901-8c63-592bdf66f5ba", 
+          "actions": [
+            {
+              "msg": {
+                "base": "There's an error with your report or system failed to process your report. Please resend your report."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 3357, 
+          "x": 580, 
+          "destination": null, 
+          "uuid": "53602233-eef8-46da-b11b-569494f60d0f", 
+          "actions": [
+            {
+              "msg": "EPC webhook just failed", 
+              "type": "email", 
+              "emails": [
+                "support@gcinnovate.com"
+              ], 
+              "subject": "mTracpro EPC Webhook Failure"
+            }
+          ]
+        }, 
+        {
+          "y": 3406, 
+          "x": 261, 
+          "destination": null, 
+          "uuid": "50dde369-cbf4-4304-9718-d34bcb600934", 
+          "actions": [
+            {
+              "msg": {
+                "base": "You reported Other condition deaths."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }
+      ], 
+      "version": 10, 
+      "flow_type": "F", 
+      "entry": "9aca14f1-6738-4870-814a-5bfccbb26fcf", 
+      "rule_sets": [
+        {
+          "uuid": "9aca14f1-6738-4870-814a-5bfccbb26fcf", 
+          "rules": [
+            {
+              "category": {
+                "base": "All Responses"
+              }, 
+              "uuid": "cae2c370-69b7-4cda-9e5e-6d4530adaa0c", 
+              "destination": "48bf6f17-d80c-4889-8849-9959ce89da2f", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "wait_message", 
+          "label": "Report", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 8, 
+          "x": 499, 
+          "config": {}
+        }, 
+        {
+          "uuid": "48bf6f17-d80c-4889-8849-9959ce89da2f", 
+          "rules": [
+            {
+              "category": {
+                "base": "All Responses"
+              }, 
+              "uuid": "8341e499-bb85-4d13-a382-664c8bf971db", 
+              "destination": "09a1dcd1-9c58-4513-97cc-e55d5838a2fb", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "expression", 
+          "label": "msg", 
+          "operand": "@(REMOVE_FIRST_WORD(step.value))", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 96, 
+          "x": 502, 
+          "config": {}
+        }, 
+        {
+          "uuid": "09a1dcd1-9c58-4513-97cc-e55d5838a2fb", 
+          "rules": [
+            {
+              "category": {
+                "base": "Success"
+              }, 
+              "uuid": "f8b96755-4a91-48c0-920e-55ae471fcb10", 
+              "destination": "455836c5-05a0-4894-9d64-c50b81abe16d", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }
+            }, 
+            {
+              "category": {
+                "base": "Failure"
+              }, 
+              "uuid": "41619fd0-acca-4b69-bd64-5219d766e413", 
+              "destination": "6dd7c0de-1bdc-4f92-8649-04946d47531e", 
+              "label": null, 
+              "destination_type": "A", 
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Submission", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 202, 
+          "x": 511, 
+          "config": {
+            "webhook": "http://localhost:9090/ordermessage/epd?", 
+            "webhook_action": "GET", 
+            "webhook_headers": []
+          }
+        }, 
+        {
+          "uuid": "52daa2c6-0669-494e-a783-435c2c08e6d0", 
+          "rules": [
+            {
+              "category": {
+                "base": "Chikungunya"
+              }, 
+              "uuid": "d1465061-afa9-43ea-9556-3ddd5bff3dea", 
+              "destination": "acb6dd5f-38b8-4352-8423-396193dca283", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "category": {
+                "base": "Other"
+              }, 
+              "uuid": "b3b46054-0677-42de-8c7b-1f64c923a4a4", 
+              "destination": "6dd7c0de-1bdc-4f92-8649-04946d47531e", 
+              "label": null, 
+              "destination_type": "A", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "cg", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 442, 
+          "x": 477, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 0
+          }
+        }, 
+        {
+          "uuid": "acb6dd5f-38b8-4352-8423-396193dca283", 
+          "rules": [
+            {
+              "category": {
+                "base": "Dengue"
+              }, 
+              "uuid": "1ea1add1-a1a5-4859-a4df-1bacaa189efe", 
+              "destination": "e85450dc-6374-4996-9fa1-3c980fd92de7", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "category": {
+                "base": "Other"
+              }, 
+              "uuid": "31f5a57f-143d-4afc-97a9-9b6ee52b222a", 
+              "destination": "6dd7c0de-1bdc-4f92-8649-04946d47531e", 
+              "label": null, 
+              "destination_type": "A", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "dg", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 555, 
+          "x": 451, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 1
+          }
+        }, 
+        {
+          "uuid": "e85450dc-6374-4996-9fa1-3c980fd92de7", 
+          "rules": [
+            {
+              "category": {
+                "base": "Influenza-like illness"
+              }, 
+              "uuid": "8c6f6b25-505d-47b9-884f-2ce8fe887ac7", 
+              "destination": "5b4a56f4-62cf-49b4-abf8-c7b3d8e85f83", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "category": {
+                "base": "Other"
+              }, 
+              "uuid": "8d7748f1-3b2c-4cda-ad2b-acff929c29e9", 
+              "destination": "6dd7c0de-1bdc-4f92-8649-04946d47531e", 
+              "label": null, 
+              "destination_type": "A", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "il", 
+          "operand": "@flow.report", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 659, 
+          "x": 438, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 2
+          }
+        }, 
+        {
+          "uuid": "5b4a56f4-62cf-49b4-abf8-c7b3d8e85f83", 
+          "rules": [
+            {
+              "category": {
+                "base": "Anthrax (human)"
+              }, 
+              "uuid": "2a52d35c-0af6-4754-8804-fb7631215a42", 
+              "destination": "7ca76db9-99e5-47fa-ab24-24f00c27daf0", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "6dd7c0de-1bdc-4f92-8649-04946d47531e", 
+              "uuid": "ad375937-b9ab-4e72-98db-113714571034", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ax", 
+          "operand": "@flow.report", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 765, 
+          "x": 428, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 3
+          }
+        }, 
+        {
+          "uuid": "7ca76db9-99e5-47fa-ab24-24f00c27daf0", 
+          "rules": [
+            {
+              "category": {
+                "base": "Acute viral hepatitis"
+              }, 
+              "uuid": "bc561189-2e9f-4fc9-a6db-19fc707fdb0b", 
+              "destination": "09f7638d-fad8-471c-8932-eca312846f8e", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "category": {
+                "base": "Other"
+              }, 
+              "uuid": "590e33ca-cdae-4ef8-932d-2dc6c7c4a229", 
+              "destination": "6dd7c0de-1bdc-4f92-8649-04946d47531e", 
+              "label": null, 
+              "destination_type": "A", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "hp", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 871, 
+          "x": 404, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 4
+          }
+        }, 
+        {
+          "uuid": "09f7638d-fad8-471c-8932-eca312846f8e", 
+          "rules": [
+            {
+              "category": {
+                "base": "Dracunculiasis"
+              }, 
+              "uuid": "b645c06b-73d2-42de-8d0d-95cfecdff330", 
+              "destination": "face95b0-618b-47ab-80c9-637a49c49dd9", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "15e24dad-1288-4224-a790-f873de48cb35", 
+              "uuid": "3183cd86-d822-4a03-aca3-062fb6b44fd7", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "dc", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 987, 
+          "x": 375, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 5
+          }
+        }, 
+        {
+          "uuid": "face95b0-618b-47ab-80c9-637a49c49dd9", 
+          "rules": [
+            {
+              "category": {
+                "base": "Leprosy"
+              }, 
+              "uuid": "0fbe17aa-57ab-4db4-aaa1-931aa4d0d1a0", 
+              "destination": "04985ead-1ee9-4ca5-b4f3-9cb6a01bb4f1", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "15e24dad-1288-4224-a790-f873de48cb35", 
+              "uuid": "5ce5aeb0-d97d-44d0-8fb4-7cdaac14e892", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "lp", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1123, 
+          "x": 364, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 6
+          }
+        }, 
+        {
+          "uuid": "04985ead-1ee9-4ca5-b4f3-9cb6a01bb4f1", 
+          "rules": [
+            {
+              "category": {
+                "base": "Onchocerciasis"
+              }, 
+              "uuid": "a9078eea-9426-4f77-9015-0dc469825ac7", 
+              "destination": "0b562f2a-2c00-4ee3-b4e1-9914e591bcd4", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "15e24dad-1288-4224-a790-f873de48cb35", 
+              "uuid": "8bd14449-a54e-40b2-9e5a-d6499b70739a", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "oc", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1224, 
+          "x": 344, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 7
+          }
+        }, 
+        {
+          "uuid": "0b562f2a-2c00-4ee3-b4e1-9914e591bcd4", 
+          "rules": [
+            {
+              "category": {
+                "base": "Buruli Ulcer"
+              }, 
+              "uuid": "572051c4-215a-4509-988f-1ecd769e2438", 
+              "destination": "3a255c51-be85-42f3-9421-5e83c7d7af3e", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "15e24dad-1288-4224-a790-f873de48cb35", 
+              "uuid": "4eb5b764-d0bb-49f6-abb0-cf761bc94060", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "bu", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1337, 
+          "x": 312, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 8
+          }
+        }, 
+        {
+          "uuid": "3a255c51-be85-42f3-9421-5e83c7d7af3e", 
+          "rules": [
+            {
+              "category": {
+                "base": "Lymphatic Filariasis"
+              }, 
+              "uuid": "e959e6d6-0188-47f9-a1d4-c97b6574549b", 
+              "destination": "b8036788-6ad5-45fc-b7a6-c5f08ac7280b", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "15e24dad-1288-4224-a790-f873de48cb35", 
+              "uuid": "93ac3d14-2e25-4947-a5ca-2740ce2d0b9c", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "lf", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1464, 
+          "x": 277, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 9
+          }
+        }, 
+        {
+          "uuid": "b8036788-6ad5-45fc-b7a6-c5f08ac7280b", 
+          "rules": [
+            {
+              "category": {
+                "base": "Noma"
+              }, 
+              "uuid": "06bd8b1e-1c11-4878-9e26-74373ca4703f", 
+              "destination": "4ccea64a-61e3-4c2f-b90d-46cd585d6aec", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "15e24dad-1288-4224-a790-f873de48cb35", 
+              "uuid": "4b96e30c-7283-45aa-a355-dce5dafc98d3", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "no", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1576, 
+          "x": 374, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 10
+          }
+        }, 
+        {
+          "uuid": "4ccea64a-61e3-4c2f-b90d-46cd585d6aec", 
+          "rules": [
+            {
+              "category": {
+                "base": "Human Influenza due to a new subtype"
+              }, 
+              "uuid": "3afe05c7-b264-4d43-8498-58be4a889412", 
+              "destination": "05b69de8-8edd-4ae9-9ccf-fbccc948fdc2", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "696ea360-dc68-487e-9c01-18f8d0ff54a4", 
+              "uuid": "8d978b3a-6de4-48e4-b2c3-3d961309a43f", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "hn", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1688, 
+          "x": 320, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 11
+          }
+        }, 
+        {
+          "uuid": "05b69de8-8edd-4ae9-9ccf-fbccc948fdc2", 
+          "rules": [
+            {
+              "category": {
+                "base": "Severe Acute Respiratory Syndrome"
+              }, 
+              "uuid": "b5731fb7-278f-4e7c-9ede-d9cbae32f5be", 
+              "destination": "ea7e3c9c-a4ff-4aa7-9b66-d6aa30debb44", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "696ea360-dc68-487e-9c01-18f8d0ff54a4", 
+              "uuid": "375ea339-3c51-4d21-a0c6-08c49b491555", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ss", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1785, 
+          "x": 331, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 12
+          }
+        }, 
+        {
+          "uuid": "ea7e3c9c-a4ff-4aa7-9b66-d6aa30debb44", 
+          "rules": [
+            {
+              "category": {
+                "base": "Smallpox"
+              }, 
+              "uuid": "f4d43a90-96f0-45cf-b78f-144d86c38224", 
+              "destination": "3e218317-e9f2-42be-88b4-f463c9b3f43c", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "696ea360-dc68-487e-9c01-18f8d0ff54a4", 
+              "uuid": "d2454cf2-3189-4345-8c6d-532a46a6ec11", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "sp", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1886, 
+          "x": 337, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 13
+          }
+        }, 
+        {
+          "uuid": "3e218317-e9f2-42be-88b4-f463c9b3f43c", 
+          "rules": [
+            {
+              "category": {
+                "base": "Diarrhoea with dehydration"
+              }, 
+              "uuid": "6c8ee097-92ea-40f8-8a9c-bd36c04674af", 
+              "destination": "6a2023b2-b52d-4730-be9d-e682428d044e", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "696ea360-dc68-487e-9c01-18f8d0ff54a4", 
+              "uuid": "1e58b7be-f37e-47d5-b6b4-fc6884c7fcf9", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "dd", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2006, 
+          "x": 320, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 14
+          }
+        }, 
+        {
+          "uuid": "6a2023b2-b52d-4730-be9d-e682428d044e", 
+          "rules": [
+            {
+              "category": {
+                "base": "Severe Pneumonia"
+              }, 
+              "uuid": "ad373387-b7b6-47e7-8a45-07749cd79557", 
+              "destination": "6e93f203-49e8-4995-8c26-36482e880bfb", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "696ea360-dc68-487e-9c01-18f8d0ff54a4", 
+              "uuid": "08992976-2720-473c-b567-c5149a71e4d6", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "pn", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2126, 
+          "x": 317, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 15
+          }
+        }, 
+        {
+          "uuid": "6e93f203-49e8-4995-8c26-36482e880bfb", 
+          "rules": [
+            {
+              "category": {
+                "base": "Human African Trypanosomiasis"
+              }, 
+              "uuid": "ac6792a1-c280-4ce3-b439-f325e8d6e6c2", 
+              "destination": "1eea19b4-32ac-4400-9e52-c94444169b04", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "696ea360-dc68-487e-9c01-18f8d0ff54a4", 
+              "uuid": "03cc7741-2232-47cf-bb72-e5463233a1dd", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "tx", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2301, 
+          "x": 331, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 16
+          }
+        }, 
+        {
+          "uuid": "1eea19b4-32ac-4400-9e52-c94444169b04", 
+          "rules": [
+            {
+              "category": {
+                "base": "Trachoma"
+              }, 
+              "uuid": "f349b571-c49f-4acf-a93f-86d8feb6d38e", 
+              "destination": "d5adce62-1475-4ab7-8ad3-d12bdd63e7f7", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "696ea360-dc68-487e-9c01-18f8d0ff54a4", 
+              "uuid": "ce8ccb7d-6550-4841-806d-ef31be10d3d3", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "tr", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2411, 
+          "x": 335, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 17
+          }
+        }, 
+        {
+          "uuid": "d5adce62-1475-4ab7-8ad3-d12bdd63e7f7", 
+          "rules": [
+            {
+              "category": {
+                "base": "Schistosomiasis"
+              }, 
+              "uuid": "2288f533-5db8-4cfa-a544-4ca12bb37fa0", 
+              "destination": "eed2b13a-8c1d-4509-b7a8-b8d2ba8e9940", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "f90d4a0c-2bc9-4901-8c63-592bdf66f5ba", 
+              "uuid": "dcc7b81d-cf7f-412c-8e38-906313f7b2f2", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "sc", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2523, 
+          "x": 332, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 18
+          }
+        }, 
+        {
+          "uuid": "eed2b13a-8c1d-4509-b7a8-b8d2ba8e9940", 
+          "rules": [
+            {
+              "category": {
+                "base": "Diphtheria"
+              }, 
+              "uuid": "66a6d906-3999-4d99-acd0-89fa6cc13298", 
+              "destination": "6597f549-86a5-41bd-92f1-7bbadfaf4acb", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "f90d4a0c-2bc9-4901-8c63-592bdf66f5ba", 
+              "uuid": "4fd29c27-f7e2-4670-93a1-2e6bba08be31", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "dp", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2625, 
+          "x": 329, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 19
+          }
+        }, 
+        {
+          "uuid": "6597f549-86a5-41bd-92f1-7bbadfaf4acb", 
+          "rules": [
+            {
+              "category": {
+                "base": "Pertussis (Whooping Cough)"
+              }, 
+              "uuid": "4f8f20cf-915d-421a-93d7-49526bae59e2", 
+              "destination": "dae5d49d-d562-467a-9730-783ba80789d8", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "f90d4a0c-2bc9-4901-8c63-592bdf66f5ba", 
+              "uuid": "88663317-078e-405e-bd27-d14f782672f7", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "wc", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2735, 
+          "x": 325, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 20
+          }
+        }, 
+        {
+          "uuid": "dae5d49d-d562-467a-9730-783ba80789d8", 
+          "rules": [
+            {
+              "category": {
+                "base": "Brucellosis"
+              }, 
+              "uuid": "39e3a3ba-489e-41de-9bec-d1e0826b2d3d", 
+              "destination": "7ae75d6e-fe04-42a3-a1d3-9eb4a7d8190b", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "f90d4a0c-2bc9-4901-8c63-592bdf66f5ba", 
+              "uuid": "dec6339b-7783-414c-a14f-0d9152b24a1a", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "bc", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2842, 
+          "x": 332, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 21
+          }
+        }, 
+        {
+          "uuid": "7ae75d6e-fe04-42a3-a1d3-9eb4a7d8190b", 
+          "rules": [
+            {
+              "category": {
+                "base": "Kala Azar"
+              }, 
+              "uuid": "1802d979-0e5e-45e3-aeea-1fb5c8948bca", 
+              "destination": "38e59ddc-7b44-4085-bc7a-0ab3d0af3d5c", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "f90d4a0c-2bc9-4901-8c63-592bdf66f5ba", 
+              "uuid": "2cdea965-09f3-498b-bf22-9b0c8eda830c", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ka", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2947, 
+          "x": 324, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 22
+          }
+        }, 
+        {
+          "uuid": "38e59ddc-7b44-4085-bc7a-0ab3d0af3d5c", 
+          "rules": [
+            {
+              "category": {
+                "base": "Nodding Syndrome"
+              }, 
+              "uuid": "5e8e2391-cab3-49f2-86a4-7bb42d03ce2f", 
+              "destination": "e49610fe-fd35-4a96-b0a8-a6f611eed618", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "f90d4a0c-2bc9-4901-8c63-592bdf66f5ba", 
+              "uuid": "34bef9ba-ef4c-4aa6-a236-d6bf90395831", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ns", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 3061, 
+          "x": 324, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 23
+          }
+        }, 
+        {
+          "uuid": "e49610fe-fd35-4a96-b0a8-a6f611eed618", 
+          "rules": [
+            {
+              "category": {
+                "base": "Adverse Drug Reactions"
+              }, 
+              "uuid": "ba75b5e2-5dd7-4c89-ad17-7508ef9d5261", 
+              "destination": "94e91f26-0b2b-492a-ada6-646916f710f2", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "f90d4a0c-2bc9-4901-8c63-592bdf66f5ba", 
+              "uuid": "252b391a-e629-4710-87f4-0340f25e0ed5", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ar", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 3166, 
+          "x": 330, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 24
+          }
+        }, 
+        {
+          "uuid": "94e91f26-0b2b-492a-ada6-646916f710f2", 
+          "rules": [
+            {
+              "category": {
+                "base": "Success"
+              }, 
+              "uuid": "20730938-533d-4f69-a700-c20cd065f0c4", 
+              "destination": "50dde369-cbf4-4304-9718-d34bcb600934", 
+              "label": null, 
+              "destination_type": "A", 
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }
+            }, 
+            {
+              "category": {
+                "base": "Failure"
+              }, 
+              "uuid": "092076e0-2bbd-43fa-895e-14c3e70f315e", 
+              "destination": "53602233-eef8-46da-b11b-569494f60d0f", 
+              "label": null, 
+              "destination_type": "A", 
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Response 30", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 3293, 
+          "x": 304, 
+          "config": {
+            "webhook": "http://localhost:9090/dhis2queue?form=epd&facilitycode=EsXcenXz99W&msisdn=@contact.tel_e164&facility=EsXcenXz99W&report_type=epd&raw_msg=@flow.report&district=@contact.district", 
+            "webhook_action": "GET", 
+            "webhook_headers": []
+          }
+        }, 
+        {
+          "uuid": "455836c5-05a0-4894-9d64-c50b81abe16d", 
+          "rules": [
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "All Responses"
+              }, 
+              "destination": "52daa2c6-0669-494e-a783-435c2c08e6d0", 
+              "uuid": "94b634a7-361e-49c2-ba16-55d8def78dfb", 
+              "destination_type": "R"
+            }
+          ], 
+          "ruleset_type": "expression", 
+          "label": "Submission", 
+          "operand": "@extra.message", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 317, 
+          "x": 470, 
+          "config": {}
+        }
+      ], 
+      "metadata": {
+        "uuid": "a04430c9-c618-4aac-958e-4813de7098b7", 
+        "notes": [
+          {
+            "y": 224, 
+            "x": 129, 
+            "body": "This call returns period-separated values of the indicators in their right position", 
+            "title": "WebHook Usage"
+          }, 
+          {
+            "y": 974, 
+            "x": 114, 
+            "body": "", 
+            "title": "6th"
+          }, 
+          {
+            "y": 1330, 
+            "x": 47, 
+            "body": "9th", 
+            "title": "New Note"
+          }, 
+          {
+            "y": 1885, 
+            "x": 46, 
+            "body": "14th - SmallPox", 
+            "title": "New Note"
+          }, 
+          {
+            "y": 2522, 
+            "x": 64, 
+            "body": "19th - Schistosomiasis", 
+            "title": "New Note"
+          }, 
+          {
+            "y": 3357, 
+            "x": 812, 
+            "body": "This is to help troubleshoot quickly", 
+            "title": "Send SMS or Email to Admins"
+          }
+        ], 
+        "expires": 10080, 
+        "name": "Other Conditions (Deaths)", 
+        "saved_on": "2018-10-18T06:35:18.256248Z", 
+        "revision": 58
+      }
+    }, 
+    {
+      "base_language": "base", 
+      "action_sets": [
+        {
+          "y": 169, 
+          "x": 807, 
+          "destination": null, 
+          "uuid": "d2601819-b972-4889-b7ff-f68a1c2e7ffe", 
+          "actions": [
+            {
+              "msg": {
+                "base": "There's an error with your report or system failed to process your report. Please resend your report."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 1079, 
+          "x": 705, 
+          "destination": null, 
+          "uuid": "f8f4229b-966a-4c1f-b7f7-48d43b08753c", 
+          "actions": [
+            {
+              "msg": {
+                "base": "There's an error with your report or system failed to process your report. Please resend your report."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 1735, 
+          "x": 738, 
+          "destination": null, 
+          "uuid": "512a3958-b126-4d52-aa02-d31fff484664", 
+          "actions": [
+            {
+              "msg": {
+                "base": "There's an error with your report or system failed to process your report. Please resend your report."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 2558, 
+          "x": 711, 
+          "destination": null, 
+          "uuid": "494d8ff5-d973-479b-8780-abc9fd77abca", 
+          "actions": [
+            {
+              "msg": {
+                "base": "There's an error with your report or system failed to process your report. Please resend your report."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 3357, 
+          "x": 580, 
+          "destination": null, 
+          "uuid": "92944b5c-3ada-44ee-ba91-d899bc9f4543", 
+          "actions": [
+            {
+              "msg": "EPC webhook just failed", 
+              "type": "email", 
+              "emails": [
+                "support@gcinnovate.com"
+              ], 
+              "subject": "mTracpro EPC Webhook Failure"
+            }
+          ]
+        }, 
+        {
+          "y": 3406, 
+          "x": 261, 
+          "destination": null, 
+          "uuid": "eb7ae9b2-36e8-47d3-9cce-e94621530131", 
+          "actions": [
+            {
+              "msg": {
+                "base": "You reported other cases: \n@(IF(flow.cg > 0, CONCATENATE(flow.cg, \"  \", flow.ax.category, \",\"), \"\")) @(IF(flow.dg > 0, CONCATENATE(flow.dg, \" \", flow.dg.category, \",\"), \"\")) @(IF(flow.il > 0,   CONCATENATE(flow.il, \" \", flow.il.category, \",\"), \"\")) @(IF(flow.ax > 0, CONCATENATE(flow.ax, \"  \", flow.ax.category, \",\"), \"\")) @(IF(flow.hp > 0, CONCATENATE(flow.hp, \" \", flow.hp.category, \",\"), \"\")) @(IF(flow.dc > 0, CONCATENATE(flow.dc, \" \", flow.dc.category, \",\"), \"\")) @(IF(flow.lp > 0, CONCATENATE(flow.lp, \"  \", flow.lp.category, \",\"), \"\")) @(IF(flow.oc > 0, CONCATENATE(flow.oc, \"  \", flow.oc.category, \",\"), \"\")) @(IF(flow.bu > 0, CONCATENATE(flow.bu, \"  \", flow.bu.category, \",\"), \"\")) @(IF(flow.lf > 0, CONCATENATE(flow.lf, \"  \", flow.lf.category, \",\"), \"\")) @(IF(flow.no > 0, CONCATENATE(flow.no, \"  \", flow.no.category, \".\"), \"\")) @(IF(flow.hn > 0, CONCATENATE(flow.hn, \"  \", flow.hn.category, \".\"), \"\")) @(IF(flow.ss > 0, CONCATENATE(flow.ss, \"  \", flow.ss.category, \".\"), \"\")) @(IF(flow.sp > 0, CONCATENATE(flow.sp, \"  \", flow.sp.category, \".\"), \"\")) @(IF(flow.dd > 0, CONCATENATE(flow.dd, \"  \", flow.dd.category, \".\"), \"\")) @(IF(flow.dp > 0, CONCATENATE(flow.dp, \"  \", flow.dp.category, \".\"), \"\")) @(IF(flow.ns > 0, CONCATENATE(flow.ns, \"  \", flow.ns.category, \".\"), \"\")) If there's an error, please resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 213, 
+          "x": 507, 
+          "destination": "4c75cd18-7283-4ede-b225-e0e59a676e73", 
+          "uuid": "7f362f71-6b4d-4120-bed8-7b974c3ce9db", 
+          "actions": [
+            {
+              "action": "POST", 
+              "type": "api", 
+              "webhook": "http://localhost:9090/ordermessage/epc?facility=@contact.facility", 
+              "webhook_headers": []
+            }
+          ]
+        }
+      ], 
+      "version": 10, 
+      "flow_type": "F", 
+      "entry": "f9285089-cdd2-4fab-a8ad-3047b1ea9bd3", 
+      "rule_sets": [
+        {
+          "uuid": "f9285089-cdd2-4fab-a8ad-3047b1ea9bd3", 
+          "rules": [
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "All Responses"
+              }, 
+              "destination": "b71dd5df-d2a5-45e4-8e00-c7b4a0e7a451", 
+              "uuid": "8822c09b-da5b-461e-97e9-674a80c6b6b4", 
+              "destination_type": "R"
+            }
+          ], 
+          "ruleset_type": "wait_message", 
+          "label": "Report", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 8, 
+          "x": 499, 
+          "config": {}
+        }, 
+        {
+          "uuid": "b71dd5df-d2a5-45e4-8e00-c7b4a0e7a451", 
+          "rules": [
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "All Responses"
+              }, 
+              "destination": "7f362f71-6b4d-4120-bed8-7b974c3ce9db", 
+              "uuid": "589c0260-178d-4c65-b484-a8a2a845cfd6", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "expression", 
+          "label": "msg", 
+          "operand": "@(REMOVE_FIRST_WORD(step.value))", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 130, 
+          "x": 498, 
+          "config": {}
+        }, 
+        {
+          "uuid": "cc59405f-a897-4e32-9c98-790309dac151", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Chikungunya"
+              }, 
+              "destination": "6449256a-2e29-42ef-9b03-bcccd58dbcc2", 
+              "uuid": "54c9ef86-b6d6-4034-9376-e8628d09d018", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "d2601819-b972-4889-b7ff-f68a1c2e7ffe", 
+              "uuid": "0ffb00df-b296-438c-9fef-04d141e65404", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "cg", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 442, 
+          "x": 486, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 0
+          }
+        }, 
+        {
+          "uuid": "6449256a-2e29-42ef-9b03-bcccd58dbcc2", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Dengue"
+              }, 
+              "destination": "2ab795da-3c1b-4e13-8de9-625e568d96c1", 
+              "uuid": "31657b79-e92c-4336-b99f-6e24f8938a5c", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "d2601819-b972-4889-b7ff-f68a1c2e7ffe", 
+              "uuid": "83107e7d-fcbb-4721-a88f-274fd280c5a2", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "dg", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 545, 
+          "x": 457, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 1
+          }
+        }, 
+        {
+          "uuid": "2ab795da-3c1b-4e13-8de9-625e568d96c1", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Influenza"
+              }, 
+              "destination": "ee4f4168-5f05-4029-8ad0-57d699588e85", 
+              "uuid": "de6e0828-9b9e-4317-9aaa-413ab11e43da", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "d2601819-b972-4889-b7ff-f68a1c2e7ffe", 
+              "uuid": "3e404bba-f81e-43c0-a0f7-c01b3c7ede3b", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "il", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 667, 
+          "x": 430, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 2
+          }
+        }, 
+        {
+          "uuid": "ee4f4168-5f05-4029-8ad0-57d699588e85", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Anthrax"
+              }, 
+              "destination": "87b58d05-5aeb-4654-b39e-39de25e97355", 
+              "uuid": "1904f850-977d-4d44-a646-9591c9cf1734", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "d2601819-b972-4889-b7ff-f68a1c2e7ffe", 
+              "uuid": "9c147967-0f3e-4b45-9621-56511ec8ac0f", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ax", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 768, 
+          "x": 418, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 3
+          }
+        }, 
+        {
+          "uuid": "87b58d05-5aeb-4654-b39e-39de25e97355", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Acute Viral Hepatitis"
+              }, 
+              "destination": "d62c39f8-8a97-4ef4-8d95-2fb2069f1b67", 
+              "uuid": "06adfdc1-4595-42bc-8648-83409c9e84cb", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "d2601819-b972-4889-b7ff-f68a1c2e7ffe", 
+              "uuid": "e5f6f033-bccd-461e-aeb6-bdd90286efe6", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "hp", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 877, 
+          "x": 388, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 4
+          }
+        }, 
+        {
+          "uuid": "d62c39f8-8a97-4ef4-8d95-2fb2069f1b67", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Dracunculiasis"
+              }, 
+              "destination": "df21d007-9193-4998-95a9-6af95139cb5f", 
+              "uuid": "56280a60-f13b-4e17-a7ff-c10a7d94985d", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "f8f4229b-966a-4c1f-b7f7-48d43b08753c", 
+              "uuid": "f2c19b94-956d-4b36-a5eb-cde53e2459b6", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "dc", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1021, 
+          "x": 364, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 5
+          }
+        }, 
+        {
+          "uuid": "df21d007-9193-4998-95a9-6af95139cb5f", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Leprosy"
+              }, 
+              "destination": "ef6be19f-c779-45c3-9c48-4cc66da3d623", 
+              "uuid": "ab5e14be-fe05-469b-b256-3377d9149016", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "f8f4229b-966a-4c1f-b7f7-48d43b08753c", 
+              "uuid": "6dc9e775-e076-4025-ae6d-a52371e641b7", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "lp", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1123, 
+          "x": 364, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 6
+          }
+        }, 
+        {
+          "uuid": "ef6be19f-c779-45c3-9c48-4cc66da3d623", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Onchocerciasis"
+              }, 
+              "destination": "719b2ae5-7325-4a8a-ba07-a5b3bd61298e", 
+              "uuid": "4fe24f32-6801-4cd6-a5d6-9ac8204d727f", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "f8f4229b-966a-4c1f-b7f7-48d43b08753c", 
+              "uuid": "2c25acc1-8ba8-4587-a548-24732c210b9f", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "oc", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1224, 
+          "x": 344, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 7
+          }
+        }, 
+        {
+          "uuid": "719b2ae5-7325-4a8a-ba07-a5b3bd61298e", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Buruli Ulcer"
+              }, 
+              "destination": "95d548cf-1164-4314-84b7-2309aba5bef9", 
+              "uuid": "422348a9-8f42-4e03-ad80-96a17ae405a4", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "f8f4229b-966a-4c1f-b7f7-48d43b08753c", 
+              "uuid": "2c9a9f0a-eef0-499c-a8ae-31d37f18ac56", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "bu", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1337, 
+          "x": 312, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 8
+          }
+        }, 
+        {
+          "uuid": "95d548cf-1164-4314-84b7-2309aba5bef9", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Lymphatic Filariasis"
+              }, 
+              "destination": "b046cd16-53ff-45f5-9573-2cfd5abacb4f", 
+              "uuid": "adeb2359-0252-4eeb-9c24-9fbccf9766c3", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "f8f4229b-966a-4c1f-b7f7-48d43b08753c", 
+              "uuid": "a9835bec-c0b0-4dc9-a687-38a5ca74d065", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "lf", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1464, 
+          "x": 277, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 9
+          }
+        }, 
+        {
+          "uuid": "b046cd16-53ff-45f5-9573-2cfd5abacb4f", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Noma"
+              }, 
+              "destination": "82fc0170-6df1-40fb-9639-6307d337ee27", 
+              "uuid": "b1545fc4-6119-48a8-9b7a-a6c78edd5c0a", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "f8f4229b-966a-4c1f-b7f7-48d43b08753c", 
+              "uuid": "ed1d1242-e981-4a60-9a3f-789c10e7cddc", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "no", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1576, 
+          "x": 374, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 10
+          }
+        }, 
+        {
+          "uuid": "82fc0170-6df1-40fb-9639-6307d337ee27", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Human Influenza due to a new subtype"
+              }, 
+              "destination": "6034dd17-b04d-41de-a8b8-b554abf5b2bb", 
+              "uuid": "feca1073-3044-498a-9508-0f7090963ed2", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "512a3958-b126-4d52-aa02-d31fff484664", 
+              "uuid": "f03fdd9e-b18b-4cac-9373-aa1dafaa5bc0", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "hn", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1688, 
+          "x": 320, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 11
+          }
+        }, 
+        {
+          "uuid": "6034dd17-b04d-41de-a8b8-b554abf5b2bb", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Severe Acute Respiratory Syndrome"
+              }, 
+              "destination": "7fc5c1ec-18a4-414a-b2bc-cdde4f072044", 
+              "uuid": "8440d0a9-a78a-471c-bfc4-b7da06841096", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "512a3958-b126-4d52-aa02-d31fff484664", 
+              "uuid": "f6d3cc76-9605-43c7-826f-b28e7d325806", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ss", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1785, 
+          "x": 331, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 12
+          }
+        }, 
+        {
+          "uuid": "7fc5c1ec-18a4-414a-b2bc-cdde4f072044", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Smallpox"
+              }, 
+              "destination": "e4008e77-648b-45c9-beaf-4712e857f91d", 
+              "uuid": "4de570e0-c5b8-4e4a-ac74-7e692de669ec", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "512a3958-b126-4d52-aa02-d31fff484664", 
+              "uuid": "1c67ac5d-04ed-4ed1-acf0-d4c351ebcf4a", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "sp", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1886, 
+          "x": 337, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 13
+          }
+        }, 
+        {
+          "uuid": "e4008e77-648b-45c9-beaf-4712e857f91d", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Diarrhea with dehydration"
+              }, 
+              "destination": "67a7f55d-0358-4c61-83f2-704dea2f164b", 
+              "uuid": "438c0234-0806-4042-92d1-410258e1ebef", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "512a3958-b126-4d52-aa02-d31fff484664", 
+              "uuid": "fcd14c70-c687-47e3-98f8-0ecaf7629b8f", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "dd", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2006, 
+          "x": 320, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 14
+          }
+        }, 
+        {
+          "uuid": "67a7f55d-0358-4c61-83f2-704dea2f164b", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Pneumonia"
+              }, 
+              "destination": "e4b8ff21-646a-4ee9-9d99-7a27772fba45", 
+              "uuid": "01f12732-277e-448e-94ab-5617246cac2a", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "512a3958-b126-4d52-aa02-d31fff484664", 
+              "uuid": "0768fc7d-c025-4140-b209-ea7bb746ea16", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "pn", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2126, 
+          "x": 317, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 15
+          }
+        }, 
+        {
+          "uuid": "e4b8ff21-646a-4ee9-9d99-7a27772fba45", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Human African Trypanosomiasis"
+              }, 
+              "destination": "2b19e049-36c4-4bce-b870-b7e2eca4f5fc", 
+              "uuid": "bf9bc066-8d6e-4be1-bb67-9c8a14d1e389", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "512a3958-b126-4d52-aa02-d31fff484664", 
+              "uuid": "aedaae67-a4c9-478a-a30a-0adf3fdca24b", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "tx", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2301, 
+          "x": 331, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 16
+          }
+        }, 
+        {
+          "uuid": "2b19e049-36c4-4bce-b870-b7e2eca4f5fc", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Trachoma"
+              }, 
+              "destination": "edb0980e-f374-43d8-92f5-1c6e4325615b", 
+              "uuid": "b67e0d23-42a5-4b3c-bc91-dade0c1e9bf1", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "512a3958-b126-4d52-aa02-d31fff484664", 
+              "uuid": "a2d255a9-c0ee-4939-bb02-6924adec0a40", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "tr", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2411, 
+          "x": 335, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 17
+          }
+        }, 
+        {
+          "uuid": "edb0980e-f374-43d8-92f5-1c6e4325615b", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Schistosomiasis"
+              }, 
+              "destination": "634beef0-7a2a-4350-8361-e3ad8927b334", 
+              "uuid": "a3ce0781-925f-499c-ab59-b4d724fb5902", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "494d8ff5-d973-479b-8780-abc9fd77abca", 
+              "uuid": "ed86f054-aa02-4410-9d00-83f966026647", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "sc", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2523, 
+          "x": 332, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 18
+          }
+        }, 
+        {
+          "uuid": "634beef0-7a2a-4350-8361-e3ad8927b334", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Diphtheria"
+              }, 
+              "destination": "c02b7e5c-adc5-4779-9635-69bfb836750c", 
+              "uuid": "5056d75b-0c5b-47a4-98fa-003e47b14d7e", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "494d8ff5-d973-479b-8780-abc9fd77abca", 
+              "uuid": "101efa29-facf-455c-a773-2ec6c7a869f4", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "dp", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2625, 
+          "x": 329, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 19
+          }
+        }, 
+        {
+          "uuid": "c02b7e5c-adc5-4779-9635-69bfb836750c", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Pertussis (Whooping Cough)"
+              }, 
+              "destination": "5b6a2324-74a8-4ea3-bf08-18b4e39bc5eb", 
+              "uuid": "ad7c2809-2a45-4ac3-b96e-ccfe3ff109a2", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "494d8ff5-d973-479b-8780-abc9fd77abca", 
+              "uuid": "62daad92-1769-46a1-b5f5-9d0c792eb669", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "wc", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2735, 
+          "x": 325, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 20
+          }
+        }, 
+        {
+          "uuid": "5b6a2324-74a8-4ea3-bf08-18b4e39bc5eb", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Brucellosis"
+              }, 
+              "destination": "081bab22-5b5b-43e8-a565-9a8f354b8b80", 
+              "uuid": "2f83d2c4-ad14-4791-8545-dd14d7c7752b", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "494d8ff5-d973-479b-8780-abc9fd77abca", 
+              "uuid": "8599cdce-778a-417f-a189-df9a22fc55e9", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "bc", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2842, 
+          "x": 332, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 21
+          }
+        }, 
+        {
+          "uuid": "081bab22-5b5b-43e8-a565-9a8f354b8b80", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Kala Azar"
+              }, 
+              "destination": "77d88dd6-5c0f-4674-b3fc-c1f9e41bc0dd", 
+              "uuid": "281d84fb-a2a6-4e83-9015-58fb4885087d", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "494d8ff5-d973-479b-8780-abc9fd77abca", 
+              "uuid": "3ebbe150-b7bd-4056-9d28-48ef5ea43c51", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ka", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2947, 
+          "x": 324, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 22
+          }
+        }, 
+        {
+          "uuid": "77d88dd6-5c0f-4674-b3fc-c1f9e41bc0dd", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Nodding Syndrome"
+              }, 
+              "destination": "2cb7eb82-a05e-4e5a-8c69-71b651cc7df3", 
+              "uuid": "52e3d93d-577c-49a8-bab6-7c979283db5e", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "494d8ff5-d973-479b-8780-abc9fd77abca", 
+              "uuid": "898dc174-8ea1-4798-9917-21a8aa66ebf3", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ns", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 3061, 
+          "x": 324, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 23
+          }
+        }, 
+        {
+          "uuid": "2cb7eb82-a05e-4e5a-8c69-71b651cc7df3", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Adverse Drug Reactions"
+              }, 
+              "destination": "994b2471-a9e0-4490-9fdc-c08d16357b2e", 
+              "uuid": "1fb706c9-c78a-4e3b-95b0-5de4548c7f8c", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "494d8ff5-d973-479b-8780-abc9fd77abca", 
+              "uuid": "15669bc0-d4be-4275-94bf-0ba3c8d4b9d7", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ar", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 3166, 
+          "x": 330, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 24
+          }
+        }, 
+        {
+          "uuid": "994b2471-a9e0-4490-9fdc-c08d16357b2e", 
+          "rules": [
+            {
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Success"
+              }, 
+              "destination": "eb7ae9b2-36e8-47d3-9cce-e94621530131", 
+              "uuid": "551b2ec2-6942-4aec-a25f-5d9cc844e0a2", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Failure"
+              }, 
+              "destination": "92944b5c-3ada-44ee-ba91-d899bc9f4543", 
+              "uuid": "24d9d541-7c38-41c7-8b4d-cd3b20093708", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Response 30", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 3293, 
+          "x": 304, 
+          "config": {
+            "webhook": "http://localhost:9090/dhis2queue?form=epc&facilitycode=EsXcenXz99W&msisdn=@contact.tel_e164&facility=EsXcenXz99W&report_type=epc&raw_msg=@flow.report&district=@contact.district", 
+            "webhook_action": "GET", 
+            "webhook_headers": []
+          }
+        }, 
+        {
+          "uuid": "4c75cd18-7283-4ede-b225-e0e59a676e73", 
+          "rules": [
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "All Responses"
+              }, 
+              "destination": "cc59405f-a897-4e32-9c98-790309dac151", 
+              "uuid": "6d6706f1-139e-48d3-903a-f74685032ae5", 
+              "destination_type": "R"
+            }
+          ], 
+          "ruleset_type": "expression", 
+          "label": "Submission", 
+          "operand": "@extra.message", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 336, 
+          "x": 472, 
+          "config": {}
+        }
+      ], 
+      "metadata": {
+        "uuid": "30ebd4cf-a1a5-4354-8b77-7b88e91019d3", 
+        "notes": [
+          {
+            "y": 217, 
+            "x": 186, 
+            "body": "This call returns period-separated values of the indicators in their right position", 
+            "title": "WebHook Usage"
+          }, 
+          {
+            "y": 1001, 
+            "x": 104, 
+            "body": "6th Dracunculiasis", 
+            "title": "6th"
+          }, 
+          {
+            "y": 1330, 
+            "x": 47, 
+            "body": "9th", 
+            "title": "New Note"
+          }, 
+          {
+            "y": 1885, 
+            "x": 46, 
+            "body": "14th - SmallPox", 
+            "title": "New Note"
+          }, 
+          {
+            "y": 2522, 
+            "x": 64, 
+            "body": "19th - Schistosomiasis", 
+            "title": "New Note"
+          }, 
+          {
+            "y": 3357, 
+            "x": 812, 
+            "body": "This is to help troubleshoot quickly", 
+            "title": "Send SMS or Email to Admins"
+          }
+        ], 
+        "expires": 10080, 
+        "name": "Other Conditions - Cases (New)", 
+        "saved_on": "2018-10-17T17:46:03.657348Z", 
+        "revision": 336
+      }
+    }
+  ], 
+  "triggers": [
+    {
+      "trigger_type": "K", 
+      "flow": {
+        "name": "Other Conditions (Deaths)", 
+        "uuid": "a04430c9-c618-4aac-958e-4813de7098b7"
+      }, 
+      "groups": [], 
+      "keyword": "epd", 
+      "channel": null
+    }, 
+    {
+      "trigger_type": "K", 
+      "flow": {
+        "name": "Other Conditions - Cases (New)", 
+        "uuid": "30ebd4cf-a1a5-4354-8b77-7b88e91019d3"
+      }, 
+      "groups": [], 
+      "keyword": "epc", 
+      "channel": null
+    }
+  ]
+}

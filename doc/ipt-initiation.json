@@ -1,0 +1,517 @@
+{
+  "campaigns": [], 
+  "version": 10, 
+  "site": "https://app.rapidpro.io", 
+  "flows": [
+    {
+      "base_language": "base", 
+      "action_sets": [
+        {
+          "y": 5, 
+          "x": 701, 
+          "destination": "e927df97-fcd6-4c9b-b46d-1bb599351e61", 
+          "uuid": "9df31b7d-c0ff-4dc1-afd4-3aacc0a45b94", 
+          "actions": [
+            {
+              "msg": {
+                "base": "There was an error with your report, or the system failed to process it. Please resend your report."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 968, 
+          "x": 106, 
+          "destination": "c112e11b-e426-4b70-8529-7a18951b813e", 
+          "uuid": "ca8526cc-7c70-497d-b16a-2bb76892578a", 
+          "actions": [
+            {
+              "msg": {
+                "base": "You reported @flow.eligible_adults @flow.eligible_adults.category, @flow.children_and_adolo @flow.children_and_adolo.category, @flow.adults_initiated @flow.adults_initiated.category, @flow.child_adolo_init @flow.child_adolo_init.category, @flow.child_0_4_contacts @flow.child_0_4_contacts.category & @flow.child_0_4_contacts_init @flow.child_0_4_contacts_init.category. If wrong resend"
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 469, 
+          "x": 735, 
+          "destination": "e927df97-fcd6-4c9b-b46d-1bb599351e61", 
+          "uuid": "f9789b08-be10-483e-a4d7-566508f69331", 
+          "actions": [
+            {
+              "msg": {
+                "base": "Adult ART clients initiated on IPT reported (@flow.adults_initiated) should be less than or equal to the eligible adult ART clients (@flow.eligible_adults). Correct and resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 913, 
+          "x": 755, 
+          "destination": "e927df97-fcd6-4c9b-b46d-1bb599351e61", 
+          "uuid": "d612c39d-5978-40e6-9382-24b9e393f079", 
+          "actions": [
+            {
+              "msg": {
+                "base": "Children (0-4yrs) initiated on IPT (@flow.child_0_4_contacts_init) should be less than or equal to the Children (0-4yrs) eligible for IPT (@flow.child_0_4_contacts). Please correct and resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 691, 
+          "x": 740, 
+          "destination": "e927df97-fcd6-4c9b-b46d-1bb599351e61", 
+          "uuid": "537e8fc4-9d1e-47a0-867d-01239511e5f6", 
+          "actions": [
+            {
+              "msg": {
+                "base": "Children/Adolescents initiated on IPT (@flow.child_adolo_init) should be less than or equal to the Children/Adolescents ART clients (@flow.children_and_adolo). Correct and resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }
+      ], 
+      "version": 10, 
+      "flow_type": "F", 
+      "entry": "ec020093-74b5-4bfe-abed-e46dbbd557e6", 
+      "rule_sets": [
+        {
+          "uuid": "ec020093-74b5-4bfe-abed-e46dbbd557e6", 
+          "rules": [
+            {
+              "category": {
+                "base": "All Responses"
+              }, 
+              "uuid": "205520be-525a-44ac-8307-64050112fca4", 
+              "destination": "1a9aae4e-5264-434e-a166-acb296363195", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "wait_message", 
+          "label": "response_1", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 3, 
+          "x": 288, 
+          "config": {}
+        }, 
+        {
+          "uuid": "1a9aae4e-5264-434e-a166-acb296363195", 
+          "rules": [
+            {
+              "category": {
+                "base": "All Responses"
+              }, 
+              "uuid": "fccbbba9-fe50-4e40-a9db-d87157e31871", 
+              "destination": "80444588-a18b-4edc-a9a2-c6716210dd2b", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "expression", 
+          "label": "submission", 
+          "operand": "@(REMOVE_FIRST_WORD(SUBSTITUTE(step.value, \",\", \".\")))", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 106, 
+          "x": 286, 
+          "config": {}
+        }, 
+        {
+          "uuid": "80444588-a18b-4edc-a9a2-c6716210dd2b", 
+          "rules": [
+            {
+              "category": {
+                "base": "Adult"
+              }, 
+              "uuid": "77b89bf8-7bd4-4963-b6b5-4a36c83781c9", 
+              "destination": "5cb19bee-964f-4559-b09d-434eb0203eab", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "9df31b7d-c0ff-4dc1-afd4-3aacc0a45b94", 
+              "uuid": "777bd17d-6cd7-4292-94d6-527c7fa0df7a", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "eligible_adults", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 211, 
+          "x": 274, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 0
+          }
+        }, 
+        {
+          "uuid": "5cb19bee-964f-4559-b09d-434eb0203eab", 
+          "rules": [
+            {
+              "category": {
+                "base": "Child(0-19)"
+              }, 
+              "uuid": "a6d50d8a-2be9-4c7c-95e9-4044d04ccd81", 
+              "destination": "08c76168-1e9a-4b70-a3ef-331590d8fc5d", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "9df31b7d-c0ff-4dc1-afd4-3aacc0a45b94", 
+              "uuid": "7020dc62-b6c8-40d0-86c0-e7141e91ba16", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "children_and_adolo", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 318, 
+          "x": 247, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 1
+          }
+        }, 
+        {
+          "uuid": "08c76168-1e9a-4b70-a3ef-331590d8fc5d", 
+          "rules": [
+            {
+              "category": {
+                "base": "Adult Initiated"
+              }, 
+              "uuid": "9be9ffb6-4608-46ee-8e60-dfe8ed737da4", 
+              "destination": "1cd09d7e-320d-4a8f-9695-5f886bbabc5d", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "test": "@(flow.eligible_adults + 1)", 
+                "type": "lt"
+              }
+            }, 
+            {
+              "test": {
+                "test": "@flow.eligible_adults", 
+                "type": "gt"
+              }, 
+              "category": {
+                "base": "> Eligible Adult ART Clients"
+              }, 
+              "destination": "f9789b08-be10-483e-a4d7-566508f69331", 
+              "uuid": "3297aba6-6d8a-49da-b3b2-6f6ed4984ec8", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "9df31b7d-c0ff-4dc1-afd4-3aacc0a45b94", 
+              "uuid": "f3d7f0f9-d03c-4264-ba32-2679d701d38f", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "adults_initiated", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 448, 
+          "x": 234, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 2
+          }
+        }, 
+        {
+          "uuid": "1cd09d7e-320d-4a8f-9695-5f886bbabc5d", 
+          "rules": [
+            {
+              "category": {
+                "base": "Child(0-19) Initiated"
+              }, 
+              "uuid": "385ba50c-83b3-4394-aaaf-ac92e568a0fb", 
+              "destination": "c4b3f886-693f-4043-af1d-8ee9cd1351f7", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "test": "@(flow.children_and_adolo + 1)", 
+                "type": "lt"
+              }
+            }, 
+            {
+              "test": {
+                "test": "@flow.children_and_adolo", 
+                "type": "gt"
+              }, 
+              "category": {
+                "base": "> Eligible Children & Adolescents"
+              }, 
+              "destination": "537e8fc4-9d1e-47a0-867d-01239511e5f6", 
+              "uuid": "4ed408b4-f2c3-494b-9e8e-862e36c1fe9b", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "9df31b7d-c0ff-4dc1-afd4-3aacc0a45b94", 
+              "uuid": "3f666b2f-94c3-41f1-8077-2fecd184e4df", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "child_adolo_init", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 567, 
+          "x": 89, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 3
+          }
+        }, 
+        {
+          "uuid": "c4b3f886-693f-4043-af1d-8ee9cd1351f7", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "base": "Child(0-4) Contact"
+              }, 
+              "destination": "39e2e2c4-610d-4a18-a65d-75ca57afc8bd", 
+              "uuid": "128906d8-e39b-4011-b6df-ce3720f1c759", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "9df31b7d-c0ff-4dc1-afd4-3aacc0a45b94", 
+              "uuid": "8c752ebe-54d6-40b9-815f-f74e693187a5", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "child_0_4_contacts", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 674, 
+          "x": 124, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 4
+          }
+        }, 
+        {
+          "uuid": "39e2e2c4-610d-4a18-a65d-75ca57afc8bd", 
+          "rules": [
+            {
+              "test": {
+                "test": "@(flow.child_0_4_contacts + 1)", 
+                "type": "lt"
+              }, 
+              "category": {
+                "base": "Child (0-4) Initiated"
+              }, 
+              "destination": "ca8526cc-7c70-497d-b16a-2bb76892578a", 
+              "uuid": "cf96b238-a6a3-4623-bc6b-6360ced0c051", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "@flow.child_0_4_contacts.", 
+                "type": "gt"
+              }, 
+              "category": {
+                "base": "> Children (0-4)  Contacts"
+              }, 
+              "destination": "d612c39d-5978-40e6-9382-24b9e393f079", 
+              "uuid": "87a434df-f39c-48ee-a3c3-bd30a4b0568a", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "9df31b7d-c0ff-4dc1-afd4-3aacc0a45b94", 
+              "uuid": "b57c929b-6d4c-4093-a2ef-399f2dd68222", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "child_0_4_contacts_init", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 798, 
+          "x": 101, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 5
+          }
+        }, 
+        {
+          "uuid": "e927df97-fcd6-4c9b-b46d-1bb599351e61", 
+          "rules": [
+            {
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Success"
+              }, 
+              "uuid": "55248fa1-0584-4171-9fff-c9f8cb908bc3"
+            }, 
+            {
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Failure"
+              }, 
+              "uuid": "eaa7328d-0678-4adb-b28a-5fd7b9a04956"
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Response 9", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1194, 
+          "x": 742, 
+          "config": {
+            "webhook": "http://localhost:9090/errors", 
+            "webhook_action": "GET", 
+            "webhook_headers": []
+          }
+        }, 
+        {
+          "uuid": "c112e11b-e426-4b70-8529-7a18951b813e", 
+          "rules": [
+            {
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Success"
+              }, 
+              "uuid": "2ebd6566-56ef-46d9-b621-9d843608baf8"
+            }, 
+            {
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Failure"
+              }, 
+              "uuid": "51cf3bad-77f5-42a6-a7d3-eedb3e8160be"
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Response 10", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1470, 
+          "x": 129, 
+          "config": {
+            "webhook": "http://localhost:9090/dhis2queue?form=ip&facilitycode=EsXcenXz99W&msisdn=@contact.tel_e164&facility=EsXcenXz99W&report_type=ip&raw_msg=@flow.report&district=@contact.district", 
+            "webhook_action": "GET", 
+            "webhook_headers": []
+          }
+        }
+      ], 
+      "metadata": {
+        "expires": 10080, 
+        "saved_on": "2018-10-01T20:16:04.342937Z", 
+        "uuid": "661e2461-7733-4f17-b66e-f0c4cd549d1c", 
+        "name": "IPT Initiation", 
+        "revision": 96
+      }
+    }
+  ], 
+  "triggers": [
+    {
+      "trigger_type": "K", 
+      "flow": {
+        "name": "IPT Initiation", 
+        "uuid": "661e2461-7733-4f17-b66e-f0c4cd549d1c"
+      }, 
+      "groups": [], 
+      "keyword": "ipt", 
+      "channel": null
+    }
+  ]
+}

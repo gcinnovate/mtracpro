@@ -1,0 +1,436 @@
+{
+  "campaigns": [], 
+  "version": 10, 
+  "site": "https://app.rapidpro.io", 
+  "flows": [
+    {
+      "base_language": "ang", 
+      "action_sets": [
+        {
+          "y": 1290, 
+          "x": 369, 
+          "destination": null, 
+          "uuid": "731823e3-1be4-4d97-9032-8e28b612ef1a", 
+          "actions": [
+            {
+              "msg": {
+                "ang": "You reported @flow.act_tablets @flow.act_tablets.category, @flow.ors_sackets @flow.ors_sackets.category, @flow.measles_vaccine @flow.measles_vaccine.category, @flow.amoxcilline @flow.amoxcilline.category, @flow.depo_provera @flow.depo_provera.category, @flow.iv_artesunate @flow.iv_artesunate.category, @flow.fansidar @flow.fansidar.category  and @flow.rdt_malaria @flow.rdt_malaria.category. If there's an error please resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }, 
+            {
+              "action": "POST", 
+              "type": "api", 
+              "webhook": "http://localhost:9090/dhis2queue?form=tra&facilitycode=EsXcenXz99W&msisdn=@contact.tel_e164&facility=EsXcenXz99W&report_type=tra&raw_msg=@flow.report&district=@contact.district", 
+              "webhook_headers": []
+            }
+          ]
+        }, 
+        {
+          "y": 210, 
+          "x": 722, 
+          "destination": null, 
+          "uuid": "70f18673-ae43-4ff0-880e-ac00ea8423fc", 
+          "actions": [
+            {
+              "msg": {
+                "ang": "There's an error with your report or system failed to process your report. Please resend your report."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }
+      ], 
+      "version": 10, 
+      "flow_type": "F", 
+      "entry": "bd9d7bf5-59bc-4d39-875d-fad559e76b1a", 
+      "rule_sets": [
+        {
+          "uuid": "bd9d7bf5-59bc-4d39-875d-fad559e76b1a", 
+          "rules": [
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "All Responses"
+              }, 
+              "destination": "644a45bf-7700-4b22-a8d9-0a7bb130f4b7", 
+              "uuid": "9a74ffa9-61d8-4bde-90f6-927537766938", 
+              "destination_type": "R"
+            }
+          ], 
+          "ruleset_type": "wait_message", 
+          "label": "Report", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 0, 
+          "x": 384, 
+          "config": {}
+        }, 
+        {
+          "uuid": "644a45bf-7700-4b22-a8d9-0a7bb130f4b7", 
+          "rules": [
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "All Responses"
+              }, 
+              "destination": "957d8862-22c1-47e7-b10e-bf7d1d0a201f", 
+              "uuid": "a8c196d5-d64f-4705-9dd9-6076e7f17ef3", 
+              "destination_type": "R"
+            }
+          ], 
+          "ruleset_type": "expression", 
+          "label": "Fields", 
+          "operand": "@(REMOVE_FIRST_WORD(step.value ))", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 110, 
+          "x": 385, 
+          "config": {}
+        }, 
+        {
+          "uuid": "957d8862-22c1-47e7-b10e-bf7d1d0a201f", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "ACT (Tablets)"
+              }, 
+              "destination": "09fca396-999c-483d-b413-a17869219e1a", 
+              "uuid": "50d2f2f9-7ae7-4271-b5c7-148fd756e116", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "70f18673-ae43-4ff0-880e-ac00ea8423fc", 
+              "uuid": "83075690-9215-4bcc-8052-211e8d8dc867", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "act_tablets", 
+          "operand": "@flow.fields", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 222, 
+          "x": 386, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 0
+          }
+        }, 
+        {
+          "uuid": "09fca396-999c-483d-b413-a17869219e1a", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "ORS (Sackets)"
+              }, 
+              "destination": "6ee51c57-a3ae-4f53-8ac6-a9d9f52c6f86", 
+              "uuid": "399020fa-bddd-4471-99b9-1a225e864e84", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "70f18673-ae43-4ff0-880e-ac00ea8423fc", 
+              "uuid": "f5cc19b3-4fc8-470d-bc30-5becf5f3fa9e", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ors_sackets", 
+          "operand": "@flow.fields", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 337, 
+          "x": 380, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 1
+          }
+        }, 
+        {
+          "uuid": "6ee51c57-a3ae-4f53-8ac6-a9d9f52c6f86", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Measles Vaccine"
+              }, 
+              "destination": "15fe6a92-7d6b-4680-bad8-6d0405dd203c", 
+              "uuid": "63e7f10c-bfb8-4c0d-a60d-cd16b524b80a", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "70f18673-ae43-4ff0-880e-ac00ea8423fc", 
+              "uuid": "f5a743e7-5bb7-42a9-a8a2-b565f08b3d23", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "measles_vaccine", 
+          "operand": "@flow.fields", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 445, 
+          "x": 387, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 2
+          }
+        }, 
+        {
+          "uuid": "15fe6a92-7d6b-4680-bad8-6d0405dd203c", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Amoxcilline"
+              }, 
+              "destination": "9fa4670d-d051-42ce-a8eb-3cd9a0c46be6", 
+              "uuid": "01df0a24-512b-4d77-a10b-ed919e36830c", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "70f18673-ae43-4ff0-880e-ac00ea8423fc", 
+              "uuid": "049e313b-01ad-4d6a-aebf-99f221ab1e4f", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "amoxcilline", 
+          "operand": "@flow.fields", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 570, 
+          "x": 387, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 3
+          }
+        }, 
+        {
+          "uuid": "9fa4670d-d051-42ce-a8eb-3cd9a0c46be6", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "DMPA"
+              }, 
+              "destination": "1db65ee7-7f3f-4898-a3dc-717e3efe3f6b", 
+              "uuid": "184a685a-0814-499a-8446-d3ceaeaee859", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "70f18673-ae43-4ff0-880e-ac00ea8423fc", 
+              "uuid": "aba515ad-a655-4dee-9fa4-29681df5019d", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "depo_provera", 
+          "operand": "@flow.fields", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 709, 
+          "x": 392, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 4
+          }
+        }, 
+        {
+          "uuid": "1db65ee7-7f3f-4898-a3dc-717e3efe3f6b", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "IV Artesunate"
+              }, 
+              "destination": "e9963d41-12ce-40b7-99a8-d4dabd12db16", 
+              "uuid": "3553ab34-22b1-41c8-b22a-6af7fddeb939", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "70f18673-ae43-4ff0-880e-ac00ea8423fc", 
+              "uuid": "d4a12436-1629-48d7-bccf-7399f582efb6", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "iv_artesunate", 
+          "operand": "@flow.fields", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 852, 
+          "x": 385, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 5
+          }
+        }, 
+        {
+          "uuid": "e9963d41-12ce-40b7-99a8-d4dabd12db16", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Fansidar"
+              }, 
+              "destination": "e1c47fd9-d069-4134-8e85-124240420916", 
+              "uuid": "b3134588-63c9-41cc-b4b6-42adb2dca6c6", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "70f18673-ae43-4ff0-880e-ac00ea8423fc", 
+              "uuid": "7262b33d-d79a-4fce-b931-7c9b300e9504", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "fansidar", 
+          "operand": "@flow.fields", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 992, 
+          "x": 384, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 6
+          }
+        }, 
+        {
+          "uuid": "e1c47fd9-d069-4134-8e85-124240420916", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "RDT (Malaria)"
+              }, 
+              "destination": "731823e3-1be4-4d97-9032-8e28b612ef1a", 
+              "uuid": "ce3d1cbb-2efc-4058-905a-f26f3ce2bd45", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "70f18673-ae43-4ff0-880e-ac00ea8423fc", 
+              "uuid": "23789dff-d0f7-4727-8d09-45f491d75ec7", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "rdt_malaria", 
+          "operand": "@flow.fields", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1130, 
+          "x": 380, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 7
+          }
+        }
+      ], 
+      "metadata": {
+        "expires": 0, 
+        "saved_on": "2018-10-19T10:54:44.612517Z", 
+        "uuid": "25dfe418-215c-47dc-9327-1b2d9a798595", 
+        "name": "Tracer Medicines - Stock Balance", 
+        "revision": 9
+      }
+    }
+  ], 
+  "triggers": [
+    {
+      "trigger_type": "K", 
+      "flow": {
+        "name": "Tracer Medicines - Stock Balance", 
+        "uuid": "25dfe418-215c-47dc-9327-1b2d9a798595"
+      }, 
+      "groups": [], 
+      "keyword": "tra", 
+      "channel": null
+    }
+  ]
+}

@@ -1,0 +1,406 @@
+{
+  "campaigns": [], 
+  "version": 10, 
+  "site": "https://app.rapidpro.io", 
+  "flows": [
+    {
+      "base_language": "ang", 
+      "action_sets": [
+        {
+          "y": 904, 
+          "x": 423, 
+          "destination": "27cda014-f9b1-4f58-984e-c07e7b45b365", 
+          "uuid": "a1c9a766-788c-48bb-a315-b5f238ab0327", 
+          "actions": [
+            {
+              "msg": {
+                "ang": "You reported @flow.opd_new @flow.opd_new.category, @flow.opd_total @flow.opd_total.category, @flow.emtct_expected @flow.emtct_expected.category and @flow.emtct_missed @flow.emtct_missed.category  If there's an error please resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 157, 
+          "x": 839, 
+          "destination": "adadc651-6588-46e9-b367-233c4abab259", 
+          "uuid": "476e24ba-41c0-4901-af52-5d6ff6756369", 
+          "actions": [
+            {
+              "msg": {
+                "ang": "You have and error with your APT report. Please resend it."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 387, 
+          "x": 841, 
+          "destination": "adadc651-6588-46e9-b367-233c4abab259", 
+          "uuid": "fc636668-b89b-4785-935d-871778ecbd84", 
+          "actions": [
+            {
+              "msg": {
+                "ang": "OPD New Attendees (@flow.opd_new) should be less than or equal to the OPD Total Attendance (@flow.opd_total). Please correct and resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 729, 
+          "x": 884, 
+          "destination": "adadc651-6588-46e9-b367-233c4abab259", 
+          "uuid": "6602482f-fc6b-4adb-9b21-533e8f6a7db8", 
+          "actions": [
+            {
+              "msg": {
+                "ang": "The eMTCT missed appointments (@flow.emtct_missed) should be less than or equal to the expected eMTCT mothers on appointment (@flow.emtct_expected). Please correct and resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }
+      ], 
+      "version": 10, 
+      "flow_type": "F", 
+      "entry": "d022d8be-df85-42c2-9c91-c36dbdf29d6f", 
+      "rule_sets": [
+        {
+          "uuid": "d022d8be-df85-42c2-9c91-c36dbdf29d6f", 
+          "rules": [
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "All Responses"
+              }, 
+              "destination": "9c1a8155-6754-4725-a87f-27b932dd51bb", 
+              "uuid": "d614efdc-e895-4eb7-bbd0-90d0cc51d2ec", 
+              "destination_type": "R"
+            }
+          ], 
+          "ruleset_type": "wait_message", 
+          "label": "Report", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 0, 
+          "x": 430, 
+          "config": {}
+        }, 
+        {
+          "uuid": "9c1a8155-6754-4725-a87f-27b932dd51bb", 
+          "rules": [
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "All Responses"
+              }, 
+              "destination": "e1c2688c-62dd-42c2-a0dc-1468b51d1b7c", 
+              "uuid": "49ad78cc-cfc0-45e2-a3e2-596a54588a32", 
+              "destination_type": "R"
+            }
+          ], 
+          "ruleset_type": "expression", 
+          "label": "Fields", 
+          "operand": "@(REMOVE_FIRST_WORD(step.value ))", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 118, 
+          "x": 424, 
+          "config": {}
+        }, 
+        {
+          "uuid": "e1c2688c-62dd-42c2-a0dc-1468b51d1b7c", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "OPD Total Attendance"
+              }, 
+              "destination": "fdb3dcee-878a-46fa-b572-2c6bd7d8acfb", 
+              "uuid": "da2e087c-ecd4-4bd7-892d-43d067efbed8", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "476e24ba-41c0-4901-af52-5d6ff6756369", 
+              "uuid": "4e767703-3eb6-4d11-a30e-4474498e1996", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "opd_total", 
+          "operand": "@flow.fields", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 259, 
+          "x": 426, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 1
+          }
+        }, 
+        {
+          "uuid": "fdb3dcee-878a-46fa-b572-2c6bd7d8acfb", 
+          "rules": [
+            {
+              "test": {
+                "test": "@(flow.opd_total + 1)", 
+                "type": "lt"
+              }, 
+              "category": {
+                "ang": "OPD New Attendees"
+              }, 
+              "destination": "30fa956c-a3ab-44a4-9b15-654da5f8ebf8", 
+              "uuid": "5b4964b2-827b-4972-8dd4-c37dbaffb995", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "@flow.opd_total", 
+                "type": "gt"
+              }, 
+              "category": {
+                "ang": "> OPD Total Attendance"
+              }, 
+              "destination": "fc636668-b89b-4785-935d-871778ecbd84", 
+              "uuid": "00dd0a58-0ba7-4a22-92e7-6042f967fa6b", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "476e24ba-41c0-4901-af52-5d6ff6756369", 
+              "uuid": "f523ccd3-4e99-4dcf-a8bd-51ba781c5299", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "opd_new", 
+          "operand": "@flow.fields", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 384, 
+          "x": 351, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 0
+          }
+        }, 
+        {
+          "uuid": "30fa956c-a3ab-44a4-9b15-654da5f8ebf8", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Expected eMTCT mothers on appt"
+              }, 
+              "destination": "6f51580c-480c-4015-a00d-fc88b6a05919", 
+              "uuid": "a6129004-bf8a-4ea9-bc7a-7e5a96feff83", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "476e24ba-41c0-4901-af52-5d6ff6756369", 
+              "uuid": "ea995f67-b9da-4309-ba60-ba2079a2822b", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "emtct_expected", 
+          "operand": "@flow.fields", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 514, 
+          "x": 432, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 2
+          }
+        }, 
+        {
+          "uuid": "6f51580c-480c-4015-a00d-fc88b6a05919", 
+          "rules": [
+            {
+              "test": {
+                "test": "@(flow.emtct_expected + 1)", 
+                "type": "lt"
+              }, 
+              "category": {
+                "ang": "eMTCT missed appointments"
+              }, 
+              "destination": "a1c9a766-788c-48bb-a315-b5f238ab0327", 
+              "uuid": "8b49f1d2-9851-4a6a-ba29-0b255419f804", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "@flow.emtct_expected", 
+                "type": "gt"
+              }, 
+              "category": {
+                "ang": "> Expected eMTCT mothers on appt"
+              }, 
+              "destination": "6602482f-fc6b-4adb-9b21-533e8f6a7db8", 
+              "uuid": "99aa5bf1-4d3b-4bc2-8530-aca1fd9d6c93", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "476e24ba-41c0-4901-af52-5d6ff6756369", 
+              "uuid": "f382fbbd-d62b-4c57-849a-74f5f293d422", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "emtct_missed", 
+          "operand": "@flow.fields", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 664, 
+          "x": 307, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 3
+          }
+        }, 
+        {
+          "uuid": "27cda014-f9b1-4f58-984e-c07e7b45b365", 
+          "rules": [
+            {
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "ang": "Success"
+              }, 
+              "uuid": "54938441-fd31-4649-b247-e5091c0e8db5"
+            }, 
+            {
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "ang": "Failure"
+              }, 
+              "uuid": "80859f51-c4dc-4ea8-8580-e648b3005dab"
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Response 7", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1201, 
+          "x": 414, 
+          "config": {
+            "webhook": "http://localhost:9090/dhis2queue?form=apt&facilitycode=EsXcenXz99W&msisdn=@contact.tel_e164&facility=EsXcenXz99W&report_type=apt&raw_msg=@flow.report&district=@contact.district", 
+            "webhook_action": "POST", 
+            "webhook_headers": []
+          }
+        }, 
+        {
+          "uuid": "adadc651-6588-46e9-b367-233c4abab259", 
+          "rules": [
+            {
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "ang": "Success"
+              }, 
+              "uuid": "fbf794c0-9cc3-4f22-9651-fc0237f98ba9"
+            }, 
+            {
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "ang": "Failure"
+              }, 
+              "uuid": "62bd5384-33f8-46fc-a512-ce4813b919ec"
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Response 8", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 981, 
+          "x": 870, 
+          "config": {
+            "webhook": "http://localhost:9090/errors", 
+            "webhook_action": "GET", 
+            "webhook_headers": []
+          }
+        }
+      ], 
+      "metadata": {
+        "expires": 0, 
+        "saved_on": "2018-09-21T15:09:14.808313Z", 
+        "uuid": "c92b60c6-61bc-4a30-8df0-1d256eb6bf7a", 
+        "name": "OPD and eMTCT Summary", 
+        "revision": 50
+      }
+    }
+  ], 
+  "triggers": [
+    {
+      "trigger_type": "K", 
+      "flow": {
+        "name": "OPD and eMTCT Summary", 
+        "uuid": "c92b60c6-61bc-4a30-8df0-1d256eb6bf7a"
+      }, 
+      "groups": [], 
+      "keyword": "apt", 
+      "channel": null
+    }
+  ]
+}

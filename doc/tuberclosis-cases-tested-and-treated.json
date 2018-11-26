@@ -1,0 +1,636 @@
+{
+  "campaigns": [], 
+  "version": 10, 
+  "site": "https://app.rapidpro.io", 
+  "flows": [
+    {
+      "base_language": "base", 
+      "action_sets": [
+        {
+          "y": 153, 
+          "x": 785, 
+          "destination": "c46e6638-6faf-43a8-b7f1-0f94dab8cb98", 
+          "uuid": "1128e63b-460c-4790-a350-fac1c57a4280", 
+          "actions": [
+            {
+              "msg": {
+                "base": "There was an error with your report, or the system failed to process it. Please resend your report."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 1437, 
+          "x": 178, 
+          "destination": "1ac6f88e-5dd6-4319-bf3c-810cc2b1f34a", 
+          "uuid": "31306ce0-014a-4c9c-8848-b468ec76b783", 
+          "actions": [
+            {
+              "msg": {
+                "base": "You reported  @flow.screened @flow.screened.category, @flow.presumptive @flow.presumptive.category, @flow.new_relapse_registered @flow.new_relapse_registered.category, @flow.new_relapse_on_treatment @flow.new_relapse_on_treatment.category, @flow.bacter_registered @flow.bacter_registered.category, @flow.genexpert_confirmed @flow.genexpert_confirmed.category & @flow.contacts_traced @flow.contacts_traced.category"
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 430, 
+          "x": 824, 
+          "destination": "c46e6638-6faf-43a8-b7f1-0f94dab8cb98", 
+          "uuid": "709b189c-d6bc-44b4-a241-32bc5c3e3013", 
+          "actions": [
+            {
+              "msg": {
+                "base": "The number of Presumptive TB Cases (@flow.presumptive) should be less than or equal to the number of clients screened (@flow.screened). Please correct & resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 648, 
+          "x": 868, 
+          "destination": "c46e6638-6faf-43a8-b7f1-0f94dab8cb98", 
+          "uuid": "343306cc-f5be-4c38-b2b1-a4d27dbad16d", 
+          "actions": [
+            {
+              "msg": {
+                "base": "The new & relapse diagnosed and registered (@flow.new_relapse_registered) clients should be less than or equal to the Presumptive TB cases (@flow.presumptive). Correct and resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 1199, 
+          "x": 794, 
+          "destination": "c46e6638-6faf-43a8-b7f1-0f94dab8cb98", 
+          "uuid": "199d6d2c-70cf-4a52-aae5-9fc36663c761", 
+          "actions": [
+            {
+              "msg": {
+                "base": "Bacteriologically TB cases registered (@flow.bacter_registered) should be less than or equal to the new & relapse diagnosed & registered cases (@flow.new_relapse_registered). Correct and resend"
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 1451, 
+          "x": 833, 
+          "destination": "c46e6638-6faf-43a8-b7f1-0f94dab8cb98", 
+          "uuid": "fc6885fa-d6bd-4625-958d-a1dfd16cc639", 
+          "actions": [
+            {
+              "msg": {
+                "base": "P-BC TB cases GeneXpert tested (@flow.genexpert_confirmed) should be less than or equal to the Bacteriologically TB cases registered (@flow.bacter_registered). Correct & resend"
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 912, 
+          "x": 859, 
+          "destination": "c46e6638-6faf-43a8-b7f1-0f94dab8cb98", 
+          "uuid": "2225dda8-a27b-49e1-a153-af445fdcf4df", 
+          "actions": [
+            {
+              "msg": {
+                "base": "New & relapse TB cases on treatment (@flow.new_relapse_on_treatment) should be less than or equal to the new & relapse diagnosed & registered cases (@flow.new_relapse_registered). Correct and resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }
+      ], 
+      "version": 10, 
+      "flow_type": "F", 
+      "entry": "6051ca56-83d4-41a4-9ec8-e58739593501", 
+      "rule_sets": [
+        {
+          "uuid": "6051ca56-83d4-41a4-9ec8-e58739593501", 
+          "rules": [
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "All Responses"
+              }, 
+              "destination": "679d38d5-f6de-46ad-b1d5-96b2f735cd4b", 
+              "uuid": "3093804b-2ad9-4baf-b81e-27986f0941eb", 
+              "destination_type": "R"
+            }
+          ], 
+          "ruleset_type": "wait_message", 
+          "label": "msg", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 0, 
+          "x": 425, 
+          "config": {}
+        }, 
+        {
+          "uuid": "679d38d5-f6de-46ad-b1d5-96b2f735cd4b", 
+          "rules": [
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "All Responses"
+              }, 
+              "destination": "e90fbaf2-7d41-43ab-b353-7b6d2ea7456a", 
+              "uuid": "9a54a97c-edfd-454c-913d-cc7993426ccf", 
+              "destination_type": "R"
+            }
+          ], 
+          "ruleset_type": "expression", 
+          "label": "Submission", 
+          "operand": "@(REMOVE_FIRST_WORD(SUBSTITUTE(step.value, \",\", \".\")))", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 105, 
+          "x": 429, 
+          "config": {}
+        }, 
+        {
+          "uuid": "e90fbaf2-7d41-43ab-b353-7b6d2ea7456a", 
+          "rules": [
+            {
+              "category": {
+                "base": "Screened"
+              }, 
+              "uuid": "c3aec7e0-b0f8-496f-9cc1-1773e5ce97f2", 
+              "destination": "38950320-7c45-4255-adb9-35883f41d222", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "1128e63b-460c-4790-a350-fac1c57a4280", 
+              "uuid": "7b98528a-64ac-46db-9c15-d25cf917f994", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "screened", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 370, 
+          "x": 412, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 0
+          }
+        }, 
+        {
+          "uuid": "38950320-7c45-4255-adb9-35883f41d222", 
+          "rules": [
+            {
+              "category": {
+                "base": "Presumptive"
+              }, 
+              "uuid": "cdfb222e-36db-41f4-a7f9-30b72b61d778", 
+              "destination": "76b8e8bf-88d4-4921-b57c-1249e11839b2", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "test": "@(flow.screened + 1)", 
+                "type": "lt"
+              }
+            }, 
+            {
+              "test": {
+                "test": "@flow.screened", 
+                "type": "gt"
+              }, 
+              "category": {
+                "base": "> Clients Screened"
+              }, 
+              "destination": "709b189c-d6bc-44b4-a241-32bc5c3e3013", 
+              "uuid": "c5c947bc-2525-4b44-99a1-75f317e79388", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "1128e63b-460c-4790-a350-fac1c57a4280", 
+              "uuid": "b514c527-5190-4a29-9a05-c2d7043bb6ff", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "presumptive", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 496, 
+          "x": 377, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 1
+          }
+        }, 
+        {
+          "uuid": "76b8e8bf-88d4-4921-b57c-1249e11839b2", 
+          "rules": [
+            {
+              "category": {
+                "base": "New & Relapse Diagnosed"
+              }, 
+              "uuid": "f4502767-2f3c-4401-ab7d-3672d8490e11", 
+              "destination": "c30e9ec7-5aaa-4bb5-bcd2-8ce020b54f71", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "test": "@(flow.presumptive + 1)", 
+                "type": "lt"
+              }
+            }, 
+            {
+              "test": {
+                "test": "@flow.presumptive", 
+                "type": "gt"
+              }, 
+              "category": {
+                "base": "> Presumptive TB Cases"
+              }, 
+              "destination": "343306cc-f5be-4c38-b2b1-a4d27dbad16d", 
+              "uuid": "fd77e582-9f49-4381-af2d-4ccc1ccf8361", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "1128e63b-460c-4790-a350-fac1c57a4280", 
+              "uuid": "70c493f2-b0c9-49cb-89ed-3c6604a760a4", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "new relapse registered", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 632, 
+          "x": 178, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 2
+          }
+        }, 
+        {
+          "uuid": "c30e9ec7-5aaa-4bb5-bcd2-8ce020b54f71", 
+          "rules": [
+            {
+              "category": {
+                "base": "On Treatment"
+              }, 
+              "uuid": "fc68b946-be06-4754-8b51-610ada159459", 
+              "destination": "bba1d0c9-f65b-4277-8763-1672cd4989fb", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "test": "@(flow.new_relapse_registered + 1)", 
+                "type": "lt"
+              }
+            }, 
+            {
+              "test": {
+                "test": "@flow.new_relapse_registered", 
+                "type": "gt"
+              }, 
+              "category": {
+                "base": "> New & Relapse Diagnosed/Registered"
+              }, 
+              "destination": "2225dda8-a27b-49e1-a153-af445fdcf4df", 
+              "uuid": "960b89b7-90b5-49e8-987e-cfa23f785708", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "1128e63b-460c-4790-a350-fac1c57a4280", 
+              "uuid": "46d8b0bf-7f5c-47c7-b093-4ce6363816fb", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "new relapse on treatment", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 822, 
+          "x": 315, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 3
+          }
+        }, 
+        {
+          "uuid": "bba1d0c9-f65b-4277-8763-1672cd4989fb", 
+          "rules": [
+            {
+              "category": {
+                "base": "Bacteriologically Registered"
+              }, 
+              "uuid": "4703b42b-567c-4526-b70d-bb7f062e9203", 
+              "destination": "4d42ca11-1693-4959-910a-45a37e1cb4d6", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "test": "@(flow.new_relapse_registered + 1)", 
+                "type": "lt"
+              }
+            }, 
+            {
+              "test": {
+                "test": "@flow.new_relapse_registered", 
+                "type": "gt"
+              }, 
+              "category": {
+                "base": "> New & Relapse Diagnosed/Registered"
+              }, 
+              "destination": "199d6d2c-70cf-4a52-aae5-9fc36663c761", 
+              "uuid": "f7c325e0-7b57-4317-aa1f-1fef0a3550ac", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "1128e63b-460c-4790-a350-fac1c57a4280", 
+              "uuid": "683e80fa-9cc6-439a-8a01-299442610829", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "bacter_registered", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 933, 
+          "x": 278, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 4
+          }
+        }, 
+        {
+          "uuid": "4d42ca11-1693-4959-910a-45a37e1cb4d6", 
+          "rules": [
+            {
+              "category": {
+                "base": "Confirmed"
+              }, 
+              "uuid": "e4db23b7-64bd-4c81-8839-2dfdf1161770", 
+              "destination": "f9717b8d-50df-48ca-a341-e5f9449ccbae", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "test": "@(flow.bacter_registered + 1)", 
+                "type": "lt"
+              }
+            }, 
+            {
+              "test": {
+                "test": "@flow.bacter_registered.", 
+                "type": "gt"
+              }, 
+              "category": {
+                "base": "> Bacteriologically Registered"
+              }, 
+              "destination": "fc6885fa-d6bd-4625-958d-a1dfd16cc639", 
+              "uuid": "08523d00-17d7-46a5-9ad2-7b6889da7529", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "1128e63b-460c-4790-a350-fac1c57a4280", 
+              "uuid": "9dd668c1-decc-4351-9052-c35c4bac2233", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "genexpert_confirmed", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1115, 
+          "x": 160, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 5
+          }
+        }, 
+        {
+          "uuid": "f9717b8d-50df-48ca-a341-e5f9449ccbae", 
+          "rules": [
+            {
+              "category": {
+                "base": "Traced"
+              }, 
+              "uuid": "a490ad9a-d2f8-4f5b-aec8-38cce8e7cfa5", 
+              "destination": "31306ce0-014a-4c9c-8848-b468ec76b783", 
+              "label": null, 
+              "destination_type": "A", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "1128e63b-460c-4790-a350-fac1c57a4280", 
+              "uuid": "72987619-8bc9-4b1e-a878-83278fcf16ab", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "contacts_traced", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1298, 
+          "x": 140, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 6
+          }
+        }, 
+        {
+          "uuid": "c46e6638-6faf-43a8-b7f1-0f94dab8cb98", 
+          "rules": [
+            {
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Success"
+              }, 
+              "uuid": "26b4bf46-c729-4761-ac9b-cc09f0650cbe"
+            }, 
+            {
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Failure"
+              }, 
+              "uuid": "427bc9e5-79cb-4133-8b77-bfaead0723d0"
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Response 10", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1825, 
+          "x": 815, 
+          "config": {
+            "webhook": "http://localhost:9090/errors", 
+            "webhook_action": "GET", 
+            "webhook_headers": [
+              {
+                "name": "", 
+                "value": ""
+              }
+            ]
+          }
+        }, 
+        {
+          "uuid": "1ac6f88e-5dd6-4319-bf3c-810cc2b1f34a", 
+          "rules": [
+            {
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Success"
+              }, 
+              "uuid": "22188a6d-6495-4a82-87f0-f9aa2838bbad"
+            }, 
+            {
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Failure"
+              }, 
+              "uuid": "42eba321-1038-4fa4-888d-e61a64308202"
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Response 11", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1988, 
+          "x": 213, 
+          "config": {
+            "webhook": "http://localhost:9090/dhis2queue?form=tb&facilitycode=EsXcenXz99W&msisdn=@contact.tel_e164&facility=EsXcenXz99W&report_type=tb&raw_msg=@flow.report&district=@contact.district", 
+            "webhook_action": "GET", 
+            "webhook_headers": []
+          }
+        }
+      ], 
+      "metadata": {
+        "uuid": "af317f52-9ec9-48e2-a181-23ab2273eae4", 
+        "notes": [
+          {
+            "y": 1812, 
+            "x": 1075, 
+            "body": "...", 
+            "title": "Save Messages with errors"
+          }, 
+          {
+            "y": 1801, 
+            "x": 390, 
+            "body": "...", 
+            "title": "Save for submission to DHIS2"
+          }
+        ], 
+        "expires": 10080, 
+        "name": "Tuberclosis Cases Tested and Treated", 
+        "saved_on": "2018-10-01T20:13:39.211047Z", 
+        "revision": 124
+      }
+    }
+  ], 
+  "triggers": [
+    {
+      "trigger_type": "K", 
+      "flow": {
+        "name": "Tuberclosis Cases Tested and Treated", 
+        "uuid": "af317f52-9ec9-48e2-a181-23ab2273eae4"
+      }, 
+      "groups": [], 
+      "keyword": "tb", 
+      "channel": null
+    }
+  ]
+}

@@ -1,0 +1,996 @@
+{
+  "campaigns": [], 
+  "version": 10, 
+  "site": "https://app.rapidpro.io", 
+  "flows": [
+    {
+      "base_language": "ang", 
+      "action_sets": [
+        {
+          "y": 241, 
+          "x": 848, 
+          "destination": null, 
+          "uuid": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+          "actions": [
+            {
+              "msg": {
+                "ang": "You have an error in your death report. Please make corrections and resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 2857, 
+          "x": 404, 
+          "destination": null, 
+          "uuid": "1dd1a73e-b478-4a4b-97be-56b08c7c6935", 
+          "actions": [
+            {
+              "msg": {
+                "ang": "You reported deaths: \n@(IF(flow.ma > 0, CONCATENATE(flow.ma, \" \", flow.ma.category, \",\"), \"0 Malaria,\")) @(IF(flow.dy > 0, CONCATENATE(flow.dy, \" \", flow.dy.category, \",\"), \"\")) @(IF(flow.sa > 0, CONCATENATE(flow.sa, \" \", flow.sa.category, \",\"), \"\")) @(IF(flow.af > 0, CONCATENATE(flow.af, \"  \", flow.af.category, \",\"), \"\")) @(IF(flow.ae > 0, CONCATENATE(flow.ae, \" \", flow.ae.category, \",\"), \"\")) @(IF(flow.ab > 0, CONCATENATE(flow.ab, \" \", flow.ab.category, \",\"), \"\")) @(IF(flow.pl > 0, CONCATENATE(flow.pl, \"  \", flow.pl.category, \",\"), \"\")) @(IF(flow.ch > 0, CONCATENATE(flow.ch, \"  \", flow.ch.category, \",\"), \"\")) @(IF(flow.me > 0, CONCATENATE(flow.me, \"  \", flow.me.category, \",\"), \"\")) @(IF(flow.tf > 0, CONCATENATE(flow.tf, \"  \", flow.tf.category, \",\"), \"\"))\n@(IF(flow.hb > 0, CONCATENATE(flow.hb, \"  \", flow.hb.category, \".\"), \"\")) @(IF(flow.dr > 0, CONCATENATE(flow.dr, \"  \", flow.dr.category, \".\"), \"\")) @(IF(flow.yf > 0, CONCATENATE(flow.yf, \"  \", flow.yf.category, \".\"), \"\")) @(IF(flow.vf > 0, CONCATENATE(flow.vf, \"  \", flow.vf.category, \".\"), \"\")) @(IF(flow.md > 0, CONCATENATE(flow.md, \"  \", flow.md.category, \".\"), \"\")) If there's an error please resend."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }, 
+            {
+              "action": "POST", 
+              "type": "api", 
+              "webhook": "http://localhost:9090/dhis2queue?form=death&facilitycode=EsXcenXz99W&msisdn=@contact.tel_e164&facility=EsXcenXz99W&report_type=death&raw_msg=@flow.report&district=@contact.district", 
+              "webhook_headers": []
+            }
+          ]
+        }, 
+        {
+          "y": 237, 
+          "x": 467, 
+          "destination": "543ea31b-bd55-4644-a72c-efa47f94e226", 
+          "uuid": "726a0784-95ef-4992-b284-7b713f054416", 
+          "actions": [
+            {
+              "action": "POST", 
+              "type": "api", 
+              "webhook": "http://localhost:9090/ordermessage/death?facility=@contact.facility", 
+              "webhook_headers": []
+            }
+          ]
+        }
+      ], 
+      "version": 10, 
+      "flow_type": "F", 
+      "entry": "6f6bac0e-305b-452e-841d-a7070af6774b", 
+      "rule_sets": [
+        {
+          "uuid": "6f6bac0e-305b-452e-841d-a7070af6774b", 
+          "rules": [
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "All Responses"
+              }, 
+              "destination": "81d499e5-9205-43c1-8673-38d1976e883a", 
+              "uuid": "bbdcefa6-6f46-4f8f-b1e0-ad33d091c25d", 
+              "destination_type": "R"
+            }
+          ], 
+          "ruleset_type": "wait_message", 
+          "label": "Report", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 0, 
+          "x": 386, 
+          "config": {}
+        }, 
+        {
+          "uuid": "1b23bd1f-3719-4535-9d7a-c27624ca88b2", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Malaria"
+              }, 
+              "destination": "5932e93e-a9ea-4afb-be5f-b4fe030fa4a6", 
+              "uuid": "bba85520-7fd5-4919-a4d6-675a3e4c9598", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "7ae7d1cb-649c-4d23-b218-6a0b282727e9", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ma", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 482, 
+          "x": 358, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 0
+          }
+        }, 
+        {
+          "uuid": "5932e93e-a9ea-4afb-be5f-b4fe030fa4a6", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Dysentry"
+              }, 
+              "destination": "1e78ef95-82c2-41c5-8d81-6a93d14a03cf", 
+              "uuid": "1c319157-f8da-4fa2-8d1d-f985b44c6ac3", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "e8048a84-8735-4f0c-a1f0-23a3f1dfb57d", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "dy", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 580, 
+          "x": 341, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 1
+          }
+        }, 
+        {
+          "uuid": "1e78ef95-82c2-41c5-8d81-6a93d14a03cf", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "SARI"
+              }, 
+              "destination": "a576b082-0a14-47ea-ba2c-1351d23c3e8f", 
+              "uuid": "ba4474e0-c45f-4db5-8bbb-1823a3ff2295", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "1242f065-e874-4141-81e4-83a1247a1238", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "sa", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 687, 
+          "x": 170, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 2
+          }
+        }, 
+        {
+          "uuid": "a576b082-0a14-47ea-ba2c-1351d23c3e8f", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Acute Flaccid Paralysis"
+              }, 
+              "destination": "5f405a72-58e1-4615-90e7-4013a8af64d5", 
+              "uuid": "c7e0dbda-dcb8-4d68-9f03-f160131bc69f", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "86a96e5f-9a1a-42c8-adc3-d574bc104ce5", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "af", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 780, 
+          "x": 329, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 3
+          }
+        }, 
+        {
+          "uuid": "5f405a72-58e1-4615-90e7-4013a8af64d5", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "AEFI"
+              }, 
+              "destination": "e95d04c5-424f-489a-9c07-278732cca2b1", 
+              "uuid": "62243bc1-7616-4996-8f08-03b87ba45d7e", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "a83cc43b-10df-441a-8f4c-4966c79abbad", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ae", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 880, 
+          "x": 211, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 4
+          }
+        }, 
+        {
+          "uuid": "e95d04c5-424f-489a-9c07-278732cca2b1", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Animal Bites"
+              }, 
+              "destination": "944dbb9a-cab5-441b-9234-fbe34c002cab", 
+              "uuid": "84b7d0ae-67d0-4943-aaa0-df4ae143083a", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "bec6ac2f-8db6-4c8a-acaf-9bfe60112f88", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ab", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 975, 
+          "x": 363, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 5
+          }
+        }, 
+        {
+          "uuid": "944dbb9a-cab5-441b-9234-fbe34c002cab", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Bacterial Meningitis"
+              }, 
+              "destination": "3b10c6c6-d8b8-4b2f-a26b-f01ace1cb891", 
+              "uuid": "44de7df3-ac23-4e18-bdb9-140ff22c9a8d", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "59579764-e76f-4ae0-9cd9-5eb09fe04a4e", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "mg", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1097, 
+          "x": 404, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 6
+          }
+        }, 
+        {
+          "uuid": "3b10c6c6-d8b8-4b2f-a26b-f01ace1cb891", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Cholera"
+              }, 
+              "destination": "c4e7b3f9-681b-4935-96f9-2649a02a5653", 
+              "uuid": "87df690a-ae58-42bb-9eef-2bf990295bb9", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "b84e61d5-d287-447a-91e7-89260504e8c9", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "ch", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1219, 
+          "x": 401, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 7
+          }
+        }, 
+        {
+          "uuid": "c4e7b3f9-681b-4935-96f9-2649a02a5653", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Guinea Worm"
+              }, 
+              "destination": "9c155248-b523-407b-ae59-dbe805bab4da", 
+              "uuid": "14be67d0-3dc5-4e85-82e7-b7b93418ead9", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "7bd8aced-276d-47cd-8875-da36fc10df4c", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "gw", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1327, 
+          "x": 401, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 8
+          }
+        }, 
+        {
+          "uuid": "9c155248-b523-407b-ae59-dbe805bab4da", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Measles"
+              }, 
+              "destination": "ce4f8f25-4434-4e01-aed1-1c5ebb8a36e5", 
+              "uuid": "77bf4756-9a5d-4f2c-a0be-d1f27b0907d2", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "ce050720-88c5-41e5-bda4-c30fffa25929", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "me", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1435, 
+          "x": 395, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 9
+          }
+        }, 
+        {
+          "uuid": "ce4f8f25-4434-4e01-aed1-1c5ebb8a36e5", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Neonatal Tetanus"
+              }, 
+              "destination": "74b084e4-a694-413e-86b5-8f5972bc2d4c", 
+              "uuid": "75857949-3355-437f-b743-a1b3db6105f8", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "f06391a4-446b-405f-9421-8ec0a9a400fb", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "nt", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1532, 
+          "x": 399, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 10
+          }
+        }, 
+        {
+          "uuid": "74b084e4-a694-413e-86b5-8f5972bc2d4c", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Plague"
+              }, 
+              "destination": "85ac3d8c-77b1-4296-9b15-fc189722f1ac", 
+              "uuid": "cb61292e-af1e-4dd7-811c-c29727e34ab5", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "25f9d3db-a9b1-47bd-8e05-532dacff712a", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "pl", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1670, 
+          "x": 372, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 11
+          }
+        }, 
+        {
+          "uuid": "85ac3d8c-77b1-4296-9b15-fc189722f1ac", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Typhoid Fever"
+              }, 
+              "destination": "3059c93a-bcf7-46b1-8540-4abab5280e8f", 
+              "uuid": "d6fbbc0a-8365-41b9-90a0-4a7ce5ef25ad", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "ca5991a6-bc76-428a-94db-db387340a6a7", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "tf", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1792, 
+          "x": 375, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 12
+          }
+        }, 
+        {
+          "uuid": "3059c93a-bcf7-46b1-8540-4abab5280e8f", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Hepatitis B"
+              }, 
+              "destination": "c315aeec-7d3c-4e64-86a7-d5dca6644cbd", 
+              "uuid": "691630b8-0345-43f9-acea-9723239c30f4", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "6aa83540-5ccf-4a04-ad14-1876e15f3234", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "hb", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1895, 
+          "x": 385, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 13
+          }
+        }, 
+        {
+          "uuid": "c315aeec-7d3c-4e64-86a7-d5dca6644cbd", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "TB"
+              }, 
+              "destination": "987e9ff9-b749-4861-ae9a-2029b0bbc16f", 
+              "uuid": "cbc3ef5f-a255-4322-812d-77b9b10e656a", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "762947c8-c3fa-4153-83d7-922a2e329c0e", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "dr", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2003, 
+          "x": 314, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 14
+          }
+        }, 
+        {
+          "uuid": "ba93953b-f7ea-49b9-a001-b20cd38b81fb", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Maternal Deaths"
+              }, 
+              "destination": "dda3d2a3-32dd-4a69-aa81-3178a2a114df", 
+              "uuid": "521a732b-b8a7-4e7d-8bbc-e95e4accb935", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "a8bcee71-95d9-4ffa-aeab-31ab14da7333", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "md", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2362, 
+          "x": 319, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 17
+          }
+        }, 
+        {
+          "uuid": "dda3d2a3-32dd-4a69-aa81-3178a2a114df", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Macerated Still Births"
+              }, 
+              "destination": "8b09048a-b6e7-4e18-befb-bf95847d05c8", 
+              "uuid": "be4d45b2-5f2e-4ce2-851b-6d39387cf74e", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "e48a8379-3fc3-4fbb-8ce2-f86e42891713", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "mb", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2486, 
+          "x": 406, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 18
+          }
+        }, 
+        {
+          "uuid": "543ea31b-bd55-4644-a72c-efa47f94e226", 
+          "rules": [
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "All Responses"
+              }, 
+              "destination": "1b23bd1f-3719-4535-9d7a-c27624ca88b2", 
+              "uuid": "d77bbb5b-9168-4d21-b7fb-63b9e185a2a5", 
+              "destination_type": "R"
+            }
+          ], 
+          "ruleset_type": "expression", 
+          "label": "Submission", 
+          "operand": "@extra.message", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 385, 
+          "x": 380, 
+          "config": {}
+        }, 
+        {
+          "uuid": "81d499e5-9205-43c1-8673-38d1976e883a", 
+          "rules": [
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "All Responses"
+              }, 
+              "destination": "726a0784-95ef-4992-b284-7b713f054416", 
+              "uuid": "3fa1e93b-e8c4-488d-9724-9cc9d8ebdc92", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "expression", 
+          "label": "msg", 
+          "operand": "@(REMOVE_FIRST_WORD(step.value ))", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 106, 
+          "x": 401, 
+          "config": {}
+        }, 
+        {
+          "uuid": "987e9ff9-b749-4861-ae9a-2029b0bbc16f", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Yellow Fever"
+              }, 
+              "destination": "1f174db6-e6e2-4d95-9af2-3d4debfeb0ed", 
+              "uuid": "96fadf06-51f6-4139-94c9-234220fe4d9c", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "71a8110a-f180-48ce-8ba8-81058d70087b", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "yf", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2157, 
+          "x": 333, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 15
+          }
+        }, 
+        {
+          "uuid": "1f174db6-e6e2-4d95-9af2-3d4debfeb0ed", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Viral Hemorrhagic Fevers"
+              }, 
+              "destination": "ba93953b-f7ea-49b9-a001-b20cd38b81fb", 
+              "uuid": "1354ef2a-0c6f-46db-8e72-7f1a5c4c1a2b", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "cabfe784-02d3-4bc6-a492-9a8181278c99", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "vf", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2263, 
+          "x": 349, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 16
+          }
+        }, 
+        {
+          "uuid": "8b09048a-b6e7-4e18-befb-bf95847d05c8", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Fresh Still Births"
+              }, 
+              "destination": "b5e1a1e5-5006-4740-9fd0-316068770080", 
+              "uuid": "27a558d5-6e1d-4040-bfad-49ba0ee99600", 
+              "destination_type": "R"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "b546b390-60ef-4c8d-baa4-842d2b6166c2", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "fb", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2595, 
+          "x": 389, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 19
+          }
+        }, 
+        {
+          "uuid": "b5e1a1e5-5006-4740-9fd0-316068770080", 
+          "rules": [
+            {
+              "test": {
+                "type": "number"
+              }, 
+              "category": {
+                "ang": "Early Neonatal Deaths"
+              }, 
+              "destination": "1dd1a73e-b478-4a4b-97be-56b08c7c6935", 
+              "uuid": "28b001dc-df7a-4513-9393-444d4d4be2c0", 
+              "destination_type": "A"
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "ang": "Other"
+              }, 
+              "destination": "dfa8e72a-e78f-43f8-8193-0537b81dde0e", 
+              "uuid": "57f4676b-9c27-402e-830b-02652dfcadf8", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "nd", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2741, 
+          "x": 397, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 20
+          }
+        }
+      ], 
+      "metadata": {
+        "uuid": "35a488a7-29f5-4412-bd97-c88fc6aa650c", 
+        "notes": [
+          {
+            "y": 1431, 
+            "x": 125, 
+            "body": "10th", 
+            "title": "Measles"
+          }, 
+          {
+            "y": 1996, 
+            "x": 50, 
+            "body": "15th", 
+            "title": "TB"
+          }
+        ], 
+        "expires": 0, 
+        "name": "Deaths This Week", 
+        "saved_on": "2018-10-17T16:48:46.299545Z", 
+        "revision": 100
+      }
+    }
+  ], 
+  "triggers": [
+    {
+      "trigger_type": "K", 
+      "flow": {
+        "name": "Deaths This Week", 
+        "uuid": "35a488a7-29f5-4412-bd97-c88fc6aa650c"
+      }, 
+      "groups": [], 
+      "keyword": "death", 
+      "channel": null
+    }
+  ]
+}

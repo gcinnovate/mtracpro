@@ -1,0 +1,592 @@
+{
+  "campaigns": [], 
+  "version": 10, 
+  "site": "https://app.rapidpro.io", 
+  "flows": [
+    {
+      "base_language": "base", 
+      "action_sets": [
+        {
+          "y": 1225, 
+          "x": 877, 
+          "destination": "2539b60a-2286-4734-be95-607c182fb3c2", 
+          "uuid": "77dbcb4e-66da-486f-8474-0af87f3d570f", 
+          "actions": [
+            {
+              "msg": {
+                "base": "There was an error with your report, or the system failed to process it. Please resend your report."
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }, 
+        {
+          "y": 1881, 
+          "x": 234, 
+          "destination": "224c191d-e447-4fcb-80c8-83ba6f2b4c3d", 
+          "uuid": "214ca9d8-e45e-437d-9ac6-314b896bd6eb", 
+          "actions": [
+            {
+              "msg": {
+                "base": "You reported @flow.hiv_screening_test_kits @flow.hiv_screening_test_kits.category, @flow.emtct @flow.emtct.category, \n@flow.lopinavir @flow.lopinavir.category, @flow.navirapine @flow.navirapine.category, @flow.tenofovir @flow.tenofovir.category, @flow.rhze @flow.rhze.category, @flow.rh @flow.rh.category, \n@flow.rhz @flow.rhz.category, @flow.inh300\n@flow.inh300.category & @flow.inh100 @flow.inh100.category. If there is an error please resend"
+              }, 
+              "media": {}, 
+              "send_all": false, 
+              "type": "reply"
+            }
+          ]
+        }
+      ], 
+      "version": 10, 
+      "flow_type": "F", 
+      "entry": "1d8101a2-4335-4a4c-b379-bf16e4e62f83", 
+      "rule_sets": [
+        {
+          "uuid": "1d8101a2-4335-4a4c-b379-bf16e4e62f83", 
+          "rules": [
+            {
+              "category": {
+                "base": "All Responses"
+              }, 
+              "uuid": "276ef6e4-0479-4a90-883a-118f36dc1591", 
+              "destination": "1ae102fa-0241-4b02-8111-b97474bf7ea1", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "wait_message", 
+          "label": "Response 1", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 0, 
+          "x": 440, 
+          "config": {}
+        }, 
+        {
+          "uuid": "1ae102fa-0241-4b02-8111-b97474bf7ea1", 
+          "rules": [
+            {
+              "category": {
+                "base": "All Responses"
+              }, 
+              "uuid": "b1f9dea9-cbc7-4080-a237-67c6e4dec4a2", 
+              "destination": "bae80db2-64dc-46b2-98ed-3df52d1f3143", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "expression", 
+          "label": "submission", 
+          "operand": "@(REMOVE_FIRST_WORD(SUBSTITUTE(step.value, \",\", \".\")))", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 118, 
+          "x": 455, 
+          "config": {}
+        }, 
+        {
+          "uuid": "bae80db2-64dc-46b2-98ed-3df52d1f3143", 
+          "rules": [
+            {
+              "category": {
+                "base": "HIV 1&2 Screening Tests"
+              }, 
+              "uuid": "c6967559-39a8-40a6-99e6-e8892dde8478", 
+              "destination": "6f8a78dc-982d-4518-950e-5fdc682de5de", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "77dbcb4e-66da-486f-8474-0af87f3d570f", 
+              "uuid": "8d7d7ad8-b57c-4b1f-97b9-2cb5b02d67aa", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "hiv_screening_test_kits", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 244, 
+          "x": 469, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 0
+          }
+        }, 
+        {
+          "uuid": "6f8a78dc-982d-4518-950e-5fdc682de5de", 
+          "rules": [
+            {
+              "category": {
+                "base": "ARVs"
+              }, 
+              "uuid": "d55d1ff8-fff2-4f07-8057-1f268f7af6bd", 
+              "destination": "f340b2df-9f79-4561-81a6-ba7eee89bb08", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "77dbcb4e-66da-486f-8474-0af87f3d570f", 
+              "uuid": "3bc4f064-2e90-4acf-be83-40ec46d1628f", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "emtct", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 373, 
+          "x": 419, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 1
+          }
+        }, 
+        {
+          "uuid": "f340b2df-9f79-4561-81a6-ba7eee89bb08", 
+          "rules": [
+            {
+              "category": {
+                "base": "Lopinavir"
+              }, 
+              "uuid": "f97f6d69-391f-48ad-bbe0-6d4b45234205", 
+              "destination": "06ef5d88-d587-4f98-bacc-7fcbd2f3c54a", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "77dbcb4e-66da-486f-8474-0af87f3d570f", 
+              "uuid": "787fceba-15ba-4d67-84f0-c0b43589954d", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "lopinavir", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 523, 
+          "x": 376, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 2
+          }
+        }, 
+        {
+          "uuid": "06ef5d88-d587-4f98-bacc-7fcbd2f3c54a", 
+          "rules": [
+            {
+              "category": {
+                "base": "Navirapine"
+              }, 
+              "uuid": "be428c25-da5a-481b-a121-8377dc31759f", 
+              "destination": "a1327872-ff09-4c39-b411-8070c101702a", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "77dbcb4e-66da-486f-8474-0af87f3d570f", 
+              "uuid": "96bcfaa1-940f-4464-8141-f1ca1f082bad", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "navirapine", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 698, 
+          "x": 339, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 3
+          }
+        }, 
+        {
+          "uuid": "a1327872-ff09-4c39-b411-8070c101702a", 
+          "rules": [
+            {
+              "category": {
+                "base": "Tenofovir"
+              }, 
+              "uuid": "923cff80-0fb2-43e9-a0c1-f8336a8ff4ab", 
+              "destination": "2609a589-3cd4-4b91-859e-87823a955ccf", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "77dbcb4e-66da-486f-8474-0af87f3d570f", 
+              "uuid": "ab723bcc-eb84-4a85-b910-389546777369", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "tenofovir", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 861, 
+          "x": 318, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 4
+          }
+        }, 
+        {
+          "uuid": "2609a589-3cd4-4b91-859e-87823a955ccf", 
+          "rules": [
+            {
+              "category": {
+                "base": "RHZE"
+              }, 
+              "uuid": "2321bd7a-8a0a-4aed-b488-22bbdff66436", 
+              "destination": "0a18fd02-0188-4bc7-b33e-98a049b79e17", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "77dbcb4e-66da-486f-8474-0af87f3d570f", 
+              "uuid": "524f416e-93cb-497e-8c09-0673a643d39c", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "rhze", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1018, 
+          "x": 310, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 5
+          }
+        }, 
+        {
+          "uuid": "0a18fd02-0188-4bc7-b33e-98a049b79e17", 
+          "rules": [
+            {
+              "category": {
+                "base": "RH Blisters"
+              }, 
+              "uuid": "d622d2be-d570-444b-996a-766e70b1b166", 
+              "destination": "6200a3ef-b13f-4734-9494-42c1249f566e", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "77dbcb4e-66da-486f-8474-0af87f3d570f", 
+              "uuid": "a39e6045-7ae4-4d07-be35-780cd635e941", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "rh", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1177, 
+          "x": 259, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 6
+          }
+        }, 
+        {
+          "uuid": "6200a3ef-b13f-4734-9494-42c1249f566e", 
+          "rules": [
+            {
+              "category": {
+                "base": "R75H50Z150"
+              }, 
+              "uuid": "5e0f6c67-9807-4c1a-9303-4a84fbee134b", 
+              "destination": "0321c7e3-191f-4635-8af9-876d3b0d17df", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "77dbcb4e-66da-486f-8474-0af87f3d570f", 
+              "uuid": "9cfe4032-fc59-45d4-a6af-d2d65f4c542d", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "rhz", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1310, 
+          "x": 223, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 7
+          }
+        }, 
+        {
+          "uuid": "0321c7e3-191f-4635-8af9-876d3b0d17df", 
+          "rules": [
+            {
+              "category": {
+                "base": "INH300"
+              }, 
+              "uuid": "84806044-7e36-4ca3-8a0f-db275de85c96", 
+              "destination": "3d22bf54-c33c-44d0-9e9d-2442a80c909e", 
+              "label": null, 
+              "destination_type": "R", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "test": {
+                "test": "true", 
+                "type": "true"
+              }, 
+              "category": {
+                "base": "Other"
+              }, 
+              "destination": "77dbcb4e-66da-486f-8474-0af87f3d570f", 
+              "uuid": "991d9d41-11c7-4a5c-8850-2c0e55260696", 
+              "destination_type": "A"
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "inh300", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1499, 
+          "x": 271, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 8
+          }
+        }, 
+        {
+          "uuid": "3d22bf54-c33c-44d0-9e9d-2442a80c909e", 
+          "rules": [
+            {
+              "category": {
+                "base": "INH100"
+              }, 
+              "uuid": "95e86de0-1309-4303-b36e-ce35900c82b0", 
+              "destination": "214ca9d8-e45e-437d-9ac6-314b896bd6eb", 
+              "label": null, 
+              "destination_type": "A", 
+              "test": {
+                "type": "number"
+              }
+            }, 
+            {
+              "category": {
+                "base": "Other"
+              }, 
+              "uuid": "bd4e9712-3c6c-4d4a-8cb8-6ccfcb93aac3", 
+              "destination": "77dbcb4e-66da-486f-8474-0af87f3d570f", 
+              "label": null, 
+              "destination_type": "A", 
+              "test": {
+                "type": "true"
+              }
+            }
+          ], 
+          "ruleset_type": "form_field", 
+          "label": "inh100", 
+          "operand": "@flow.submission", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1677, 
+          "x": 256, 
+          "config": {
+            "field_delimiter": ".", 
+            "field_index": 9
+          }
+        }, 
+        {
+          "uuid": "224c191d-e447-4fcb-80c8-83ba6f2b4c3d", 
+          "rules": [
+            {
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Success"
+              }, 
+              "uuid": "a4192f2d-6d36-46c8-9ff4-b95f341da94b"
+            }, 
+            {
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Failure"
+              }, 
+              "uuid": "6f540c61-1cb7-4381-b5e0-71228a0478ba"
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Response 13", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 2422, 
+          "x": 233, 
+          "config": {
+            "webhook": "http://localhost:9090/dhis2queue?form=arv&facilitycode=EsXcenXz99W&msisdn=@contact.tel_e164&facility=EsXcenXz99W&report_type=arv&raw_msg=@flow.report&district=@contact.district", 
+            "webhook_action": "POST", 
+            "webhook_headers": []
+          }
+        }, 
+        {
+          "uuid": "2539b60a-2286-4734-be95-607c182fb3c2", 
+          "rules": [
+            {
+              "test": {
+                "status": "success", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Success"
+              }, 
+              "uuid": "cffa4937-61e6-481c-9169-a25cfbee45a3"
+            }, 
+            {
+              "test": {
+                "status": "failure", 
+                "type": "webhook_status"
+              }, 
+              "category": {
+                "base": "Failure"
+              }, 
+              "uuid": "84be651c-ce10-4a5d-864d-e06eba50127c"
+            }
+          ], 
+          "ruleset_type": "webhook", 
+          "label": "Response 14", 
+          "operand": "@step.value", 
+          "finished_key": null, 
+          "response_type": "", 
+          "y": 1384, 
+          "x": 882, 
+          "config": {
+            "webhook": "http://localhost:9090/errors?", 
+            "webhook_action": "GET", 
+            "webhook_headers": []
+          }
+        }
+      ], 
+      "metadata": {
+        "expires": 10080, 
+        "revision": 23, 
+        "uuid": "becd2088-58cf-4432-8a28-070fa096db50", 
+        "name": "HIV Kit", 
+        "saved_on": "2018-10-01T20:12:12.816469Z"
+      }
+    }
+  ], 
+  "triggers": [
+    {
+      "trigger_type": "K", 
+      "flow": {
+        "name": "HIV Kit", 
+        "uuid": "becd2088-58cf-4432-8a28-070fa096db50"
+      }, 
+      "groups": [], 
+      "keyword": "arv", 
+      "channel": null
+    }
+  ]
+}
