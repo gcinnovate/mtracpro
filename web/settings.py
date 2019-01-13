@@ -33,10 +33,11 @@ USE_OLD_WEBHOOKS = False
 # position of indicator in its message form.
 CASES_POSITIONS = {
     'ma': 0, 'dy': 1, 'sa': 2, 'af': 3, 'ae': 4, 'ab': 5, 'mg': 6, 'ch': 7, 'gw': 8,
-    'me': 9, 'nt': 10, 'vf': 11, 'pl': 12, 'tf': 13, 'yf': 14, 'tb': 15, 'md': 16, 'pd': 17,
+    'me': 9, 'nt': 10, 'pl': 11, 'tf': 12, 'hb': 13, 'tb': 14, 'yf': 15, 'vf': 16, 'md': 17,
+    'mb': 18, 'fb': 19, 'nd': 20,
     # other condition follow - luckily codes are unique
     'cg': 0, 'dg': 1, 'il': 2, 'ax': 3, 'hp': 4, 'dc': 5, 'lp': 6, 'oc': 7, 'bu': 8,
-    'lf': 9, 'no': 10, 'hn': 11, 'ss': 12, 'sp': 13, 'dd': 14, 'pn': 15, 'tx': 16, 'tr': 17,
+    'gw': 9, 'no': 10, 'hn': 11, 'ss': 12, 'sp': 13, 'dd': 14, 'pn': 15, 'tx': 16, 'tr': 17,
     'sc': 18, 'dp': 19, 'wc': 20, 'bc': 21, 'ka': 22, 'ns': 24, 'ar': 15
 }
 # Preferred delimiter for the message forms
