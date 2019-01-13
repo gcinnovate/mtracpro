@@ -244,6 +244,32 @@ class Deaths:
         return json.dumps({"message": message})
 
 
+class OrderMessage:
+    def GET(self, form):
+        params = web.input()
+        if USE_OLD_WEBHOOKS:
+            msg = get_webhook_msg_old(params, 'msg')
+        else:
+            payload = json.loads(web.data())
+            msg = get_webhook_msg(payload, 'msg')
+
+        message = parse_message(msg, form)
+
+        return json.dumps({"message": message})
+
+    def POST(self, form):
+        params = web.input()
+        if USE_OLD_WEBHOOKS:
+            msg = get_webhook_msg_old(params, 'msg')
+        else:
+            payload = json.loads(web.data())
+            msg = get_webhook_msg(payload, 'msg')
+
+        message = parse_message(msg, form)
+
+        return json.dumps({"message": message})
+
+
 class Test:
     def GET(self):
         web.header('Content-Type', 'application/json')
@@ -268,7 +294,7 @@ class Dhis2Queue:
             dataValues = []
         else:
             dataValues = ""
-        print "FACILITYCODE:", params.facilitycode, "==>", params.facility
+        print("FACILITYCODE:", params.facilitycode, "==>", params.facility)
         if params.facilitycode:
             if not USE_OLD_WEBHOOKS:
                 values = json.loads(web.data())
@@ -286,7 +312,7 @@ class Dhis2Queue:
                                 settings, 'REPORTS_WITH_COMMANDS', ['cases', 'death', 'epc', 'epd']):  # XXX irregular forms
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
-                        print "%s=>%s" % (slug, val), IndicatorMapping[slug]
+                        print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
                                 {
@@ -312,7 +338,7 @@ class Dhis2Queue:
                         if not(val) and params.form in ['cases', 'death', 'epc', 'death']:
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
-                        print "%s=>%s" % (slug, val), IndicatorMapping[slug]
+                        print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
                                 {
@@ -345,7 +371,7 @@ class Dhis2Queue:
                 else:
                     payload = XML_TEMPLATE % args_dict
                 year, week = tuple(args_dict['period'].split('W'))
-                print payload
+                print(payload)
                 extra_params = {
                     'week': week, 'year': year, 'msisdn': params.msisdn,
                     'facility': params.facilitycode, 'raw_msg': params.raw_msg,
@@ -358,7 +384,7 @@ class Dhis2Queue:
                     'status': config.get('default-queue-status', 'pending')}
                 # now ready to queue to DB for pushing to DHIS2
                 # resp = queue_submission(serverid, post_xml, year, week)
-                print extra_params
+                print(extra_params)
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                     extra_params['ctype'] = 'json'
                     # resp = post_request_to_dispatcher2(
@@ -388,9 +414,9 @@ class QueueForDhis2InstanceProcessing:
             'distrcit': '', 'report_type': params.report_type,
             'source': params.source, 'destination': params.destination,
             'is_qparams': "t"}
-        print extra_params
+        print(extra_params)
 
         resp = post_request_to_dispatcher2(payload, ctype="text", params=extra_params)
-        print "Resp:", resp
+        print("Resp:", resp)
 
         return json.dumps({"status": "success"})

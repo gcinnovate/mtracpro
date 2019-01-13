@@ -203,7 +203,7 @@ class Reporters:
                         'district_id': params.district
                     })
                 if r:
-                    print params.role
+                    print(params.role)
                     db.query(
                         "UPDATE reporters SET groups = $groups::INTEGER[], "
                         " jparents = $ancestors WHERE id = $id",

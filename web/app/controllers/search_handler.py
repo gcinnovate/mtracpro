@@ -87,7 +87,7 @@ class Search:
             if params.formatting == "xml":
                 criteria += " AND xml_is_well_formed_document(body)"
 
-        print criteria
+        print(criteria)
         if len(criteria) > 5:
             session.criteria = criteria
         dic = lit(

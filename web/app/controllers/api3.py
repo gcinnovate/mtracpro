@@ -16,7 +16,7 @@ class EditReport:
         week = params.week
         facilitycode = params.facilitycode
         report = params.report
-        print params.values()
+        print(params.values())
 
         dataDict = {}
         addCommands = False
@@ -33,7 +33,7 @@ class EditReport:
                 continue
             if val.__str__().isdigit() or key in TEXT_INDICATORS:
                     slug = key
-                    print "%s=>%s" % (slug, val), MAPPING[slug]
+                    print("%s=>%s" % (slug, val), MAPPING[slug])
                     dataDict[slug] = val
                     if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                         dataValues.append(

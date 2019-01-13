@@ -18,9 +18,9 @@ class QueueRejectedReports:
             resp = get_request(
                 config['api_url'] + "messages.json?contact=%s&after=%s" % (contact_uuid, start_of_today))
             messages = json.loads(resp.text)
-            print messages
-        except Exception, e:
-            print str(e)
+            print(messages)
+        except Exception as e:
+            print(str(e))
             messages = {}
         if 'results' in messages:
             msgs = list(messages['results'])
@@ -41,7 +41,7 @@ class QueueRejectedReports:
             dataValues = []
         else:
             dataValues = ""
-        print "FACILITYCODE:", params.facilitycode, "==>", params.facility, "UUID:", params.uuid
+        print("FACILITYCODE:", params.facilitycode, "==>", params.facility, "UUID:", params.uuid)
         if params.facilitycode:
             if not USE_OLD_WEBHOOKS:
                 values = json.loads(web.data())
@@ -58,7 +58,7 @@ class QueueRejectedReports:
                         if not(val) and params.form in ['cases', 'death', 'epc', 'epd']:
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases, death, epc and epd
-                        print "%s=>%s" % (slug, val), MAPPING[slug]
+                        print("%s=>%s" % (slug, val), MAPPING[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
                                 {
@@ -84,7 +84,7 @@ class QueueRejectedReports:
                         if not(val) and params.form in ['cases', 'death']:
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
-                        print "%s=>%s" % (slug, val), MAPPING[slug]
+                        print("%s=>%s" % (slug, val), MAPPING[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
                                 {
@@ -117,7 +117,7 @@ class QueueRejectedReports:
                 else:
                     payload = XML_TEMPLATE % args_dict
                 year, week = tuple(args_dict['period'].split('W'))
-                print payload
+                print(payload)
                 extra_params = {
                     'week': week, 'year': year, 'msisdn': params.msisdn,
                     'facility': params.facilitycode, 'raw_msg': params.raw_msg,
@@ -131,7 +131,7 @@ class QueueRejectedReports:
                     'status': config.get('default-queue-status', 'pending')}
                 # now ready to queue to DB for pushing to DHIS2
                 # resp = queue_submission(serverid, post_xml, year, week)
-                print extra_params
+                print(extra_params)
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                     extra_params['ctype'] = 'json'
                     # resp = post_request_to_dispatcher2(

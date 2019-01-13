@@ -53,9 +53,9 @@ class Refresh:
         params = web.input(month="")
         web.header('Content-Type', 'application/json')
         if params.month:
-            print params.month
+            print(params.month)
             script_path = script_dir + os.sep + "parse_kannel_log.py"
             cmd = "%s %s -v -m %s" % (config['python_script'], script_path, params.month)
-            print cmd
+            print(cmd)
             r = os.popen(cmd)
         return json.dumps(r.read().strip())

@@ -64,7 +64,7 @@ class DataEntry:
                 continue
             if val.__str__().isdigit() or key in TEXT_INDICATORS:
                     slug = key
-                    print "%s=>%s" % (slug, val), MAPPING[slug]
+                    print("%s=>%s" % (slug, val), MAPPING[slug])
                     dataDict[slug] = val
                     if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                         dataValues.append(
@@ -101,7 +101,7 @@ class DataEntry:
             else:
                 payload = XML_TEMPLATE % args_dict
             year, _week = tuple(args_dict['period'].split('W'))
-            print payload
+            print(payload)
             extra_params = {
                 'week': _week, 'year': year, 'msisdn': params.reporter,
                 'facility': facilitycode, 'raw_msg': msg,
@@ -111,7 +111,7 @@ class DataEntry:
                 'body': payload}
             # now ready to queue to DB for pushing to DHIS2
             # resp = queue_submission(serverid, post_xml, year, week)
-            print extra_params
+            print(extra_params)
             if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                 extra_params['ctype'] = 'json'
                 # resp = post_request_to_dispatcher2(

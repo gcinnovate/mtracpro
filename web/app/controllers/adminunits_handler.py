@@ -23,7 +23,7 @@ class AdminUnits:
             if res:
                 loc = res[0]
                 location_name = loc['name']
-                print location_name
+                print(location_name)
                 ancestors = db.query(
                     "SELECT id, name, level FROM get_ancestors($loc) "
                     "WHERE level > 1 ORDER BY level DESC;", {'loc': edit_val})
