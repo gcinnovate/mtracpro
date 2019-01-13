@@ -168,6 +168,7 @@ def get_reporting_week(date):
 def parse_message(msg, kw=""):
     msg = msg.strip().lower()
     msg = msg.replace(',', '.')
+    msg = msg.replace(' ', '.')
     separators = []
     segments = []
     separator = DELIMITER or '\\s'
@@ -267,7 +268,7 @@ def queue_request(db, params):
             "VALUES($source, $destination, $body, $week, $year, $district, $facility, "
             "$msisdn, $raw_msg, $report_type, $extras, $status)", params)
     except Exception as e:
-        print ">>> FAILED <<<<", str(e)
+        print(">>> FAILED <<<<", str(e))
         return False
     return True
 
@@ -280,7 +281,30 @@ def queue_rejected_reports(db, params):
             "VALUES($source, $destination, $body, $response, $week, $year, $district, $facility, "
             "$msisdn, $raw_msg, $report_type, $extras, $status)", params)
     except Exception as e:
-        print ">>> FAILED <<<<", str(e)
+        print(">>> FAILED <<<<", str(e))
+        return False
+    return True
+
+
+def queue_anonymous_report(db, params):
+    try:
+        res = db.query(
+            "SELECT id FROM anonymousreports WHERE contact_uuid = $contact_uuid "
+            "AND created > NOW() - '3 days'::interval", {'contact_uuid': params['contact_uuid']})
+        if not res:
+            db.query(
+                "INSERT INTO anonymousreports(contact_uuid, report) "
+                "VALUES ($contact_uuid, $report) ", params
+            )
+        else:
+            report_id = res[0]['id']
+            db.query(
+                "INSERT INTO anonymousreport_messages (report_id, message) "
+                "VALUES ($report_id, $message)", {
+                    'report_id': report_id, 'message': params['report']})
+
+    except Exception as e:
+        print(">>> FAILED <<<<" + str(e))
         return False
     return True
 
