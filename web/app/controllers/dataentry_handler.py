@@ -1,7 +1,7 @@
 import web
 import datetime
 import json
-from . import csrf_protected, db, require_login, render, get_session, serversByName
+from . import csrf_protected, db, require_login, render, get_session, serversByName, IndicatorMapping
 from settings import config
 from app.tools.utils import get_reporting_week, generate_raw_message  # ,post_request_to_dispatcher2
 from app.tools.utils import queue_request
@@ -41,6 +41,7 @@ class DataEntry:
     @require_login
     def POST(self):
         params = web.input(districtname="")
+        extras = {}
         week = params.week
         facility = params.facility
         facilitycode = ""
@@ -64,19 +65,19 @@ class DataEntry:
                 continue
             if val.__str__().isdigit() or key in TEXT_INDICATORS:
                     slug = key
-                    print("%s=>%s" % (slug, val), MAPPING[slug])
+                    print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                     dataDict[slug] = val
                     if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                         dataValues.append(
                             {
-                                'dataElement': MAPPING[slug]['dhis2_id'],
-                                'categoryOptionCombo': MAPPING[slug]['dhis2_combo_id'],
+                                'dataElement': IndicatorMapping[slug]['dhis2_id'],
+                                'categoryOptionCombo': IndicatorMapping[slug]['dhis2_combo_id'],
                                 'value': val})
                     else:
                         dataValues += (
                             "<dataValue dataElement='%s' categoryOptionCombo="
                             "'%s' value='%s' />\n" %
-                            (MAPPING[slug]['dhis2_id'], MAPPING[slug]['dhis2_combo_id'], val))
+                            (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
 
         if not dataValues and report in ('cases', 'death'):
             if PREFERED_DHIS2_CONTENT_TYPE == 'json':
@@ -108,6 +109,8 @@ class DataEntry:
                 'district': params.districtname, 'report_type': params.report,
                 'source': serversByName[config['dispatcher2_source']],
                 'destination': serversByName[config['dispatcher2_destination']],
+                'extras': json.dumps(extras),
+                'status': config.get('default-queue-status', 'pending'),
                 'body': payload}
             # now ready to queue to DB for pushing to DHIS2
             # resp = queue_submission(serverid, post_xml, year, week)
