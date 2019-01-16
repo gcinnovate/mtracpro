@@ -1,9 +1,9 @@
 import web
 import datetime
 import json
-from . import db, require_login, serversByName, formatMsgForAndroid
+from . import db, require_login, serversByName, formatMsgForAndroid, IndicatorMapping
 from app.tools.utils import generate_raw_message, get_reporting_week
-from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
+from settings import DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, REPORTS_WITH_COMMANDS
 from settings import TEXT_INDICATORS
 import settings
@@ -33,19 +33,19 @@ class EditReport:
                 continue
             if val.__str__().isdigit() or key in TEXT_INDICATORS:
                     slug = key
-                    print("%s=>%s" % (slug, val), MAPPING[slug])
+                    print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                     dataDict[slug] = val
                     if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                         dataValues.append(
                             {
-                                'dataElement': MAPPING[slug]['dhis2_id'],
-                                'categoryOptionCombo': MAPPING[slug]['dhis2_combo_id'],
+                                'dataElement': IndicatorMapping[slug]['dhis2_id'],
+                                'categoryOptionCombo': IndicatorMapping[slug]['dhis2_combo_id'],
                                 'value': val})
                     else:
                         dataValues += (
                             "<dataValue dataElement='%s' categoryOptionCombo="
                             "'%s' value='%s' />\n" %
-                            (MAPPING[slug]['dhis2_id'], MAPPING[slug]['dhis2_combo_id'], val))
+                            (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
 
         if not dataValues and report in getattr(
                 settings, 'REPORTS_WITH_COMMANDS', ('cases', 'death', 'epc', 'epd')):

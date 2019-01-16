@@ -1,13 +1,13 @@
 import json
 import web
 import datetime
-from . import db, serversByName
+from . import db, serversByName, IndicatorMapping
 from settings import config
 from settings import USE_OLD_WEBHOOKS
 # from app.tools.utils import get_webhook_msg_old
 from app.tools.utils import get_reporting_week, get_request
 from app.tools.utils import queue_rejected_reports
-from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
+from settings import DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS
 
 
@@ -58,18 +58,18 @@ class QueueRejectedReports:
                         if not(val) and params.form in ['cases', 'death', 'epc', 'epd']:
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases, death, epc and epd
-                        print("%s=>%s" % (slug, val), MAPPING[slug])
+                        print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
                                 {
-                                    'dataElement': MAPPING[slug]['dhis2_id'],
-                                    'categoryOptionCombo': MAPPING[slug]['dhis2_combo_id'],
+                                    'dataElement': IndicatorMapping[slug]['dhis2_id'],
+                                    'categoryOptionCombo': IndicatorMapping[slug]['dhis2_combo_id'],
                                     'value': val})
                         else:
                             dataValues += (
                                 "<dataValue dataElement='%s' categoryOptionCombo="
                                 "'%s' value='%s' />\n" %
-                                (MAPPING[slug]['dhis2_id'], MAPPING[slug]['dhis2_combo_id'], val))
+                                (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
             else:
                 values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
                 for v in values:
@@ -84,18 +84,18 @@ class QueueRejectedReports:
                         if not(val) and params.form in ['cases', 'death']:
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
-                        print("%s=>%s" % (slug, val), MAPPING[slug])
+                        print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
                                 {
-                                    'dataElement': MAPPING[slug]['dhis2_id'],
-                                    'categoryOptionCombo': MAPPING[slug]['dhis2_combo_id'],
+                                    'dataElement': IndicatorMapping[slug]['dhis2_id'],
+                                    'categoryOptionCombo': IndicatorMapping[slug]['dhis2_combo_id'],
                                     'value': val})
                         else:
                             dataValues += (
                                 "<dataValue dataElement='%s' categoryOptionCombo="
                                 "'%s' value='%s' />\n" %
-                                (MAPPING[slug]['dhis2_id'], MAPPING[slug]['dhis2_combo_id'], val))
+                                (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
 
             if not dataValues and params.form in ('cases', 'death'):
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':
