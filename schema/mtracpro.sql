@@ -75,6 +75,28 @@ CREATE TABLE configs (
         created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE anonymousreports(
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    facilityid INTEGER REFERENCES healthfacilities(id),
+    districtid INTEGER REFERENCES locations,
+    report TEXT NOT NULL DEFAULT '',
+    action TEXT NOT NULL DEFAULT 'Open' CHECK(action IN('Open', 'Ignored', 'Escalated', 'Closed', 'Canceled')),
+    action_center TEXT NOT NULL DEFAULT '',
+    topic TEXT NOT NULL DEFAULT '',
+    action_taken TEXT NOT NULL DEFAULT '',
+    comment TEXT NOT NULL DEFAULT '',
+    contact_uuid TEXT NOT NULL DEFAULT '',
+    created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE anonymousreport_messages(
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    report_id BIGINT REFERENCES anonymousreports(id),
+    message TEXT NOT NULL DEFAULT '',
+    created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE OR REPLACE FUNCTION gen_code() RETURNS TEXT AS
 $delim$
 import string
@@ -434,6 +456,15 @@ CREATE TABLE kannel_stats(
     created TIMESTAMP NOT NULL DEFAULT NOW(),
     updated TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+CREATE VIEW anonymousreports_view AS
+    SELECT
+        a.id, a.report, a.topic, a.action, a.action_center, a.action_taken, a.comment,
+        a.created, a.facilityid, a.districtid, b.name AS facility, c.name AS district
+    FROM
+        anonymousreports a
+        LEFT OUTER JOIN healthfacilities b ON (a.facilityid = b.id)
+        LEFT OUTER JOIN locations c ON (a.districtid = c.id);
 
 CREATE VIEW sms_stats AS
     SELECT

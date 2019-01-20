@@ -7,16 +7,18 @@ class handlers.
 from app.controllers.main_handler import Index, Logout
 from app.controllers.api import Location, LocationChildren, SubcountyLocations
 from app.controllers.api import DistrictFacilities, LocationFacilities, FacilityReporters
-from app.controllers.api import Cases, Deaths, Dhis2Queue, Test, ReportsThisWeek
+from app.controllers.api import Cases, Deaths, OrderMessage, Dhis2Queue, Test, ReportsThisWeek
 from app.controllers.api import QueueForDhis2InstanceProcessing, ReporterAPI
 from app.controllers.api2 import LocationsEndpoint, ReportersXLEndpoint
 from app.controllers.api2 import CreateFacility, ReportForms, IndicatorHtml
-from app.controllers.api2 import FacilitySMS, SendSMS, RequestDetails
+from app.controllers.api2 import FacilitySMS, SendSMS, RequestDetails, SendBulkSMS
 from app.controllers.api2 import DeleteRequest, DeleteServer
 from app.controllers.api3 import EditReport, ReportingWeek, ReporterHistoryApi
 from app.controllers.api4 import ReportersUploadAPI
 from app.controllers.api5 import CaramalReminders
 from app.controllers.api6 import QueueRejectedReports
+from app.controllers.api7 import AnonymousReports, AnonymousReportDetails, AnonReport
+from app.controllers.api8 import IndicatorsAPI
 from app.controllers.reporters_handler import Reporters
 from app.controllers.users_handler import Users
 from app.controllers.groups_handler import Groups
@@ -45,6 +47,7 @@ from app.controllers.caramal_handler import CaramalReports
 from app.controllers.archive_handler import Archive
 from app.controllers.indicators_handler import Indicators
 from app.controllers.rejected_handler import Rejected
+from app.controllers.schedules_handler import Schedules
 
 URLS = (
     r'^/', Index,
@@ -60,6 +63,7 @@ URLS = (
     r'/auditlog', AuditLog,
     r'/settings', Settings,
     r'/fsync', FSync,
+    r'/schedules', Schedules,
     r'/dashboard', Dashboard,
     r'/users', Users,
     r'/groups', Groups,
@@ -83,10 +87,14 @@ URLS = (
     # API stuff follows
     r'/cases', Cases,  # cases flow
     r'/deaths', Deaths,  # deaths flow
+    r'/ordermessage/(\w+)/?', OrderMessage,
     r'/errors', QueueRejectedReports,  # intended to save messages that ran into errors in rapidPro
     r'/dhis2queue', Dhis2Queue,  # queue reports in dispatcher2
     r'/dhis2instancequeue', QueueForDhis2InstanceProcessing,  # queue reports in dispatcher2
     r'/test', Test,
+    r'/api/v1/anonreport/(\d+)/?', AnonReport,
+    r'/api/v1/anonymousreports', AnonymousReports,
+    r'/api/v1/anonymousreport_details/(\d+)/?', AnonymousReportDetails,
     r'/api/v1/loc_children/(\d+)/?', LocationChildren,
     r'/api/v1/district_facilities/(\d+)/?', DistrictFacilities,
     r'/api/v1/facility_reporters/(\d+)/?', FacilityReporters,
@@ -100,6 +108,7 @@ URLS = (
     r'/api/v1/indicatorhtml/(\w+)/?', IndicatorHtml,
     r'/api/v1/facilitysms/(\d+)/?', FacilitySMS,
     r'/api/v1/sendsms', SendSMS,
+    r'/api/v1/sendbulksms', SendBulkSMS,
     r'/api/v1/request_details/(\d+)/?', RequestDetails,
     r'/api/v1/request_del/(\d+)/?', DeleteRequest,
     r'/api/v1/server_del/(\d+)/?', DeleteServer,
@@ -108,5 +117,6 @@ URLS = (
     r'/api/v1/reporter/(\w+)/?', ReporterAPI,
     r'/reportersupload', ReportersUploadAPI,
     r'/api/v1/reporterhistory/\+?(\w+)/?', ReporterHistoryApi,
+    r'/api/v1/indicators', IndicatorsAPI
 
 )

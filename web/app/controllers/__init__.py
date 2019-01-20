@@ -261,7 +261,8 @@ render = render_jinja(
 )
 
 render._lookup.globals.update(
-    ses=get_session(), roles=roles, districts=ourDistricts
+    ses=get_session(), roles=roles, districts=ourDistricts,
+    year=datetime.datetime.now().strftime('%Y')
 )
 render._lookup.filters.update(myFilters)
 

@@ -77,8 +77,8 @@
 						<div class="col-lg-9">
 							<select name="report_type" id="report_type" class="form-control" >
 								<option value="">Select Report Type</option>
-								{% for r in ('arv', 'apt', 'cases', 'death', 'mat', 'tra')%}
-                        			<option value="{{ r }}">{{ r }}</option>
+								{% for r in report_types%}
+                        			<option value="{{ r.form }}">{{ r.form }}</option>
                     			{% endfor %}
 							</select>
 						</div>

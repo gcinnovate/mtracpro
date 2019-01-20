@@ -24,7 +24,8 @@ class Reporters:
                 "SELECT id, name FROM locations WHERE type_id = "
                 "(SELECT id FROM locationtype WHERE name = 'district') ORDER by name")
 
-        districts = db.query(districts_SQL)
+        districts_1 = db.query(districts_SQL)
+        districts_2 = db.query(districts_SQL)
         district = {}
         # roles = db.query("SELECT id, name from reporter_groups order by name")
         allow_edit = False

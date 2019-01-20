@@ -21,6 +21,8 @@ class Search:
         servers = doquery(db, dic)
         servers2 = doquery(db, dic)
 
+        report_types = db.query(
+            "SELECT distinct(form) AS form FROM dhis2_mtrack_indicators_mapping ORDER BY form")
         dic = lit(
             relations='requests_view', fields="*",
             criteria=session.criteria,

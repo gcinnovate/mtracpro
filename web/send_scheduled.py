@@ -10,7 +10,7 @@ logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s [%(process)d] %(levelname)-4s:  %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S',
-    filename='/var/log/llin/llin_sched.log',
+    filename='/var/log/mtracpro/mtracpro_sched.log',
     filemode='a'
 )
 

@@ -335,6 +335,34 @@ class FacilitySMS:
         return "<h4>Successfully Sent SMS!</h4>"
 
 
+class SendBulkSMS:
+    def POST(self):
+        web.header("Content-Type", "application/json; charset=utf-8")
+        params = web.input(sms_roles=[], msg="", district="", facility="")
+        SQL = (
+            "SELECT uuid FROM reporters_view WHERE district_id=$district "
+        )
+        if params.facility:
+            SQL += "AND facilityid=$facility "
+        if params.sms_roles:
+            SQL += "AND role SIMILAR TO '%%(%s)%%'" % '|'.join(params.sms_roles)
+        print(SQL)
+        res = db.query(SQL, {
+            'district': params.district, 'facility': params.facility})
+
+        contact_uuids = []
+        for r in res:
+            contact_uuids.append(r['uuid'])
+        post_data = json.dumps({'contacts': contact_uuids, 'text': params.msg})
+        try:
+            post_request(post_data, '%sbroadcasts.json' % config['api_url'])
+        except:
+            return json.dumps({'message': 'Failed to send SMS'})
+        print("===>", contact_uuids)
+
+        return json.dumps({'message': 'success'})
+
+
 class SendSMS:
     def POST(self):
         params = web.input(uuid="", sms="")

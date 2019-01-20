@@ -1,0 +1,256 @@
+{% extends "layout.html" %}
+{% from 'layout.html' import navbar, myscripts %}
+
+{% block title %}Dispatcher2.::.Schedules{% endblock%}
+{% block stylesheets %}
+    <!-- Data Tables -->
+    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+    <link href="/static/js/plugins/Buttons-1.1.2/css/buttons.dataTables.min.css" rel="stylesheet">
+    <!-- Sweet Alert -->
+    <link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+{% endblock %}
+
+{% block nav %}
+    {% call navbar() %}
+
+    {% endcall %}
+{% endblock %}
+
+{% block content %}
+     <form class="form-horizontal" role="form" method="post">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <div class="row">
+        <!-- LEFT-->
+        <div class="col-lg-6">
+            <div class="ibox float-e-margins">
+               <div class="ibox-title">
+                    <h5>Schedules</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+
+				<div class="ibox-content">
+					<div class="form-group">
+						<label for="sched_type" class="col-lg-4 control-label">Schedule Type:</label>
+						<div class="col-lg-8">
+                            <select name="sched_type" id="sched_type" class="form-control">
+								<option value="">Select Schedule Type</option>
+								{% for y in ('command', 'contact_push', 'sms', 'url') %}
+                        			<option value="{{ y }}" {% if y == sched_type %} selected="yes" {% endif%}>{{ y }}</option>
+                    			{% endfor %}
+							</select>
+						</div>
+					</div>
+                    <div class="form-group">
+						<label for="params" class="col-lg-4 control-label">Params:</label>
+						<div class="col-lg-8">
+                            <textarea name="params" id="params" class="form-control" size="6" rows="5"></textarea>
+						</div>
+					</div>
+			        <div class="form-group">
+						<label for="url" class="col-lg-4 control-label">Schedule URL:</label>
+						<div class="col-lg-8">
+                            <input name="url" id="url" type="text" value="{{ url }}" class="form-control"/>
+						</div>
+					</div>
+		            <div class="form-group">
+						<label for="sched_content" class="col-lg-4 control-label">Scheduled Content:</label>
+						<div class="col-lg-8">
+                            <textarea name="sched_content" id="sched_content" class="form-control" size="6" rows="5"></textarea>
+						</div>
+					</div>
+                    <br/>
+
+				</div>
+            </div>
+        </div>
+        <!-- END LEFT-->
+
+        <!-- RIGHT-->
+        <div class="col-lg-6">
+            <div class="ibox float-e-margins">
+				<div class="ibox-title">
+                    <h5>Schedules</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+
+				<div class="ibox-content">
+                    <div class="form-group">
+						<label for="command" class="col-lg-5 control-label">Command:</label>
+						<div class="col-lg-7">
+                            <input name="command" id="command" type="text" value="{{ command }}" class="form-control"/>
+						</div>
+					</div>
+
+                    <div class="form-group">
+					    <label for="command_args" class="col-lg-5 control-label">Command Args:</label>
+                        <div class="col-lg-7">
+                            <input name="command_args" id="" type="text" value="{{ command_args }}" class="form-control"/>
+					    </div>
+                    </div>
+
+                    <div class="form-group">
+						<label for="sched_date" class="col-lg-5 control-label">Schedule Date:</label>
+						<div class="col-lg-7">
+                            <input name="sched_date" id="sched_date" value="{{ sched_date }}" type="text" class="form-control"/>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="runtime" class="col-lg-5 control-label">Run Time:</label>
+						<div class="col-lg-7">
+                            <input name="runtime" id="runtime value="{{ runtime }}" type="text" class="form-control"/>
+						</div>
+					</div>
+                    <div class="form-group">
+						<label for="repeat" class="col-lg-5 control-label">Repeat:</label>
+						<div class="col-lg-7">
+                            <select name="repeat" id="repeat" class="form-control">
+								<option value="">Select Repeat Interval</option>
+								{% for y in ('never', 'daily', 'weekly', 'monthly', 'yearly') %}
+                        			<option value="{{ y }}" {% if y == sched_type %} selected="yes" {% endif%}>{{ y }}</option>
+                    			{% endfor %}
+							</select>
+						</div>
+					</div>
+                    <div class="form-group">
+						<label for="is_active" class="col-lg-5 control-label">Is Active?:</label>
+						<div class="col-lg-7 checkbox checkbox-info">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <input name="is_active" id="is_active" type="checkbox"
+                                {% if use_ssl == True %}
+                                    checked = "yes"
+                                {% endif %} class="" />
+
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="col-lg-offset-5 col-lg-5">
+							<button class="btn btn-sm btn-primary" type="submit">Save</button>
+						</div>
+                    </div>
+                    <br/>
+                    <br/>
+				</div>
+            </div>
+        </div>
+        <!-- END RIGHT-->
+    </div>
+</form>
+    <div class="modal inmodal" id="myModal2" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">Request Details</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="modal_res">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {% call myscripts() %}
+        <!-- Data Tables -->
+        <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+        <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+        <script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+        <script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+
+       	<script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/dataTables.buttons.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/buttons.flash.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/jszip.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/pdfmake.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/vfs_fonts.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/buttons.html5.min.js"></script>
+        <script type="text/javascript" src="/static/js/plugins/Buttons-1.1.2/js/buttons.print.min.js"></script>
+        <script src="/static/js/plugins/bootstrap-validator/dist/validator.min.js"></script>
+        <!-- Sweet alert -->
+        <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>
+        <script src="/static/js/mtrackpro/adminunits.js"></script>
+        <script>
+           $(document).ready(function() {
+            $('.delete_btn').click(function () {
+                del_id = $(this).attr('id');
+                table_row = $(this).closest('tr');
+                swal({
+                        title: "Are you sure?",
+                        text: "Your will not be able to recover all request details",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Yes, delete it!",
+                        cancelButtonText: "No, cancel please!",
+                        closeOnConfirm: false,
+                        closeOnCancel: false },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            $.get(
+                                '/api/v1/request_del/' + del_id,
+                                {d_id: del_id, caller: 'api'},
+                                function(data){
+                                    if (data.message == "success"){
+                                        /* remove row from table */
+                                        table_row.remove();
+                                    };
+                                },
+                                'json'
+                            );
+                            swal("Deleted!", "Request [id:" + del_id + "]has been deleted.", "success");
+                            return false;
+                        } else {
+                            swal("Cancelled", "Request details are safe!", "error");
+                            return false;
+                        }
+                    });
+            });
+			$('#mydata').DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ],
+                    pageLength: 25,
+                    bPaginate: false,
+                    info: false
+
+            });
+			$('#selecctall').click(function (event) {
+                $('.topromote:input:checkbox').prop('checked', this.checked);
+            });
+            $(".topromote").click(function () {
+                if (!$(this).is(':checked'))
+                    $("#selecctall").prop('checked', false);
+            });
+            $('.details_btn').click(function(){
+                id_val = $(this).attr('id');
+                $.get(
+					'/api/v1/request_details/' + id_val,
+					{},
+					function(data){
+							$('#modal_res').html(data);
+				});
+            });
+        });
+        </script>
+    {% endcall %}
+{% endblock %}
+
+

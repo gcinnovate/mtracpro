@@ -29,6 +29,7 @@
                 <ul class="nav nav-tabs">
                     <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-user"></i>Add/Edit Reporter</a></li>
                     <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-filter"></i> Filter Reporters</a></li>
+                    <li class=""><a data-toggle="tab" href="#tab-3"><i class="fa fa-envelope"></i> Send SMS</a></li>
                 </ul>
                 <div class="tab-content">
                     <!-- tab-1 -->
@@ -44,7 +45,7 @@
                                             <div class="col-lg-9">
                                                 <select name="district" id="district" class="form-control" required>
                                                     <option value="">Select District</option>
-                                                    {% for d in districts %}
+                                                    {% for d in districts_2 %}
                                                     <option value="{{ d.id}}" {% if d.id == district.id %} selected="yes" {% endif %}>{{ d.name}}</option>
                                                     {% endfor %}
                                                 </select>
@@ -121,7 +122,11 @@
                                         </div>
                                         <div class="form-group">
                                             <div class="col-lg-offset-3 col-lg-3">
+                                                {% if edit_val %}
                                                 <button class="btn btn-sm btn-primary" type="submit">Save Reporter</button>
+                                                {% else %}
+                                                <button class="btn btn-sm btn-primary" type="submit">Save Reporter</button>
+                                                {% endif %}
                                             </div>
 
                                         </div>
@@ -157,6 +162,88 @@
                     </div>
                     <!-- end tab-2 -->
 
+                    <!-- tab3 -->
+                    <div id="tab-3" class="tab-pane">
+                        <form role="form" id="sms_form" class="form-horizontal" data-toggle="validator" action="" method="post">
+                        <div class="panel-body">
+                            <div class="row">
+                                <!-- LEFT -->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="form-group"><label for="district" class="col-lg-3 control-label">District:</label>
+                                            <div class="col-lg-9">
+                                                <select name="district" id="district_1" class="form-control" required>
+                                                    <option value="">Select District</option>
+                                                    {% for d in districts_1 %}
+                                                    <option value="{{ d.id}}" {% if d.id == district.id %} selected="yes" {% endif %}>{{ d.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group"><label class="col-lg-3 control-label">Subcounty:</label>
+                                            <div class="col-lg-9">
+                                                <select name="subcounty" id="subcounty_1" class="form-control">
+                                                    <option value="">Select Sub County</option>
+                                                    {% for s in subcounties %}
+                                                    <option value="{{ s.id }}" {% if s.id == subcounty.id %} selected="yes" {% endif %}>{{ s.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group"><label class="col-lg-3 control-label">Facility:</label>
+                                            <div class="col-lg-9">
+                                                <select name="sms_facility" id="sms_facility" class="form-control">
+                                                    <option value="">Select Health Facility</option>
+                                                    {% for f in facilities %}
+                                                    <option value="{{ f.id }}" {% if f.id == facilityid %} selected="yes" {% endif %}>{{ f.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group"><label for="role" class="col-lg-3 control-label">Role:</label>
+                                            <div class="col-lg-9">
+                                                <select name="sms_roles" id="sms_roles" class="form-control" multiple="yes" size="6">
+                                                    {% for v in roles %}
+                                                    <option value="{{ v.name }}" {% if v.name in role %} selected="yes" {% endif %}>{{ v.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div><!-- end left row -->
+                                </div>
+                                <!-- END LEFT-->
+
+                                <!-- RIGHT -->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="form-group"><label for="role" class="col-lg-3 control-label">Message:</label>
+                                            <div class="col-lg-9">
+                                                <textarea name="msg" id="msg" class="form-control" size="6" rows="5" required></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" style="margin-top:5px;">
+                                            <div class="col-lg-2 col-lg-offset-10">
+                                                <input type="text" name="counter_2" size="7" id="counter_2" readonly/>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-lg-offset-3 col-lg-3">
+                                                <button class="btn btn-sm btn-primary" id="sendsms_2" type="submit">Send SMS</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- END RIGHT-->
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                    <!-- end tab-3 -->
+
                 </div>
             </div>
         </div>
@@ -170,6 +257,8 @@
                 <div class="ibox-title">
                     <h5>Registered Reporters</h5>
                     <div class="ibox-tools">
+                        <button class="btn btn-outline btn-warning dim sms_btn" name="abtn" value="Approve Selected">
+                        <i class="fa fa-envelope"></i> SMS Selected</button>
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
@@ -251,6 +340,9 @@
 							</div>
                             <br/>
                             <br/>
+                            <br/>
+                            <br/>
+                            <br/>
                             <div class="form-group" style="margin-top:5px;">
 								<div class="col-lg-2 col-lg-offset-10">
 									<input type="text" name="counter" size="7" id="counter" readonly/>
@@ -290,12 +382,13 @@
         <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>
 
         <script src="/static/js/mtrackpro/reporters.js"></script>
+        <script src="/static/js/bootstrap-notify.min.js"></script>
         <script>
            $(document).ready(function() {
             $('#mydata').DataTable({
                 dom: 'Bfrtip',
                 buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
+                    /*'copy', 'csv', 'excel', 'pdf', 'print'*/
                 ],
                 pageLength: 25,
                 bPaginate: false,
@@ -352,9 +445,28 @@
                 var l = obj.val().length;
                 cc.val(l);
                 if(x.length >= 160){
-                        var y = obj.val().substring(0,160);
+                        $('#counter').css("color", "red");
+                        /*var y = obj.val().substring(0,160);
                         obj.val(y);
-                        cc.val(160);
+                        cc.val(160);*/
+                } else {
+                    $('#counter').css("color", "black");
+                }
+    		});
+
+            $('#msg').keyup(function(){
+                var obj = $('#msg');
+                var cc = $('#counter_2');
+                var x = obj.val();
+                var l = obj.val().length;
+                cc.val(l);
+                if(x.length >= 160){
+                        $('#counter_2').css("color", "red");
+                        /*var y = obj.val().substring(0,160);
+                        obj.val(y);
+                        cc.val(160);*/
+                } else {
+                    $('#counter_2').css("color", "black");
                 }
     		});
 
@@ -387,6 +499,26 @@
                         }
                     }
                 );
+                return false;
+            });
+
+            $('#sendsms_2').click(function(){
+                $.post('/api/v1/sendbulksms?',
+                    $('#sms_form').serializeArray(),
+                    function(data){
+                        $.notify({
+                            title: "Response:",
+                            message: data.message
+
+                        },
+                        {
+                            type: data.status,
+                            animate: {
+                                enter: 'animated flipInY',
+                                exit: 'animated flipOutX'
+                            }
+                        });
+                    }, "json");
                 return false;
             });
 
