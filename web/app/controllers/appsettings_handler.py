@@ -28,7 +28,7 @@ class AppSettings:
                 start = r.start_submission_period
                 end = r.end_submission_period
                 xml_xpath = r.xml_response_xpath
-                json_xpath = r.json_response_xpath
+                json_xpath = r.json_response_jsonpath
                 use_ssl = r.use_ssl
                 ssl_client_certkey_file = r.ssl_client_certkey_file
 
@@ -61,7 +61,7 @@ class AppSettings:
                 db.query(
                     "UPDATE servers SET (name, username, password, url, auth_method, "
                     "start_submission_period, end_submission_period, xml_response_xpath,"
-                    "json_response_xpath, use_ssl, ssl_client_certkey_file) = "
+                    "json_response_jsonpath, use_ssl, ssl_client_certkey_file) = "
                     "($name, $username, $password, $url, $auth_method, $start, $end, "
                     "$xml_xpath, $json_xpath, $use_ssl, $certkey) WHERE id=$id", {
                         'name': params.name, 'username': params.username,
@@ -83,7 +83,7 @@ class AppSettings:
                 res = db.query(
                     "INSERT INTO servers (name, username, password, url, auth_method, "
                     "start_submission_period, end_submission_period, ssl_client_certkey_file,"
-                    "use_ssl, xml_response_xpath, json_response_xpath) VALUES("
+                    "use_ssl, xml_response_xpath, json_response_jsonpath) VALUES("
                     "$name, $username, $password, $url, $auth_method, $start, $end, "
                     "$certkey, $use_ssl, $xml_xpath, $json_xpath) RETURNING id", {
                         'name': params.name, 'username': params.username,
