@@ -93,7 +93,7 @@ cur.execute(
     "SELECT id, lastname || ' ' || firstname as name, telephone, alternate_tel, "
     "email, get_location_name(district_id) AS district, role, "
     "facility, facilitycode, loc_name, created, "
-    "get_location_name(get_subcounty_id(reporting_location)) AS subcounty FROM reporters_view "
+    "get_location_name(get_subcounty_id(reporting_location)) AS subcounty FROM reporters_view1 "
     "WHERE created >= %s", [from_date]
 )
 
