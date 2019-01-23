@@ -122,8 +122,8 @@ class Reporters:
             criteria = "district_id=%s" % district_id
             if params.search:
                 criteria += (
-                    " AND (telephone ilike '%%%s%%' OR "
-                    "firstname ilike '%%%s%%' OR lastname ilike '%%%s%%')")
+                    " AND (telephone ilike '%%%%%s%%%%' OR "
+                    "firstname ilike '%%%%%s%%%%' OR lastname ilike '%%%%%s%%%%')")
                 criteria = criteria % (params.search, params.search, params.search)
                 dic = lit(
                     relations='reporters_view1',
@@ -146,14 +146,15 @@ class Reporters:
             criteria = "TRUE "
             if params.search:
                 criteria += (
-                    " AND (telephone ilike '%%%(search)s%%' OR "
-                    "firstname ilike '%%%(search)s%%' OR lastname ilike '%%%(search)s%%')")
+                    " AND (telephone ilike '%%%%%s%%%%' OR "
+                    "firstname ilike '%%%%%s%%%%' OR lastname ilike '%%%%%s%%%%')")
+                criteria = criteria % (params.search, params.search, params.search)
                 dic = lit(
                     relations='reporters_view1',
                     fields=(
                         "id, firstname, lastname, telephone, district_id, "
                         "facility, role, total_reports, last_reporting_date, uuid"),
-                    criteria=criteria % {'search': params.search},
+                    criteria=criteria,
                     order="facility, firstname, lastname",
                     limit=limit, offset=start)
             else:
