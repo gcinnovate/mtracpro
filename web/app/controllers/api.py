@@ -72,9 +72,8 @@ class FacilityReporters:
     def GET(self, id):
         ret = []
         rs = db.query(
-            "SELECT firstname, lastname, telephone FROM reporters WHERE id IN "
-            "(SELECT reporter_id FROM reporter_healthfacility WHERE facility_id=$id) "
-            " ORDER BY firstname, lastname",
+            "SELECT firstname, lastname, telephone FROM reporters WHERE  "
+            " facilityid=$id ",
             {'id': id})
         for r in rs:
             ret.append({
