@@ -311,6 +311,8 @@ class Dhis2Queue:
                                 settings, 'REPORTS_WITH_COMMANDS', ['cases', 'death', 'epc', 'epd']):  # XXX irregular forms
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
+                        if slug not in IndicatorMapping:
+                            continue
                         print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
@@ -338,6 +340,8 @@ class Dhis2Queue:
                                 settings, 'REPORTS_WITH_COMMANDS', ['cases', 'death', 'epc', 'epd']):
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
+                        if slug not in IndicatorMapping:
+                            continue
                         print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(

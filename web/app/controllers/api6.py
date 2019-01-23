@@ -58,6 +58,8 @@ class QueueRejectedReports:
                         if not(val) and params.form in ['cases', 'death', 'epc', 'epd']:
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases, death, epc and epd
+                        if slug not in IndicatorMapping:
+                            continue
                         print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
@@ -84,6 +86,8 @@ class QueueRejectedReports:
                         if not(val) and params.form in ['cases', 'death']:
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
+                        if slug not in IndicatorMapping:
+                            continue
                         print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
