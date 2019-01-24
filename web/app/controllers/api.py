@@ -162,7 +162,7 @@ class ReporterAPI:
         SQL = (
             "SELECT firstname || ' ' || lastname as name, telephone, "
             " get_district(district_id) as district, facilityid, facility, facilitycode, "
-            "total_reports, last_reporting_date, role FROM reporters_view "
+            "total_reports, last_reporting_date, role FROM reporters_view1 "
             " WHERE telephone = $tel OR alternate_tel = $tel")
         res = db.query(SQL, {'tel': phonenumber})
         ret = {}
