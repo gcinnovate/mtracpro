@@ -33,6 +33,8 @@ class EditReport:
                 continue
             if val.__str__().isdigit() or key in TEXT_INDICATORS:
                     slug = key
+                    if slug not in IndicatorMapping:
+                        continue
                     print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                     dataDict[slug] = val
                     if PREFERED_DHIS2_CONTENT_TYPE == 'json':
