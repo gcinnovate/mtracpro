@@ -19,6 +19,7 @@ def getPaginationString(_page, totalitems, limit, adjacents, targetpage, pagestr
     prev = _page - 1
     _next = _page + 1
     lastpage = ceil(int(totalitems), limit)
+    _counter = 1
 
     lpm1 = lastpage - 1
     pagination = ""
@@ -40,8 +41,9 @@ def getPaginationString(_page, totalitems, limit, adjacents, targetpage, pagestr
                 targetpage, pagestring, prev) + "'>&lsaquo; Prev</a></li>"
         else:
             pagination += "<li class='paginate_button disabled'><a href='#'>&lsaquo; Prev</a></li>"
-        if (lastpage < (12 + (adjacents * 2))):
+        if (lastpage < (7 + (adjacents * 2))):
             counter = 1
+            _counter = 1
             while (counter < lastpage):
                 if counter == _page:
                     pagination += "<li class=\" paginate_button active\"><a href='#'>%s</a></li>" % counter
@@ -49,10 +51,12 @@ def getPaginationString(_page, totalitems, limit, adjacents, targetpage, pagestr
                     pagination += "<li clas=\"paginate_button\"><a href=\"" + "%s%s%s" % (
                         targetpage, pagestring, counter) + "\">%s</a></li>" % counter
                 counter += 1
-        elif (lastpage > (12 + (adjacents * 2))):  # enough pages to hide some
+                _counter = counter
+        elif (lastpage > (7 + (adjacents * 2))):  # enough pages to hide some
             # close to beginning; only hide later page
             if (_page < 1 + (adjacents * 3)):
                 counter = 1
+                _counter = 1
                 while (counter < (4 + (adjacents * 2))):
                     if counter == _page:
                         pagination += "<li class=\"paginate_button active\"><a href=''>%s</a></li>" % counter
@@ -60,8 +64,15 @@ def getPaginationString(_page, totalitems, limit, adjacents, targetpage, pagestr
                         pagination += "<li class=\"paginate_button\"><a href=\"" + "%s%s%s" % (
                             targetpage, pagestring, counter) + "\">%s</a></li>" % counter
                     counter += 1
+                    _counter = counter
+
+                pagination += "<li class=\"paginate_button\"><a>...</a></li>"
+                pagination += "<li><a href=\"%s%s%s\">%s</a></li>" % (targetpage, pagestring, lpm1, lpm1)
+                pagination += "<li><a href=\"%s%s%s\">%s</a></li>" % (targetpage, pagestring, lastpage, lastpage)
+
             elif (lastpage - (adjacents * 2) > _page and _page > (adjacents * 2)):
                 counter = _page - adjacents
+                _counter = _page - adjacents
                 while (counter < _page + adjacents):
                     if counter == _page:
                         pagination += "<li class=\"paginate_button active\"><a href='#'>%s</a></li>" % counter
@@ -69,9 +80,18 @@ def getPaginationString(_page, totalitems, limit, adjacents, targetpage, pagestr
                         pagination += "<li class=\"paginate_button\"><a href=\"" + "%s%s%s" % (
                             targetpage, pagestring, counter) + "\">%s</a></li>" % counter
                     counter += 1
+                    _counter = counter
+
+                pagination += "<li class=\"paginate_button\"><a>...</a></li>"
+                pagination += "<li><a href=\"%s%s%s\">%s</a></li>" % (targetpage, pagestring, lpm1, lpm1)
+                pagination += "<li><a href=\"%s%s%s\">%s</a></li>" % (targetpage, pagestring, lastpage, lastpage)
             # close to end;  only hide early pages
             else:
+                pagination += "<li><a href=\"%s%s1\">1</a></li>" % (targetpage, pagestring)
+                pagination += "<li><a href=\"%s%s2\">2</a></li>" % (targetpage, pagestring)
+                pagination += "<li class=\"paginate_button\"><a>...</a></li>"
                 counter = lastpage - (1 + (adjacents * 3))
+                _counter = lastpage - (1 + (adjacents * 3))
                 while (counter <= lastpage):
                     if counter == _page:
                         pagination += "<li class=\"paginate_button active\"><a href='#'>%s</a>" % counter
@@ -79,9 +99,10 @@ def getPaginationString(_page, totalitems, limit, adjacents, targetpage, pagestr
                         pagination += "<li class=\"paginate_button\"><a href=\"" + "%s%s%s" % (
                             targetpage, pagestring, counter) + "\">%s</a></li>" % counter
                     counter += 1
+                    _counter = counter
 
         # next button
-        if (_page < counter - 1):
+        if (_page < _counter - 1):
             pagination += "<li class=\"paginate_button next\"><a href=\"" + targetpage + pagestring + "%s" % _next + "\">Next &rsaquo;</a></li>"
         else:
             pagination += "<li class=\"paginate_button disabled\"><span>Next &rsaquo;</span></li>"
