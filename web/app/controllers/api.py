@@ -163,7 +163,9 @@ class ReporterAPI:
             "SELECT firstname || ' ' || lastname as name, telephone, "
             " get_district(district_id) as district, facilityid, facility, facilitycode, "
             "total_reports, last_reporting_date, role FROM reporters_view1 "
-            " WHERE telephone = $tel OR alternate_tel = $tel")
+            " WHERE substring(reverse(telephone), 0, 9) = substring(reverse($tel), 0, 9) "
+            " OR substring(reverse(alternate_tel), 0, 9) = substring(($tel), 0, 9) ")
+        # " WHERE telephone = $tel OR alternate_tel = $tel")
         res = db.query(SQL, {'tel': phonenumber})
         ret = {}
         if res:
