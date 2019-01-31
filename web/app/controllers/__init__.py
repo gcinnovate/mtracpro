@@ -194,9 +194,9 @@ def formatMsgForAndroid(msg, form='cases'):
         datavalues = body['dataValues']
         for d in datavalues:
             try:  # XXX for cases where we dont have the key
-                if form == 'mat':
+                if form in getattr(settings, 'SPECIAL_FORMS', ['mat']):
                     # ret += "%s" % d['value'] + " " + categoryOptionCombos[d['categoryOptionCombo']] + "\n"
-                    ret_list[DataElementPosition[d['dataElement']]] = (
+                    ret_list[CategoryComboPosition[d['categoryOptionCombo']]] = (
                         "%s %s\n") % (d['value'], categoryOptionCombos[d['categoryOptionCombo']])
                 else:
                     # ret += "%s" % d['value'] + " " + dataElements[d['dataElement']] + "\n"

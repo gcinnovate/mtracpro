@@ -197,12 +197,13 @@ class Reporters:
                 r = db.query(
                     "UPDATE reporters SET firstname=$firstname, lastname=$lastname, "
                     "telephone=$telephone, email=$email, reporting_location=$location, "
-                    "alternate_tel=$alt_tel, district_id = $district_id "
+                    "alternate_tel=$alt_tel, district_id = $district_id, "
+                    " facilityid = $facility "
                     "WHERE id=$id RETURNING id", {
                         'firstname': params.firstname, 'lastname': params.lastname,
                         'telephone': params.telephone, 'email': params.email,
                         'location': location, 'id': params.ed, 'alt_tel': params.alt_telephone,
-                        'district_id': params.district
+                        'district_id': params.district, 'facility': params.facility
                     })
                 if r:
                     print(params.role)

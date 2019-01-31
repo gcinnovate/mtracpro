@@ -65,7 +65,7 @@
                                         {{ report.body|formatmsg(report.report_type)}}
                                     </td>
                                     <td>{{ report.year|string + "W" + report.week}}</td>
-                                    <td>{{ report.created|datetimeformat }}</td>
+                                    <td>{{ report.created|datetimeformat2 }}</td>
 									<!--<td>Yes</td>-->
                                     <td>
                                         <button type="button" class="btn btn-primary btn-xs edit_btn"
