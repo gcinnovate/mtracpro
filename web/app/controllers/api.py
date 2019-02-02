@@ -162,7 +162,8 @@ class ReporterAPI:
         SQL = (
             "SELECT firstname || ' ' || lastname as name, telephone, "
             " get_district(district_id) as district, facilityid, facility, facilitycode, "
-            "total_reports, last_reporting_date, role FROM reporters_view1 "
+            "total_reports, to_char(last_reporting_date, 'YYYY-MM-DD HH:MI') last_reporting_date, role "
+            " FROM reporters_view1 "
             " WHERE substring(reverse(telephone), 0, 9) = substring(reverse($tel), 0, 9) "
             " OR substring(reverse(alternate_tel), 0, 9) = substring(($tel), 0, 9) ")
         # " WHERE telephone = $tel OR alternate_tel = $tel")
