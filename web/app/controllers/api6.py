@@ -1,14 +1,27 @@
 import json
 import web
 import datetime
-from . import db, serversByName, IndicatorMapping
+from . import db, serversByName, IndicatorMapping, notifyingParties, allDistrictsByName
 from settings import config
 from settings import USE_OLD_WEBHOOKS
 # from app.tools.utils import get_webhook_msg_old
-from app.tools.utils import get_reporting_week, get_request
-from app.tools.utils import queue_rejected_reports
+from app.tools.utils import (
+    get_reporting_week, get_request, post_request, queue_rejected_reports)
 from settings import DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS
+
+
+def send_threshold_alert(msg, district):
+    try:
+        threshold_alert_contacts = notifyingParties[allDistrictsByName[district]]['threshold_alert_contacts']
+    except:
+        threshold_alert_contacts = []
+    if threshold_alert_contacts:
+        post_data = json.dumps({'contacts': threshold_alert_contacts, 'text': msg})
+        try:
+            post_request(post_data, '%sbroadcasts.json' % config['api_url'])
+        except:
+            pass
 
 
 class QueueRejectedReports:
@@ -46,6 +59,7 @@ class QueueRejectedReports:
             if not USE_OLD_WEBHOOKS:
                 values = json.loads(web.data())
                 results = values.get('results', {})
+                thresholds_list = []
                 for key, v in results.iteritems():
                     val = v.get('value')
                     try:
@@ -60,6 +74,14 @@ class QueueRejectedReports:
                                 continue  # skip zero values for cases, death, epc and epd
                         if slug not in IndicatorMapping:
                             continue
+                        # XXX check thresholds here
+                        if IndicatorMapping[slug]['threshold']:
+                            try:
+                                threshold = int(float(IndicatorMapping[slug]['threshold']))
+                                if val > threshold:
+                                    thresholds_list.append('{} {}'.format(val, IndicatorMapping[slug]['descr']))
+                            except:
+                                pass
                         print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
@@ -72,8 +94,17 @@ class QueueRejectedReports:
                                 "<dataValue dataElement='%s' categoryOptionCombo="
                                 "'%s' value='%s' />\n" %
                                 (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
+
+                # Build alert message and send it
+                alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
+                    params.reporter_name, params.msisdn, params.facility, params.district)
+                alert_message += '\n'.join(thresholds_list)
+                send_threshold_alert(alert_message, params.district)
+                print(alert_message)
+
             else:
                 values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
+                thresholds_list = []
                 for v in values:
                     val = v.get('value')
                     try:
@@ -88,6 +119,14 @@ class QueueRejectedReports:
                                 continue  # skip zero values for cases and death
                         if slug not in IndicatorMapping:
                             continue
+                        # XXX check thresholds here
+                        if IndicatorMapping[slug]['threshold']:
+                            try:
+                                threshold = int(float(IndicatorMapping[slug]['threshold']))
+                                if val > threshold:
+                                    thresholds_list.append('{} {}'.format(val, IndicatorMapping[slug]['descr']))
+                            except:
+                                pass
                         print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
@@ -100,6 +139,13 @@ class QueueRejectedReports:
                                 "<dataValue dataElement='%s' categoryOptionCombo="
                                 "'%s' value='%s' />\n" %
                                 (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
+
+                # Build alert message and send it
+                alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
+                    params.reporter_name, params.msisdn, params.facility, params.district)
+                alert_message += '\n'.join(thresholds_list)
+                send_threshold_alert(alert_message, params.district)
+                print(alert_message)
 
             if not dataValues and params.form in ('cases', 'death'):
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':

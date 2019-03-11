@@ -1,16 +1,32 @@
 import json
 import web
 import datetime
-from . import db, get_current_week, serversByName, IndicatorMapping
+from . import (
+    db, get_current_week, serversByName, IndicatorMapping, notifyingParties, allDistrictsByName)
 from settings import config
 import settings
-from app.tools.utils import get_basic_auth_credentials, auth_user, get_webhook_msg_old
-from app.tools.utils import queue_request
+from app.tools.utils import (
+    get_basic_auth_credentials, auth_user, get_webhook_msg_old,
+    queue_request, parse_message, post_request_to_dispatcher2, get_reporting_week,
+    get_webhook_msg, post_request
+)
 # from app.tools.utils import get_location_role_reporters, queue_schedule, log_schedule, update_queued_sms
-from app.tools.utils import parse_message, post_request_to_dispatcher2, get_reporting_week, get_webhook_msg
 from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS
 from settings import USE_OLD_WEBHOOKS
+
+
+def send_threshold_alert(msg, district):
+    try:
+        threshold_alert_contacts = notifyingParties[allDistrictsByName[district]]['threshold_alert_contacts']
+    except:
+        threshold_alert_contacts = []
+    if threshold_alert_contacts:
+        post_data = json.dumps({'contacts': threshold_alert_contacts, 'text': msg})
+        try:
+            post_request(post_data, '%sbroadcasts.json' % config['api_url'])
+        except:
+            pass
 
 
 class LocationChildren:
@@ -289,7 +305,7 @@ class Dhis2Queue:
     def POST(self):
         params = web.input(
             facilitycode="", form="", district="", msisdn="",
-            raw_msg="", report_type="", facility="", reporter_type="")
+            raw_msg="", report_type="", facility="", reporter_type="", reporter_name="")
         extras = {'reporter_type': params.reporter_type}
         # values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
@@ -301,6 +317,7 @@ class Dhis2Queue:
             if not USE_OLD_WEBHOOKS:
                 values = json.loads(web.data())
                 results = values.get('results', {})
+                thresholds_list = []
                 for key, v in results.iteritems():
                     val = v.get('value')
                     try:
@@ -316,6 +333,14 @@ class Dhis2Queue:
                                 continue  # skip zero values for cases and death
                         if slug not in IndicatorMapping:
                             continue
+                        # XXX check thresholds here
+                        if IndicatorMapping[slug]['threshold']:
+                            try:
+                                threshold = int(float(IndicatorMapping[slug]['threshold']))
+                                if val > threshold:
+                                    thresholds_list.append('{} {}'.format(val, IndicatorMapping[slug]['descr']))
+                            except:
+                                pass
                         print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
@@ -328,8 +353,17 @@ class Dhis2Queue:
                                 "<dataValue dataElement='%s' categoryOptionCombo="
                                 "'%s' value='%s' />\n" %
                                 (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
+
+                # Build alert message and send it
+                alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
+                    params.reporter_name, params.msisdn, params.facility, params.district)
+                alert_message += '\n'.join(thresholds_list)
+                send_threshold_alert(alert_message, params.district)
+                print(alert_message)
+
             else:
                 values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
+                thresholds_list = []
                 for v in values:
                     val = v.get('value')
                     try:
@@ -345,6 +379,14 @@ class Dhis2Queue:
                                 continue  # skip zero values for cases and death
                         if slug not in IndicatorMapping:
                             continue
+                        # XXX check thresholds here
+                        if IndicatorMapping[slug]['threshold']:
+                            try:
+                                threshold = int(float(IndicatorMapping[slug]['threshold']))
+                                if val > threshold:
+                                    thresholds_list.append('{} {}'.format(val, IndicatorMapping[slug]['descr']))
+                            except:
+                                pass
                         print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
@@ -357,6 +399,13 @@ class Dhis2Queue:
                                 "<dataValue dataElement='%s' categoryOptionCombo="
                                 "'%s' value='%s' />\n" %
                                 (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
+
+                # Build alert message and send it
+                alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
+                    params.reporter_name, params.msisdn, params.facility, params.district)
+                alert_message += '\n'.join(thresholds_list)
+                send_threshold_alert(alert_message, params.district)
+                print(alert_message)
 
             if not dataValues and params.form in ('cases', 'death'):
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':

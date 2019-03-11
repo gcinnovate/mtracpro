@@ -53,6 +53,11 @@ KEYWORDS_DATA_LENGTH = {
 # reports with commands - or irregular forms
 REPORTS_WITH_COMMANDS = ['cases', 'death', 'epc', 'epd']
 
+# Reporter groups to receive alert on thresholds and general alerts
+THRESHOLD_ALERT_ROLES = ['Biostatistician']
+
+GENERAL_ALERT_ROLES = ['Biostatistician']
+
 
 def absolute(path):
     """Get the absolute path of the given file/folder.

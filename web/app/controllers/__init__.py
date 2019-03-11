@@ -11,7 +11,10 @@ import datetime
 import settings
 from web.contrib.template import render_jinja
 from settings import (absolute, config)
-from settings import COMPLETE_REPORTS_KEYWORDS
+from settings import (
+    COMPLETE_REPORTS_KEYWORDS,
+    THRESHOLD_ALERT_ROLES,
+    GENERAL_ALERT_ROLES)
 
 db_host = config['db_host']
 db_name = config['db_name']
@@ -48,6 +51,21 @@ for r in rs:
     dataElements[r['dataelement']] = r['description']
     categoryOptionCombos[r['category_combo']] = r['description']
 
+roles = []
+rolesById = {}
+reporterRolesByName = {}
+rs = db.query("SELECT id, name from reporter_groups order by name")
+for r in rs:
+    roles.append({'id': r['id'], 'name': r['name']})
+    rolesById[r['id']] = r['name']
+    reporterRolesByName[r['name']] = r['id']
+
+userRolesByName = {}
+rs = db.query("SELECT id, name from user_roles order by name")
+for r in rs:
+    userRolesByName[r['name']] = r['id']
+
+notifyingParties = {}
 ourDistricts = []
 allDistricts = {}
 allDistrictsByName = {}  # make use in pages easy
@@ -57,22 +75,35 @@ for r in rs:
     allDistricts[r['id']] = r['name']
     allDistrictsByName[r['name']] = r['id']
 
+    if r['id'] not in notifyingParties:
+        notifyingParties[r['id']] = {
+            'threshold_alert_contacts': [], 'general_alert_contacts': []}
+
+    # here we save telephone numbers of threshold notifying parties at district level
+    threshold_alert_roles = [
+        int(reporterRolesByName[x]) for x in THRESHOLD_ALERT_ROLES if x in reporterRolesByName]
+    rxx = db.query(
+        "SELECT uuid, telephone, facilityid FROM reporters WHERE district_id = $districtid AND "
+        " (groups && '%s'::INT[])" % str(threshold_alert_roles).replace(
+            '[', '{').replace(']', '}').replace('\'', '\"'), {'districtid': r['id']})
+
+    for contact in rxx:
+        notifyingParties[r['id']]['threshold_alert_contacts'].append(contact['uuid'])
+
+    general_alert_roles = [
+        int(reporterRolesByName[x]) for x in GENERAL_ALERT_ROLES if x in reporterRolesByName]
+    ryy = db.query(
+        "SELECT uuid, telephone, facilityid FROM reporters WHERE district_id = $districtid AND "
+        " (groups && '%s'::INT[])" % str(general_alert_roles).replace(
+            '[', '{').replace(']', '}').replace('\'', '\"'), {'districtid': r['id']})
+
+    for contact in ryy:
+        notifyingParties[r['id']]['general_alert_contacts'].append(contact['uuid'])
+
 facilityLevels = {}
 rs = db.query("SELECT id, name FROM healthfacility_type")
 for r in rs:
     facilityLevels[r['id']] = r['name']
-
-roles = []
-rolesById = {}
-rs = db.query("SELECT id, name from reporter_groups order by name")
-for r in rs:
-    roles.append({'id': r['id'], 'name': r['name']})
-    rolesById[r['id']] = r['name']
-
-userRolesByName = {}
-rs = db.query("SELECT id, name from user_roles order by name")
-for r in rs:
-    userRolesByName[r['name']] = r['id']
 
 ourServers = []
 serversById = {}
@@ -89,14 +120,14 @@ for r in rs:
     if x:
         serverApps[r['id']] = x[0]['allowed_sources']
 
-IndicatorMapping = {}  # {'slug': {'descr': 'Malaria Cases', 'dhis2_id': '', 'dhis2_combo_id': ''}}
+IndicatorMapping = {}  # {'slug': {'descr': 'Malaria Cases', 'dhis2_id': '', 'dhis2_combo_id': '', 'threshold': ''}}
 Indicators = {}  # Form: {'cases': {'dataelement': {'slug': 'cases_ma'}, 'dataelement', {'slug': 'cases_me'}}}
 IndicatorsByFormOrder = {}  # {'cases': [{'slug': 'cases_ma', 'description': 'Malaria Cases'}, {}, {}, ...]}
 DataElementPosition = {}
 CategoryComboPosition = {}  # position for category combo - combos are different for forms like mat
 IndicatorsCategoryCombos = {}
 rs = db.query(
-    "SELECT form, slug, description, dataelement, category_combo, form_order "
+    "SELECT form, slug, description, dataelement, category_combo, threshold, form_order "
     " FROM dhis2_mtrack_indicators_mapping "
     "ORDER BY form, form_order")
 for r in rs:
@@ -114,7 +145,8 @@ for r in rs:
     DataElementPosition[r['dataelement']] = r['form_order']
     CategoryComboPosition[r['category_combo']] = r['form_order']
     IndicatorMapping[r['slug']] = {
-        'descr': r['description'], 'dhis2_id': r['dataelement'], 'dhis2_combo_id': r['category_combo']}
+        'descr': r['description'], 'dhis2_id': r['dataelement'],
+        'dhis2_combo_id': r['category_combo'], 'threshold': r['threshold']}
     if r['form'] not in IndicatorsCategoryCombos:
         IndicatorsCategoryCombos[r['form']] = {}
         IndicatorsCategoryCombos[r['form']][r['slug']] = r['category_combo']
@@ -123,9 +155,10 @@ for r in rs:
 import pprint
 # pprint.pprint(Indicators)
 # pprint.pprint(IndicatorsByFormOrder)
-pprint.pprint(IndicatorsCategoryCombos)
-pprint.pprint(IndicatorMapping)
+# pprint.pprint(IndicatorsCategoryCombos)
+# pprint.pprint(IndicatorMapping)
 # pprint.pprint(DataElementPosition)
+pprint.pprint(notifyingParties)
 
 
 def put_app(app):
