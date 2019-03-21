@@ -30,6 +30,7 @@ class Users:
                 lastname = u.lastname
                 telephone = u.telephone
                 email = u.email
+                districts = u.districts
                 username = u.username
                 user_role = u.role
                 role_name = u.role_name
@@ -68,7 +69,7 @@ class Users:
     @csrf_protected
     def POST(self):
         params = web.input(
-            firstname="", lastname="", telephone="", username="", email="", passwd="",
+            firstname="", lastname="", telephone="", username="", email="", passwd="", districts=[],
             cpasswd="", is_active="", is_super="", page="1", ed="", d_id="", user_role="")
         try:
             page = int(params.page)
@@ -83,26 +84,30 @@ class Users:
                     "telephone=$telephone, email=$email, username=$username, "
                     "password = crypt($cpasswd, gen_salt('bf')), "
                     "is_active=$is_active, "
-                    "user_role=$role "
+                    "user_role=$role, districts=$districts "
                     "WHERE id = $id", {
                         'firstname': params.firstname, 'lastname': params.lastname,
                         'telephone': params.telephone, 'email': params.email,
                         'username': params.username, 'cpasswd': params.cpasswd,
-                        'role': params.user_role, 'is_active': is_active, 'id': params.ed
+                        'role': params.user_role, 'is_active': is_active, 'id': params.ed,
+                        'districts': str([int(x) for x in params.districts]).replace(
+                            '[', '{').replace(']', '}').replace('\'', '\"')
                     }
                 )
                 return web.seeother("/users")
             else:
                 db.query(
                     "INSERT INTO users (firstname, lastname, telephone, email, "
-                    "username, password, is_active, user_role) "
+                    "username, password, is_active, user_role, districts) "
                     "VALUES($firstname, $lastname, $telephone, $email, $username, "
                     "crypt($cpasswd, gen_salt('bf')), $is_active, "
-                    "$role)", {
+                    "$role, $districts)", {
                         'firstname': params.firstname, 'lastname': params.lastname,
                         'telephone': params.telephone, 'email': params.email,
                         'username': params.username, 'cpasswd': params.cpasswd,
-                        'role': params.user_role, 'is_active': is_active, 'id': params.ed
+                        'role': params.user_role, 'is_active': is_active, 'id': params.ed,
+                        'districts': str([int(x) for x in params.districts]).replace(
+                            '[', '{').replace(']', '}').replace('\'', '\"')
                     }
                 )
                 return web.seeother("/users")

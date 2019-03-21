@@ -21,7 +21,8 @@ class Facilities:
         limit = PAGE_LIMIT
         start = (page - 1) * limit if page > 0 else 0
         if session.role == 'District User':
-            criteria = "district='%s'" % session.username.capitalize()
+            # criteria = "district='%s'" % session.username.capitalize()
+            criteria = "district_id = ANY('%s'::INT[]) " % session.districts_array
         else:
             criteria = ""
         dic = lit(

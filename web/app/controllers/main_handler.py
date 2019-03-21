@@ -29,6 +29,9 @@ class Index:
             session.username = username
             session.sesid = info.id
             session.role = info.role
+            session.districts = info.districts
+            session.districts_array = str([int(x) for x in info.districts]).replace(
+                '[', '{').replace(']', '}').replace('\'', '\"')
             session.criteria = ""
             put_session(session)
             log_dict = {

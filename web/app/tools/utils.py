@@ -70,7 +70,7 @@ def post_request(data, url=config['default_api_uri']):
 
 def auth_user(db, username, password):
     sql = (
-        "SELECT a.id, a.firstname, a.lastname, b.name as role "
+        "SELECT a.id, a.firstname, a.lastname, b.name as role, a.districts "
         "FROM users a, user_roles b "
         "WHERE username = $username AND password = crypt($passwd, password) "
         "AND a.user_role = b.id AND is_active = 't'")

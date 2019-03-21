@@ -2,7 +2,7 @@ import web
 import json
 import simplejson
 import psycopg2.extras
-from . import csrf_protected, db, require_login, get_session, render, allDistrictsByName
+from . import csrf_protected, db, require_login, get_session, render  # , allDistrictsByName
 from app.tools.utils import audit_log, default, lit
 from app.tools.pagination2 import doquery, countquery, getPaginationString
 from settings import PAGE_LIMIT
@@ -16,9 +16,8 @@ class Reporters:
         session = get_session()
         if session.role == 'District User':
             districts_SQL = (
-                "SELECT id, name FROM locations WHERE type_id = "
-                "(SELECT id FROM locationtype WHERE name = 'district') "
-                "AND name = '%s'" % session.username.capitalize())
+                "SELECT id, name FROM locations WHERE id = "
+                "ANY('%s'::INT[]) ORDER BY name" % session.districts_array)
         else:
             districts_SQL = (
                 "SELECT id, name FROM locations WHERE type_id = "
@@ -118,8 +117,9 @@ class Reporters:
                         return json.dumps({'message': "success"})
 
         if session.role == 'District User':
-            district_id = allDistrictsByName['%s' % session.username.capitalize()]
-            criteria = "district_id=%s" % district_id
+            # district_id = allDistrictsByName['%s' % session.username.capitalize()]
+            criteria = "district_id = ANY('%s'::INT[]) " % session.districts_array
+            # criteria = "district_id=%s" % district_id
             if params.search:
                 criteria += (
                     " AND (telephone ilike '%%%%%s%%%%' OR "

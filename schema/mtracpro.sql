@@ -20,12 +20,19 @@ CREATE TABLE user_roles (
 );
 CREATE INDEX user_roles_idx1 ON user_roles(name);
 
+CREATE TABLE permissions(
+    id SERIAL NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    codename TEXT NOT NULL,
+    sys_module TEXT NOT NULL,
+    created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (codename, sys_module)
+);
+
 CREATE TABLE user_role_permissions (
     id SERIAL NOT NULL PRIMARY KEY,
     user_role INTEGER NOT NULL REFERENCES user_roles ON DELETE CASCADE ON UPDATE CASCADE,
-    Sys_module TEXT NOT NULL, -- the name of the module - defined above this level
-    sys_perms VARCHAR(16) NOT NULL,
-    unique(sys_module,user_role)
+    permission_id INTEGER NOT NULL REFERENCES permissions(id) ON DELETE CASCADE
 );
 
 CREATE TABLE users (
@@ -37,6 +44,7 @@ CREATE TABLE users (
     telephone TEXT NOT NULL DEFAULT '', -- acts as the username
     password TEXT NOT NULL, -- blowfish hash of password
     email TEXT NOT NULL DEFAULT '',
+    districts INTEGER [] DEFAULT '{}'::INT[],
     allowed_ips TEXT NOT NULL DEFAULT '127.0.0.1;::1', -- semi-colon separated list of allowed ip masks
     denied_ips TEXT NOT NULL DEFAULT '', -- semi-colon separated list of denied ip masks
     failed_attempts TEXT DEFAULT '0/'||to_char(now(),'yyyymmdd'),
@@ -47,6 +55,12 @@ CREATE TABLE users (
     last_passwd_update TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_permissions(
+    id SERIAL NOT NULL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    permission_id INTEGER NOT NULL REFERENCES permissions(id) ON DELETE CASCADE
 );
 
 CREATE INDEX users_idx1 ON users(telephone);
@@ -610,6 +624,23 @@ AS $function$
     END;
 $function$;
 
+CREATE OR REPLACE FUNCTION public.get_reporter_groups2(_reporter_id bigint)
+ RETURNS text
+ LANGUAGE plpgsql
+AS $function$
+    DECLARE
+    r TEXT;
+    p TEXT;
+    BEGIN
+        r := '';
+        FOR p IN SELECT name FROM reporter_groups WHERE id IN
+            (SELECT unnest(groups) FROM reporters WHERE id = _reporter_id) LOOP
+            r := r || p || ',';
+        END LOOP;
+        RETURN rtrim(r,',');
+    END;
+$function$;
+
 CREATE OR REPLACE FUNCTION public.get_reporter_location(tel text)
     RETURNS bigint
     LANGUAGE plpgsql
@@ -747,3 +778,22 @@ SELECT a.id,
     locations b,
     healthfacilities d
   WHERE a.reporting_location = b.id AND d.id = a.facilityid;
+
+
+CREATE OR REPLACE FUNCTION requests_after_insert() RETURNS TRIGGER AS
+$delim$
+    BEGIN
+        IF TG_OP = 'INSERT' THEN
+            IF NEW.msisdn IS NOT NULL AND NEW.facility IS NOT NULL THEN
+                UPDATE reporters SET last_reporting_date = NOW()
+                    WHERE telephone = NEW.msisdn OR alternate_tel = NEW.msisdn;
+                UPDATE healthfacilities SET last_reporting_date = NOW()
+                    WHERE code = NEW.facility;
+            END IF;
+            RETURN NEW;
+        END IF;
+    END;
+$delim$ LANGUAGE plpgsql;
+
+CREATE TRIGGER requests_after_insert AFTER INSERT ON requests
+    FOR EACH ROW EXECUTE PROCEDURE requests_after_insert();
