@@ -21,7 +21,7 @@ class Users:
         if params.ed:
             r = db.query(
                 "SELECT a.id, a.firstname, a.lastname, a.username, a.email, a.telephone, "
-                "a.is_active, b.id as role, b.name role_name "
+                "a.is_active, a.districts, b.id as role, b.name role_name "
                 "FROM users a, user_roles b "
                 "WHERE a.id = $id AND a.user_role = b.id", {'id': params.ed})
             if r and (session.role == 'Administrator' or '%s' % session.sesid == edit_val):
@@ -30,12 +30,17 @@ class Users:
                 lastname = u.lastname
                 telephone = u.telephone
                 email = u.email
-                districts = u.districts
                 username = u.username
                 user_role = u.role
                 role_name = u.role_name
                 is_active = u.is_active
                 is_super = True if u.role == 'Administrator' else False
+                district_ids = []
+                rx = db.query(
+                    "SELECT id FROM locations WHERE id IN "
+                    "(select unnest(districts) from users where id = $id)", {'id': params.ed})
+                for d in rx:
+                    district_ids.append(d['id'])
 
         if params.d_id:
             if session.role == 'Administrator':

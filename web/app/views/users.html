@@ -74,9 +74,16 @@
                                 <div class="form-group"><label for="email" class="col-lg-3 control-label">Districts:</label>
                                     <div class="col-lg-9">
                                         <select name="districts" id="role" class="form-control" multiple="yes" size="6">
-                                            {% for district in districts%}
-                                                <option value="{{ district.id}}">{{ district.name }}</option>
-                                            {% endfor %}
+                                            {% if edit_val %}
+                                                {% for district in districts%}
+                                                    <option value="{{ district.id}}" {% if district.id in district_ids %} selected="yes" {% endif %}>
+                                                    {{ district.name }}</option>
+                                                {% endfor %}
+                                            {% else %}
+                                                {% for district in districts%}
+                                                    <option value="{{ district.id}}">{{ district.name }}</option>
+                                                {% endfor %}
+                                            {% endif %}
                                         </select>
                                     </div>
                                 </div>
@@ -228,7 +235,6 @@
 		<!-- Sweet alert -->
         <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>
 
-        <script src="/static/js/llin/dpoints.js"></script>
         <script>
            $(document).ready(function() {
             $('.dataTables-example').DataTable({
