@@ -785,7 +785,7 @@ $delim$
     BEGIN
         IF TG_OP = 'INSERT' THEN
             IF NEW.msisdn IS NOT NULL AND NEW.facility IS NOT NULL THEN
-                UPDATE reporters SET last_reporting_date = NOW()
+                UPDATE reporters SET last_reporting_date = NOW(), total_reports = total_reports + 1
                     WHERE telephone = NEW.msisdn OR alternate_tel = NEW.msisdn;
                 UPDATE healthfacilities SET last_reporting_date = NOW()
                     WHERE code = NEW.facility;

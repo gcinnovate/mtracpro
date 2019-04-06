@@ -123,11 +123,12 @@ for r in rs:
 IndicatorMapping = {}  # {'slug': {'descr': 'Malaria Cases', 'dhis2_id': '', 'dhis2_combo_id': '', 'threshold': ''}}
 Indicators = {}  # Form: {'cases': {'dataelement': {'slug': 'cases_ma'}, 'dataelement', {'slug': 'cases_me'}}}
 IndicatorsByFormOrder = {}  # {'cases': [{'slug': 'cases_ma', 'description': 'Malaria Cases'}, {}, {}, ...]}
+IndicatorsDataSet = {}  # {'cases': 'V4....', 'epc': '....', 'epd': ''} # mapping forms to datasets
 DataElementPosition = {}
 CategoryComboPosition = {}  # position for category combo - combos are different for forms like mat
 IndicatorsCategoryCombos = {}
 rs = db.query(
-    "SELECT form, slug, description, dataelement, category_combo, threshold, form_order "
+    "SELECT form, slug, description, dataelement, dataset, category_combo, threshold, form_order "
     " FROM dhis2_mtrack_indicators_mapping "
     "ORDER BY form, form_order")
 for r in rs:
@@ -152,13 +153,19 @@ for r in rs:
         IndicatorsCategoryCombos[r['form']][r['slug']] = r['category_combo']
     else:
         IndicatorsCategoryCombos[r['form']][r['slug']] = r['category_combo']
-import pprint
-# pprint.pprint(Indicators)
-# pprint.pprint(IndicatorsByFormOrder)
-# pprint.pprint(IndicatorsCategoryCombos)
-# pprint.pprint(IndicatorMapping)
-# pprint.pprint(DataElementPosition)
-pprint.pprint(notifyingParties)
+
+    if r['form'] not in IndicatorsDataSet:
+        IndicatorsDataSet[r['form']] = r['dataset']
+
+if settings.DEBUG:
+    import pprint
+    pprint.pprint(Indicators)
+    pprint.pprint(IndicatorsByFormOrder)
+    pprint.pprint(IndicatorsCategoryCombos)
+    pprint.pprint(IndicatorMapping)
+    pprint.pprint(DataElementPosition)
+    pprint.pprint(notifyingParties)
+    pprint.pprint(IndicatorsDataSet)
 
 
 def put_app(app):

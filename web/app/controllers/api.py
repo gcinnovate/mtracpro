@@ -2,8 +2,9 @@ import json
 import web
 import datetime
 from . import (
-    db, get_current_week, serversByName, IndicatorMapping, notifyingParties, allDistrictsByName)
-from settings import config
+    db, get_current_week, serversByName,
+    IndicatorMapping, IndicatorsDataSet, notifyingParties, allDistrictsByName)
+from settings import config, KEYWORD_SERVER_MAPPINGS
 import settings
 from app.tools.utils import (
     get_basic_auth_credentials, auth_user, get_webhook_msg_old,
@@ -11,7 +12,7 @@ from app.tools.utils import (
     get_webhook_msg, post_request
 )
 # from app.tools.utils import get_location_role_reporters, queue_schedule, log_schedule, update_queued_sms
-from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
+from settings import DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS
 from settings import USE_OLD_WEBHOOKS
 
@@ -291,7 +292,6 @@ class OrderMessage:
 class Test:
     def GET(self):
         web.header('Content-Type', 'application/json')
-        return json.dumps(MAPPING)
         return json.dumps({"message": "1.2.3"})
 
     def POST(self):
@@ -308,11 +308,12 @@ class Dhis2Queue:
             raw_msg="", report_type="", facility="", reporter_type="", reporter_name="")
         extras = {'reporter_type': params.reporter_type}
         # values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
+
         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
             dataValues = []
         else:
             dataValues = ""
-        print("FACILITYCODE:", params.facilitycode, "==>", params.facility)
+        # print("FACILITYCODE:", params.facilitycode, "==>", params.facility)
         if params.facilitycode:
             if not USE_OLD_WEBHOOKS:
                 values = json.loads(web.data())
@@ -326,22 +327,25 @@ class Dhis2Queue:
                         pass
                     label = v.get('name')
                     slug = "%s_%s" % (params.form, label)
+                    # print(slug)
                     if val.__str__().isdigit() or slug in TEXT_INDICATORS:
                         if not(val) and params.form in getattr(
                                 settings, 'REPORTS_WITH_COMMANDS', ['cases', 'death', 'epc', 'epd']):  # XXX irregular forms
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
                         if slug not in IndicatorMapping:
+                            # print("Indicator Not Supported.::.", slug)
                             continue
                         # XXX check thresholds here
                         if IndicatorMapping[slug]['threshold']:
                             try:
                                 threshold = int(float(IndicatorMapping[slug]['threshold']))
-                                if val > threshold:
+                                if val >= threshold:
                                     thresholds_list.append('{} {}'.format(val, IndicatorMapping[slug]['descr']))
                             except:
+                                print("Threshold.::.Failed to Add threshold Message")
                                 pass
-                        print("%s=>%s" % (slug, val), IndicatorMapping[slug])
+                        # print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
                             dataValues.append(
                                 {
@@ -355,11 +359,14 @@ class Dhis2Queue:
                                 (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
 
                 # Build alert message and send it
-                alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
-                    params.reporter_name, params.msisdn, params.facility, params.district)
-                alert_message += '\n'.join(thresholds_list)
-                send_threshold_alert(alert_message, params.district)
-                print(alert_message)
+                # print("Thresholds List.::.", thresholds_list)
+                if thresholds_list:
+                    alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
+                        params.reporter_name, params.msisdn, params.facility, params.district)
+                    alert_message += '\n'.join(thresholds_list)
+                    alert_message += '\n' + params.raw_msg
+                    send_threshold_alert(alert_message, params.district)
+                    # print(alert_message)
 
             else:
                 values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
@@ -378,6 +385,7 @@ class Dhis2Queue:
                             if label not in params.raw_msg.lower():
                                 continue  # skip zero values for cases and death
                         if slug not in IndicatorMapping:
+                            print("Indicator Not Supported.::.", slug)
                             continue
                         # XXX check thresholds here
                         if IndicatorMapping[slug]['threshold']:
@@ -385,7 +393,8 @@ class Dhis2Queue:
                                 threshold = int(float(IndicatorMapping[slug]['threshold']))
                                 if val > threshold:
                                     thresholds_list.append('{} {}'.format(val, IndicatorMapping[slug]['descr']))
-                            except:
+                            except Exception as e:
+                                print("Threshold.::.Failed to Add threshold Message=>", str(e))
                                 pass
                         print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
@@ -401,11 +410,14 @@ class Dhis2Queue:
                                 (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
 
                 # Build alert message and send it
-                alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
-                    params.reporter_name, params.msisdn, params.facility, params.district)
-                alert_message += '\n'.join(thresholds_list)
-                send_threshold_alert(alert_message, params.district)
-                print(alert_message)
+                print("Thresholds List.::.", thresholds_list)
+                if thresholds_list:
+                    alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
+                        params.reporter_name, params.msisdn, params.facility, params.district)
+                    alert_message += '\n'.join(thresholds_list)
+                    alert_message += '\n' + params.raw_msg
+                    send_threshold_alert(alert_message, params.district)
+                    print(alert_message)
 
             if not dataValues and params.form in ('cases', 'death'):
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':
@@ -421,13 +433,15 @@ class Dhis2Queue:
                     'dataValues': dataValues
                 }
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':
-                    args_dict['dataSet'] = HMIS_033B_DATASET
+                    args_dict['dataSet'] = IndicatorsDataSet.get(params.form, HMIS_033B_DATASET)
                     args_dict['attributeOptionCombo'] = HMIS_033B_DATASET_ATTR_OPT_COMBO
                     payload = json.dumps(args_dict)
                 else:
                     payload = XML_TEMPLATE % args_dict
                 year, week = tuple(args_dict['period'].split('W'))
                 print(payload)
+                destination_name = KEYWORD_SERVER_MAPPINGS.get(
+                    params.form, config['dispatcher2_destination'])
                 extra_params = {
                     'week': week, 'year': year, 'msisdn': params.msisdn,
                     'facility': params.facilitycode, 'raw_msg': params.raw_msg,
@@ -435,7 +449,7 @@ class Dhis2Queue:
                     # 'source': config['dispatcher2_source'],
                     # 'destination': config['dispatcher2_destination'],
                     'source': serversByName[config['dispatcher2_source']],
-                    'destination': serversByName[config['dispatcher2_destination']],
+                    'destination': serversByName[destination_name],
                     'extras': json.dumps(extras),
                     'status': config.get('default-queue-status', 'pending')}
                 # now ready to queue to DB for pushing to DHIS2

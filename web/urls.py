@@ -18,7 +18,7 @@ from app.controllers.api4 import ReportersUploadAPI
 from app.controllers.api5 import CaramalReminders
 from app.controllers.api6 import QueueRejectedReports
 from app.controllers.api7 import AnonymousReports, AnonymousReportDetails, AnonReport
-from app.controllers.api8 import IndicatorsAPI
+from app.controllers.api8 import IndicatorsAPI, ReportingStatus, Dispatch, SendAlert
 from app.controllers.reporters_handler import Reporters
 from app.controllers.users_handler import Users
 from app.controllers.groups_handler import Groups
@@ -91,7 +91,10 @@ URLS = (
     r'/errors', QueueRejectedReports,  # intended to save messages that ran into errors in rapidPro
     r'/dhis2queue', Dhis2Queue,  # queue reports in dispatcher2
     r'/dhis2instancequeue', QueueForDhis2InstanceProcessing,  # queue reports in dispatcher2
+    r'/api/v1/dispatch', Dispatch,  # Sends to other servers/apps via Dispatcher2  -> controllers.api8.py
+    r'/sendalert', SendAlert,
     r'/test', Test,
+    r'/api/v1/status/(\w+)/?', ReportingStatus,  # give status of reporters status
     r'/api/v1/anonreport/(\d+)/?', AnonReport,
     r'/api/v1/anonymousreports', AnonymousReports,
     r'/api/v1/anonymousreport_details/(\d+)/?', AnonymousReportDetails,
@@ -101,7 +104,7 @@ URLS = (
     r'/api/v1/loc_facilities/(\d+)/?', LocationFacilities,
     r'/api/v1/location/(\d+)/?', Location,
     r'/api/v1/subcountylocations/(\d+)/?', SubcountyLocations,
-    r'/api/v1/locations_endpoint/(\w+)/?', LocationsEndpoint,
+    r'/api/v1/locations_endpoint/(\w+)/?', LocationsEndpoint,  # controllers.api2.py
     r'/api/v1/reporters_xlendpoint', ReportersXLEndpoint,
     r'/api/v1/reportsthisweek/(\w+)/?', ReportsThisWeek,
     r'/api/v1/reportforms/(\w+)/?', ReportForms,
@@ -111,12 +114,12 @@ URLS = (
     r'/api/v1/sendbulksms', SendBulkSMS,
     r'/api/v1/request_details/(\d+)/?', RequestDetails,
     r'/api/v1/request_del/(\d+)/?', DeleteRequest,
-    r'/api/v1/server_del/(\d+)/?', DeleteServer,
+    r'/api/v1/server_del/(\d+)/?', DeleteServer,  # controllers.api2.py
     r'/api/v1/editreport/(\d+)/?', EditReport,  # for retrospective report edits
     r'/api/v1/reportingweek/?', ReportingWeek,
     r'/api/v1/reporter/(\w+)/?', ReporterAPI,
     r'/reportersupload', ReportersUploadAPI,
     r'/api/v1/reporterhistory/\+?(\w+)/?', ReporterHistoryApi,
-    r'/api/v1/indicators', IndicatorsAPI
+    r'/api/v1/indicators', IndicatorsAPI,
 
 )
