@@ -797,3 +797,51 @@ $delim$ LANGUAGE plpgsql;
 
 CREATE TRIGGER requests_after_insert AFTER INSERT ON requests
     FOR EACH ROW EXECUTE PROCEDURE requests_after_insert();
+
+-- Polling tables
+CREATE TABLE polls(
+    id SERIAL NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type VARCHAR(8) NOT NULL CHECK(type IN('yn', 't', 'n')),
+    question TEXT NOT NULL DEFAULT '',
+    default_response TEXT NOT NULL DEFAULT '',
+    start_date DATE,
+    end_date DATE,
+    districts INTEGER [] DEFAULT '{}'::INT[],
+    groups INTEGER [] DEFAULT '{}'::INT[],
+    response_count INTEGER NOT NULL DEFAULT 0,
+    created timestamptz DEFAULT current_timestamp,
+    updated timestamptz DEFAULT current_timestamp
+);
+CREATE INDEX polls_idx1 ON polls(name);
+
+CREATE TABLE poll_recipients(
+    id bigserial PRIMARY KEY NOT NULL,
+    poll_id INTEGER NOT NULL REFERENCES polls(id) ON DELETE CASCADE,
+    reporter_id INTEGER NOT NULL REFERENCES reporters(id) ON DELETE CASCADE
+);
+CREATE INDEX poll_recipients_idx1 ON poll_recipients(poll_id);
+
+CREATE TABLE poll_responses(
+    id bigserial PRIMARY KEY NOT NULL,
+    poll_id INTEGER NOT NULL REFERENCES polls(id) ON DELETE CASCADE,
+    reporter_id INTEGER NOT NULL REFERENCES reporters(id) ON DELETE CASCADE,
+    message TEXT NOT NULL DEFAULT '',
+    category TEXT NOT NULL DEFAULT '', -- what this response has been categorized as
+    created timestamptz DEFAULT current_timestamp
+);
+CREATE INDEX poll_responses_idx1 ON poll_responses(poll_id);
+
+CREATE OR REPLACE FUNCTION poll_responses_after_insert() RETURNS TRIGGER AS
+$delim$
+    BEGIN
+        IF TG_OP = 'INSERT' THEN
+            IF NEW.poll_id IS NOT NULL THEN
+                UPDATE polls SET response_count = response_count + 1
+                WHERE id = NEW.poll_id;
+            END IF;
+            RETURN NEW;
+        END IF;
+    END;
+$delim$ LANGUAGE plpgsql;
