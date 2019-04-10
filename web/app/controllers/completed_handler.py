@@ -1,11 +1,8 @@
 import web
-import parsedatetime
 from . import db, require_login, render, get_session
 from app.tools.pagination2 import doquery, countquery, getPaginationString
 from app.tools.utils import default, lit, audit_log
 from settings import PAGE_LIMIT
-
-cal = parsedatetime.Calendar()
 
 
 class Completed:
