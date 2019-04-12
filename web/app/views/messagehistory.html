@@ -28,12 +28,12 @@
                         <div class="col-md-9">
                             <div class="chat-discussion">
                                 {% for m in msgs %}
-                                    {% if m.direction == "I" %}
+                                    {% if m.direction in ("I", "in") %}
                             	        <div class="chat-message left">
                                             <img class="message-avatar" src="/static/images/sms_in.png" alt="" >
                                             <div class="message">
                                                 <a class="message-author" href="#">{{ name }} ({{ phone}})</a>
-                                                <span class="message-date"> {{ m.created_on}}<br/></span>
+                                                <span class="message-date"> {{ m.sent_on}}<br/></span>
                                                 <span class="message-content">
                                                     {{ m.text }}
                                                 </span>
@@ -44,7 +44,7 @@
                                             <img class="message-avatar" src="/static/images/sms_out.png" alt="" >
                                             <div class="message">
                                                 <a class="message-author" href="#">mTracpro</a>
-                                                <span class="message-date"> {{ m.created_on }}<br/></span>
+                                                <span class="message-date"> {{ m.sent_on }}<br/></span>
                                                 <span class="message-content">
                                                     {{ m.text }}
                                                 </span>
@@ -73,12 +73,12 @@
 
         <div class="content" id="chat_content">
 			{% for m in chat_msgs %}
-                {% if m.direction == 'I' %}
+                {% if m.direction in("I", "in") %}
                     <div class="left">
                         <div class="author-name">
                             {{ name }}
                             <small class="chat-date">
-                            10:02 am
+                            {{ m.sent_on }}
                             </small>
                         </div>
                         <div class="chat-message active">
@@ -91,7 +91,7 @@
                         <div class="author-name">
                             mTracpro
                             <small class="chat-date">
-                            10:02 am
+                            {{ m.sent_on }}
                             </small>
                         </div>
                         <div class="chat-message">

@@ -30,7 +30,7 @@ class MessageHistory:
                 messages = {}
             if 'results' in messages:
                 msgs = list(messages['results'])
-                msgs.reverse()
+                # msgs.reverse()
                 chat_msgs = msgs[-4:]
         l = locals()
         del l['self']
