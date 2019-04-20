@@ -810,6 +810,7 @@ CREATE TABLE polls(
     end_date DATE,
     districts INTEGER [] DEFAULT '{}'::INT[],
     groups INTEGER [] DEFAULT '{}'::INT[],
+    recipient_count INTEGER NOT NULL DEFAULT 0,
     response_count INTEGER NOT NULL DEFAULT 0,
     created timestamptz DEFAULT current_timestamp,
     updated timestamptz DEFAULT current_timestamp
@@ -829,7 +830,8 @@ CREATE TABLE poll_responses(
     reporter_id INTEGER NOT NULL REFERENCES reporters(id) ON DELETE CASCADE,
     message TEXT NOT NULL DEFAULT '',
     category TEXT NOT NULL DEFAULT '', -- what this response has been categorized as
-    created timestamptz DEFAULT current_timestamp
+    created timestamptz DEFAULT current_timestamp,
+    UNIQUE(poll_id, reporter_id)
 );
 CREATE INDEX poll_responses_idx1 ON poll_responses(poll_id);
 
@@ -845,3 +847,22 @@ $delim$
         END IF;
     END;
 $delim$ LANGUAGE plpgsql;
+
+CREATE TRIGGER poll_responses_after_insert AFTER INSERT ON poll_responses
+    FOR EACH ROW EXECUTE PROCEDURE poll_responses_after_insert();
+
+CREATE OR REPLACE FUNCTION poll_recipients_after_insert() RETURNS TRIGGER AS
+$delim$
+    BEGIN
+        IF TG_OP = 'INSERT' THEN
+            IF NEW.poll_id IS NOT NULL THEN
+                UPDATE polls SET recipient_count = recipient_count + 1
+                WHERE id = NEW.poll_id;
+            END IF;
+            RETURN NEW;
+        END IF;
+    END;
+$delim$ LANGUAGE plpgsql;
+
+CREATE TRIGGER poll_recipients_after_insert AFTER INSERT ON poll_recipients
+    FOR EACH ROW EXECUTE PROCEDURE poll_recipients_after_insert();

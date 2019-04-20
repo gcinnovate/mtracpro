@@ -1,8 +1,10 @@
 import web
-from . import csrf_protected, db, require_login, render, get_session
+import json
+from . import db, require_login, render, get_session
 from app.tools.pagination2 import doquery, countquery, getPaginationString
 from app.tools.utils import default, lit
 from settings import PAGE_LIMIT
+from tasks import add_poll_recipients_task, record_poll_response_task
 
 
 class Polls:
@@ -52,7 +54,7 @@ class Polls:
                 start_date = p.start_date
                 if not start_date:
                     pass
-                    return
+                    # return
                 group_ids = []
                 rx = db.query(
                     "SELECT id FROM reporter_groups WHERE id IN "
@@ -80,7 +82,7 @@ class Polls:
             criteria = "user_id = %s " % session.sesid
             if params.search:
                 criteria += (
-                    " AND name ilike '%%%%%s%%%%' ")
+                    " AND name ilike '%%%%%s%%%%' " % params.search)
                 dic = lit(
                     relations='polls',
                     fields="id, name, question, start_date, end_date",
@@ -98,7 +100,7 @@ class Polls:
             criteria = "TRUE "
             if params.search:
                 criteria += (
-                    " AND name ilike '%%%%%s%%%%' ")
+                    " AND name ilike '%%%%%s%%%%' " % params.search)
                 dic = lit(
                     relations='polls',
                     fields="id, name, question, start_date, end_date",
@@ -114,19 +116,23 @@ class Polls:
                     limit=limit, offset=start)
 
         polls = doquery(db, dic)
+        polls_2 = doquery(db, dic)
         count = countquery(db, dic)
         pagination_str = getPaginationString(default(page, 0), count, limit, 2, "polling", "?page=")
         l = locals()
         del l['self']
         return render.polls(**l)
 
-    @csrf_protected
+    # @csrf_protected
     @require_login
     def POST(self):
         params = web.input(
             name="", question="", poll_type="", default_response="", groups=[],
             districts=[], start_now="", page="1", ed="", d_id="")
         session = get_session()
+        start_now = True if params.start_now == "on" else False
+        if params.start_now == "yes":
+            start_now = True
         try:
             page = int(params.page)
         except:
@@ -147,9 +153,29 @@ class Polls:
                             '[', '{').replace(']', '}').replace('\'', '\"'),
                         'districts': str([int(x) for x in params.districts]).replace(
                             '[', '{').replace(']', '}').replace('\'', '\"')})
+                if rx:
+                    poll_id = rx[0]['id']
+                    add_poll_recipients_task.apply_async(
+                        args=(
+                            poll_id, params.groups, params.districts,
+                            start_now, params.poll_type, params.question, params.default_response), countdown=5)
 
                 return web.seeother("/polling")
 
         l = locals()
         del l['self']
         return render.polls(**l)
+
+
+class PollResponses:
+    def GET(self):
+        params = web.input(poll_id="", response="", msisdn="", category="", contact_uuid="")
+        web.header("Content-Type", "application/json; charset=utf-8")
+
+        rs = db.query("SELECT id FROM reporters WHERE uuid = $uuid", {'uuid': params.contact_uuid})
+        if rs:
+            reporter_id = rs[0]['id']
+            record_poll_response_task.delay(
+                params.poll_id, reporter_id, params.response, params.category)
+            return json.dumps({'message': 'successfully recorded'})
+        return json.dumps({'message': 'response not recorded'})

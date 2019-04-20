@@ -33,7 +33,7 @@ from app.controllers.ready_handler import Ready
 from app.controllers.search_handler import Search
 from app.controllers.appsettings_handler import AppSettings
 from app.controllers.dataentry_handler import DataEntry
-from app.controllers.polls_handler import Polls
+from app.controllers.polls_handler import Polls, PollResponses
 from app.controllers.settings_handler import Settings
 from app.controllers.forgotpass_handler import ForgotPass
 from app.controllers.facilities_handler import Facilities
@@ -93,6 +93,7 @@ URLS = (
     r'/dhis2instancequeue', QueueForDhis2InstanceProcessing,  # queue reports in dispatcher2
     r'/api/v1/dispatch', Dispatch,  # Sends to other servers/apps via Dispatcher2  -> controllers.api8.py
     r'/sendalert', SendAlert,
+    r'/pollresponses', PollResponses,
     r'/test', Test,
     r'/api/v1/status/(\w+)/?', ReportingStatus,  # give status of reporters status
     r'/api/v1/anonreport/(\d+)/?', AnonReport,

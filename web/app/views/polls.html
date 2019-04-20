@@ -36,7 +36,7 @@
                                         <select name="poll_type" id="poll_type" class="form-control" required>
                                             <option value="">Select Poll Type</option>
                                             {% for k, v in [('t', 'Free Text Poll'), ('n', 'Numeric Poll'), ('yn', 'Yes/No Poll')] %}
-                                                <option value="{{ k }}">{{ v }}</option>
+                                                <option value="{{ k }}" {% if k == poll_type%} selected="yes" {% endif %}>{{ v }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -77,7 +77,7 @@
                                     <div class="col-lg-8">
                                         <select name="groups" id="role" class="form-control" multiple="yes" size="5" required>
                                             {% for v in roles %}
-                                            <option value="{{ v.id }}" {% if v.name == role %} selected="yes" {% endif %}>{{ v.name }}</option>
+                                            <option value="{{ v.id }}" {% if v.id in group_ids %} selected="yes" {% endif %}>{{ v.name }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -86,12 +86,12 @@
                                     <div class="col-lg-8">
                                         <select name="districts" id="district" class="form-control" multiple="yes" size="6" required>
                                             {% if edit_val %}
-                                                {% for district in districts%}
+                                                {% for district in districts_1%}
                                                     <option value="{{ district.id}}" {% if district.id in district_ids %} selected="yes" {% endif %}>
                                                     {{ district.name }}</option>
                                                 {% endfor %}
                                             {% else %}
-                                                {% for district in districts%}
+                                                {% for district in districts_2%}
                                                     <option value="{{ district.id}}">{{ district.name }}</option>
                                                 {% endfor %}
                                             {% endif %}
@@ -149,6 +149,9 @@
                                                 <div class="input-group">
                                                     <select name="poll" id="poll" class="form-control" required>
                                                         <option value="">Select Poll</option>
+                                                        {% for p in polls_2 %}
+                                                            <option value="{{ p.id }}">{{ p.name }}</option>
+                                                        {% endfor %}
                                                     </select>
                                                     <span class="input-group-btn">
                                                         <button type="submit" class="btn btn-primary">Download</button>
@@ -196,7 +199,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for poll in poll%}
+                                {% for poll in polls%}
                                     <tr>
                                        <td>{{ poll.name }}</td>
                                        <td><small>{{ poll.question}}</small></td>
@@ -206,12 +209,12 @@
                                             <a href="/polling?ed={{ poll.id }}" class="btn btn-primary btn-xs" value={{ poll.id }}>
                                             <i class="fa fa-edit"></i></a>
                                                             &nbsp;&nbsp;&nbsp;
-                                        <button type="button" class="btn btn-white btn-xs sms_btn" id="{{reporter.id}}" data-toggle="modal"
-											data-target="#myModal3">
-												<i title="SMS" class="fa fa-envelope-o"></i>
+                                        <button type="button" class="btn btn-white btn-xs details_btn" id="{{poll.id}}" data-toggle="modal"
+											data-target="#myModal2">
+												<i title="Details" class="fa fa-list-alt"></i>
 										</button>
                                                             &nbsp;&nbsp;&nbsp;
-                                        <button class="btn btn-danger btn-xs delete_btn" id={{ reporter.id}}><i class="fa fa-trash-o"></i></button>
+                                        <button class="btn btn-danger btn-xs delete_btn" id={{ poll.id}}><i class="fa fa-trash-o"></i></button>
                                        </td>
                                     </tr>
                                 {% endfor %}
@@ -223,6 +226,26 @@
         </div>
     </div>
     <br/>
+    <!-- END TABLE -->
+
+    <div class="modal inmodal" id="myModal2" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content animated flipInY">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">Poll Details</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="modal_res">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
