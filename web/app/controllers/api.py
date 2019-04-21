@@ -9,12 +9,13 @@ import settings
 from app.tools.utils import (
     get_basic_auth_credentials, auth_user, get_webhook_msg_old,
     queue_request, parse_message, post_request_to_dispatcher2, get_reporting_week,
-    get_webhook_msg, post_request
+    get_webhook_msg
 )
 # from app.tools.utils import get_location_role_reporters, queue_schedule, log_schedule, update_queued_sms
 from settings import DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS
 from settings import USE_OLD_WEBHOOKS
+from tasks import sendsms_to_uuids_task
 
 
 def send_threshold_alert(msg, district):
@@ -23,11 +24,7 @@ def send_threshold_alert(msg, district):
     except:
         threshold_alert_contacts = []
     if threshold_alert_contacts:
-        post_data = json.dumps({'contacts': threshold_alert_contacts, 'text': msg})
-        try:
-            post_request(post_data, '%sbroadcasts.json' % config['api_url'])
-        except:
-            pass
+        sendsms_to_uuids_task(threshold_alert_contacts, msg)
 
 
 class LocationChildren:

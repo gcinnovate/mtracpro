@@ -3,8 +3,9 @@ import web
 import requests
 # import settings
 from . import db, get_current_week, notifyingParties, allDistrictsByName
-from app.tools.utils import get_basic_auth_credentials, auth_user, post_request
+from app.tools.utils import get_basic_auth_credentials, auth_user
 from settings import config, KEYWORD_SERVER_MAPPINGS, SEND_ALERTS
+from tasks import sendsms_to_uuids_task
 
 
 def send_general_alert(msg, district):
@@ -15,11 +16,7 @@ def send_general_alert(msg, district):
         general_alert_contacts = []
     # print("GEN ALERT=>", general_alert_contacts)
     if general_alert_contacts:
-        post_data = json.dumps({'contacts': general_alert_contacts, 'text': msg})
-        try:
-            post_request(post_data, '%sbroadcasts.json' % config['api_url'])
-        except:
-            pass
+        sendsms_to_uuids_task.delay(general_alert_contacts, msg)
 
 
 class IndicatorsAPI:

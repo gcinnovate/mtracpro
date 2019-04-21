@@ -88,3 +88,61 @@ def record_poll_response_task(poll_id, reporter_id, response, category):
                 "VALUES($poll_id, $reporter_id, $message, $category)", {
                     'poll_id': poll_id, 'reporter_id': reporter_id,
                     'message': response, 'category': category})
+
+
+def sendsms_to_uuids(uuid_list, msg):
+    broadcasts_endpoint = apiv2_endpoint + "broadcasts.json"
+    contacts_len = len(uuid_list)
+    j = 0
+    print("Starting Broadcast to {0} Contacts ".format(contacts_len))
+    for i in range(0, contacts_len + MAX_CHUNK_SIZE, MAX_CHUNK_SIZE)[1:]:
+        chunk = uuid_list[j:i]
+        params = {
+            'contacts': chunk,
+            'text': msg
+        }
+        post_data = json.dumps(params)
+        try:
+            requests.post(broadcasts_endpoint, post_data, headers={
+                'Content-type': 'application/json',
+                'Authorization': 'Token %s' % api_token})
+            # print("Broadcast Response: ", resp.text)
+        except:
+            print("ERROR Sending Broadcast")
+        j = i
+    print("Finished Broadcast of {0} Contacts".format(contacts_len))
+
+
+@app.task(name="send_bulksms_task")
+def send_bulksms_task(msg, sms_roles=[], district="", facility=""):
+    SQL = (
+        "SELECT array_agg(uuid) uuids FROM reporters_view WHERE district_id=$district "
+    )
+    if facility:
+        SQL += "AND facilityid=$facility "
+    if sms_roles:
+        SQL += "AND role SIMILAR TO '%%(%s)%%'" % '|'.join(sms_roles)
+    res = db.query(SQL, {
+        'district': district, 'facility': facility})
+
+    if res:
+        recipient_uuids = list(res[0]['uuids'])
+        sendsms_to_uuids(recipient_uuids, msg)
+
+
+@app.task(name="send_facility_sms_task")
+def send_facility_sms_task(facilityid, msg, role=""):
+    SQL = (
+        "SELECT array_agg(uuid) uuids FROM reporters_view WHERE facilityid=$fid "
+    )
+    if role:
+        SQL += (" AND role like $role ")
+    res = db.query(SQL, {'fid': facilityid, 'role': '%%%s%%' % role})
+    if res:
+        recipient_uuids = list(res[0]['uuids'])
+        sendsms_to_uuids(recipient_uuids, msg)
+
+
+@app.task(name="sendsms_to_uuids_task")
+def sendsms_to_uuids_task(uuid_list, msg):
+    sendsms_to_uuids(uuid_list, msg)

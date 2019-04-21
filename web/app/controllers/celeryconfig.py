@@ -20,3 +20,8 @@ poll_flows = {
 
 api_token = '90532182de6947ed4d3d202d95eb0e280aa305c5'
 apiv2_endpoint = 'http://localhost:8000/api/v2/'  # with trailing slash(/)
+
+try:
+    from local_celeryconfig import *
+except ImportError:
+    pass

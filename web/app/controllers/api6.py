@@ -6,9 +6,10 @@ from settings import config
 from settings import USE_OLD_WEBHOOKS
 # from app.tools.utils import get_webhook_msg_old
 from app.tools.utils import (
-    get_reporting_week, get_request, post_request, queue_rejected_reports)
+    get_reporting_week, get_request, queue_rejected_reports)
 from settings import DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS
+from tasks import sendsms_to_uuids_task
 
 
 def send_threshold_alert(msg, district):
@@ -17,11 +18,7 @@ def send_threshold_alert(msg, district):
     except:
         threshold_alert_contacts = []
     if threshold_alert_contacts:
-        post_data = json.dumps({'contacts': threshold_alert_contacts, 'text': msg})
-        try:
-            post_request(post_data, '%sbroadcasts.json' % config['api_url'])
-        except:
-            pass
+        sendsms_to_uuids_task.delay(threshold_alert_contacts, msg)
 
 
 class QueueRejectedReports:

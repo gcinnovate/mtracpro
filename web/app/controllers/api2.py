@@ -6,6 +6,7 @@ from app.tools.utils import post_request
 from settings import config
 import settings
 from app.tools.utils import get_basic_auth_credentials, auth_user, get_webhook_msg
+from tasks import send_bulksms_task, send_facility_sms_task
 
 logging.basicConfig(
     format='%(asctime)s:%(levelname)s:%(message)s', filename='/tmp/mtrackpro-web.log',
@@ -77,7 +78,7 @@ class Remarks:
             r = db.query(
                 "SELECT id, reporting_location, district_id, "
                 "district, loc_name "
-                "FROM reporters_view4 WHERE replace(telephone, '+', '') = $tel "
+                "FROM reporters_view WHERE replace(telephone, '+', '') = $tel "
                 "OR replace(alternate_tel, '+', '') = $tel LIMIT 1", {'tel': phone})
             if r:
                 reporter = r[0]
@@ -321,46 +322,17 @@ class FacilitySMS:
 
     def POST(self, facilityid):
         params = web.input(role="", sms="")
-        res = db.query(
-            "SELECT uuid FROM reporters_view WHERE facilityid=$fid AND "
-            "role like $role", {'fid': facilityid, 'role': '%%%s%%' % params.role})
-        contact_uuids = []
-        for r in res:
-            contact_uuids.append(r['uuid'])
-        post_data = json.dumps({'contacts': contact_uuids, 'text': params.sms})
-        try:
-            post_request(post_data, '%sbroadcasts.json' % config['api_url'])
-        except:
-            return "<h4>Failed to Send SMS!</h4>"
-        return "<h4>Successfully Sent SMS!</h4>"
+        send_facility_sms_task.delay(facilityid, params.sms, params.role)
+        return "<h4>SMS Queued!</h4>"
 
 
 class SendBulkSMS:
     def POST(self):
         web.header("Content-Type", "application/json; charset=utf-8")
         params = web.input(sms_roles=[], msg="", district="", facility="")
-        SQL = (
-            "SELECT uuid FROM reporters_view WHERE district_id=$district "
-        )
-        if params.facility:
-            SQL += "AND facilityid=$facility "
-        if params.sms_roles:
-            SQL += "AND role SIMILAR TO '%%(%s)%%'" % '|'.join(params.sms_roles)
-        print(SQL)
-        res = db.query(SQL, {
-            'district': params.district, 'facility': params.facility})
+        send_bulksms_task.delay(params.msg, params.sms_roles, params.district, params.facility)
 
-        contact_uuids = []
-        for r in res:
-            contact_uuids.append(r['uuid'])
-        post_data = json.dumps({'contacts': contact_uuids, 'text': params.msg})
-        try:
-            post_request(post_data, '%sbroadcasts.json' % config['api_url'])
-        except:
-            return json.dumps({'message': 'Failed to send SMS'})
-        print("===>", contact_uuids)
-
-        return json.dumps({'message': 'success'})
+        return json.dumps({'message': 'SMS Queued For Submission'})
 
 
 class SendSMS:
