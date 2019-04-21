@@ -11,6 +11,7 @@
 web/local_settings.py
 web/test/test_flow.py
 web/static/downloads/
+web/app/controllers/local_celeryconfig.py
 *.zip
 *.csv
 *xls
