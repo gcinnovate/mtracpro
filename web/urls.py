@@ -12,7 +12,7 @@ from app.controllers.api import QueueForDhis2InstanceProcessing, ReporterAPI
 from app.controllers.api2 import LocationsEndpoint, ReportersXLEndpoint
 from app.controllers.api2 import CreateFacility, ReportForms, IndicatorHtml
 from app.controllers.api2 import FacilitySMS, SendSMS, RequestDetails, SendBulkSMS
-from app.controllers.api2 import DeleteRequest, DeleteServer
+from app.controllers.api2 import DeleteRequest, DeleteServer, ServerDetails
 from app.controllers.api3 import EditReport, ReportingWeek, ReporterHistoryApi
 from app.controllers.api4 import ReportersUploadAPI
 from app.controllers.api5 import CaramalReminders
@@ -114,6 +114,7 @@ URLS = (
     r'/api/v1/sendsms', SendSMS,
     r'/api/v1/sendbulksms', SendBulkSMS,
     r'/api/v1/request_details/(\d+)/?', RequestDetails,
+    r'/api/v1/server_details/(\d+)/?', ServerDetails,
     r'/api/v1/request_del/(\d+)/?', DeleteRequest,
     r'/api/v1/server_del/(\d+)/?', DeleteServer,  # controllers.api2.py
     r'/api/v1/editreport/(\d+)/?', EditReport,  # for retrospective report edits
