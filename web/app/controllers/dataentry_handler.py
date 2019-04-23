@@ -5,7 +5,7 @@ from . import csrf_protected, db, require_login, render, get_session, serversByN
 from settings import config
 from app.tools.utils import get_reporting_week, generate_raw_message  # ,post_request_to_dispatcher2
 from app.tools.utils import queue_request
-from settings import MAPPING, DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
+from settings import DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, REPORTS_WITH_COMMANDS
 from settings import TEXT_INDICATORS
 
