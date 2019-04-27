@@ -69,8 +69,48 @@ def add_poll_recipients_task(poll_id, groups=[], districts=[], start_now=False, 
 
 
 @app.task(name="start_poll_task")
-def start_poll_task():
-    pass
+def start_poll_task(poll_id):
+    res = db.query(
+        "SELECT question, default_response, type FROM polls WHERE id = $id ", {'id': poll_id})
+    if res:
+        poll = res[0]
+        qn = poll['question']
+        d_resp = poll['default_response']
+        poll_type = poll['type']
+
+        rs = db.query(
+            "SELECT array_agg(uuid) uuids FROM reporters WHERE id IN ("
+            "SELECT reporter_id FROM poll_recipients WHERE poll_id = %s) " % (poll_id))
+        if rs:
+            recipient_uuids = list(rs[0]['uuids'])
+            if poll_type in poll_flows:
+                flow_uuid = random.choice(poll_flows[poll_type])
+                flow_starts_endpoint = apiv2_endpoint + "flow_starts.json"
+                contacts_len = len(recipient_uuids)
+                j = 0
+                print("Starting {0} Contacts in Flow [uuid:{1}]".format(contacts_len, flow_uuid))
+                for i in range(0, contacts_len + MAX_CHUNK_SIZE, MAX_CHUNK_SIZE)[1:]:  # want to finsh batch right away
+                    chunk = recipient_uuids[j:i]
+                    params = {
+                        'flow': flow_uuid,
+                        'contacts': chunk,
+                        'extra': {
+                            'poll_id': poll_id,
+                            'question': qn,
+                            'default_response': d_resp
+                        }
+                    }
+                    post_data = json.dumps(params)
+                    try:
+                        requests.post(flow_starts_endpoint, post_data, headers={
+                            'Content-type': 'application/json',
+                            'Authorization': 'Token %s' % api_token})
+                        # print("Flow Start Response: ", resp.text)
+                    except:
+                        print("ERROR Startig Flow [uuid: {0}]".format(flow_uuid))
+                    j = i
+                db.query("UPDATE polls set start_date = NOW() WHERE id=$id", {'id': poll_id})
+                print("Finished Starting Contacts in Flow [uuid:{0}]".format(flow_uuid))
 
 
 @app.task(name="record_poll_response_task")

@@ -33,7 +33,7 @@ from app.controllers.ready_handler import Ready
 from app.controllers.search_handler import Search
 from app.controllers.appsettings_handler import AppSettings
 from app.controllers.dataentry_handler import DataEntry
-from app.controllers.polls_handler import Polls, PollResponses
+from app.controllers.polls_handler import Polls, PollResponses, StartPoll, DeletePoll, StopPoll
 from app.controllers.settings_handler import Settings
 from app.controllers.forgotpass_handler import ForgotPass
 from app.controllers.facilities_handler import Facilities
@@ -72,6 +72,9 @@ URLS = (
     r'/create', CreateFacility,
     r'/dataentry', DataEntry,
     r'/polling', Polls,
+    r'/startpoll/(\d+)/?', StartPoll,
+    r'/stoppoll/(\d+)/?', StopPoll,
+    r'/deletepoll/(\d+)/?', DeletePoll,
     r'/archive', Archive,
     r'/rejected', Rejected,
     r'/messagehistory/\+?(\w+)/?', MessageHistory,

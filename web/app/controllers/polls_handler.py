@@ -4,7 +4,7 @@ from . import db, require_login, render, get_session
 from app.tools.pagination2 import doquery, countquery, getPaginationString
 from app.tools.utils import default, lit
 from settings import PAGE_LIMIT
-from tasks import add_poll_recipients_task, record_poll_response_task
+from tasks import add_poll_recipients_task, record_poll_response_task, start_poll_task
 
 
 class Polls:
@@ -85,14 +85,14 @@ class Polls:
                     " AND name ilike '%%%%%s%%%%' " % params.search)
                 dic = lit(
                     relations='polls',
-                    fields="id, name, question, start_date, end_date",
+                    fields="id, name, question, start_date, end_date, response_count, recipient_count",
                     criteria=criteria,
                     order="id desc",
                     limit=limit, offset=start)
             else:
                 dic = lit(
                     relations="polls",
-                    fields="id, name, question, start_date, end_date",
+                    fields="id, name, question, start_date, end_date, response_count, recipient_count",
                     criteria=criteria,
                     order="id desc",
                     limit=limit, offset=start)
@@ -103,14 +103,14 @@ class Polls:
                     " AND name ilike '%%%%%s%%%%' " % params.search)
                 dic = lit(
                     relations='polls',
-                    fields="id, name, question, start_date, end_date",
+                    fields="id, name, question, start_date, end_date, response_count, recipient_count",
                     criteria=criteria,
                     order="id desc",
                     limit=limit, offset=start)
             else:
                 dic = lit(
                     relations="polls",
-                    fields="id, name, question, start_date, end_date",
+                    fields="id, name, question, start_date, end_date, response_count, recipient_count",
                     criteria=criteria,
                     order="id desc",
                     limit=limit, offset=start)
@@ -179,3 +179,24 @@ class PollResponses:
                 params.poll_id, reporter_id, params.response, params.category)
             return json.dumps({'message': 'successfully recorded'})
         return json.dumps({'message': 'response not recorded'})
+
+
+class StartPoll:
+    def GET(self, poll_id):
+        web.header("Content-Type", "application/json; charset=utf-8")
+        start_poll_task.delay(poll_id)
+        return json.dumps({'message': 'Starting Poll in Background'})
+
+
+class StopPoll:
+    def GET(self, poll_id):
+        web.header("Content-Type", "application/json; charset=utf-8")
+        db.query("UPDATE polls SET end_date = NOW() WHERE id=$id", {'id': poll_id})
+        return json.dumps({'message': 'Poll stopped!'})
+
+
+class DeletePoll:
+    def GET(self, poll_id):
+        web.header("Content-Type", "application/json; charset=utf-8")
+        db.query("DELETE FROM polls WHERE id = $id", {'id': poll_id})
+        return json.dumps({'message': 'Poll Deleted!'})

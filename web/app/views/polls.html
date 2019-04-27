@@ -7,6 +7,9 @@
     <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
     <link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
     <link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+
+    <!-- Sweet Alert -->
+    <link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
 {% endblock %}
 
 {% block nav %}
@@ -195,6 +198,7 @@
                                     <th>Question</th>
                                     <th>Start Date</th>
                                     <th>Closing Date</th>
+                                    <th>Responses</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -205,16 +209,31 @@
                                        <td><small>{{ poll.question}}</small></td>
                                        <td>{{ poll.start_date | datetimeformat}}</td>
                                        <td>{{ poll.end_date | datetimeformat}}</td>
+                                       <td><small><b>{{ poll.response_count }}</b> of <b>{{ poll.recipient_count }}</b></small></td>
                                        <td>
-                                            <a href="/polling?ed={{ poll.id }}" class="btn btn-primary btn-xs" value={{ poll.id }}>
-                                            <i class="fa fa-edit"></i></a>
+                                            {% if poll.recipient_count < 1 or not poll.start_date %}
+                                            <button class="btn btn-primary btn-xs start_btn" id="{{ poll.id}}">
+                                                <i title="Start" class="fa fa-play-circle"></i></button>
                                                             &nbsp;&nbsp;&nbsp;
+                                            {% endif %}
+
+                                            {% if poll.recipient_count > 1 and poll.start_date and not poll.end_date %}
+                                            <button class="btn btn-danger btn-xs stop_btn" id="{{ poll.id}}">
+                                                <i title="Stop" class="fa fa-stop"></i></button>
+                                                            &nbsp;&nbsp;&nbsp;
+                                            {% endif %}
+
+                                            <a href="/polling?ed={{ poll.id }}" class="btn btn-primary btn-xs" value={{ poll.id }}>
+                                                <i title="Edit" class="fa fa-edit"></i></a>
+                                                            &nbsp;&nbsp;&nbsp;
+
                                         <button type="button" class="btn btn-white btn-xs details_btn" id="{{poll.id}}" data-toggle="modal"
 											data-target="#myModal2">
 												<i title="Details" class="fa fa-list-alt"></i>
 										</button>
                                                             &nbsp;&nbsp;&nbsp;
-                                        <button class="btn btn-danger btn-xs delete_btn" id={{ poll.id}}><i class="fa fa-trash-o"></i></button>
+                                        <button class="btn btn-danger btn-xs delete_btn" id={{ poll.id}}>
+                                            <i title="Delete" class="fa fa-trash-o"></i></button>
                                        </td>
                                     </tr>
                                 {% endfor %}
@@ -257,6 +276,11 @@
         <script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
 
         <script src="/static/js/plugins/bootstrap-validator/dist/validator.min.js"></script>
+        <!-- Sweet alert -->
+        <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>
+
+        <script src="/static/js/mtrackpro/reporters.js"></script>
+        <script src="/static/js/bootstrap-notify.min.js"></script>
         <script>
            $(document).ready(function() {
 			/*
@@ -268,6 +292,91 @@
             });
 			*/
 
+            $('.delete_btn').click(function () {
+                del_id = $(this).attr('id');
+                table_row = $(this).closest('tr');
+                swal({
+                        title: "Are you sure?",
+                        text: "Your will not be able to recover all data taged to the poll",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Yes, delete poll!",
+                        cancelButtonText: "No, cancel please!",
+                        closeOnConfirm: false,
+                        closeOnCancel: false },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            $.get(
+                                '/deletepoll/' + del_id,
+                                {d_id: del_id, caller: 'api'},
+                                function(data){
+                                    if (data.message == "Poll Deleted!"){
+                                        /* remove row from table */
+                                        table_row.remove();
+                                    };
+                                },
+                                'json'
+                            );
+                            swal("Deleted!", "Poll has been deleted." + del_id, "success");
+                            return false;
+                        } else {
+                            swal("Cancelled", "Poll details are safe!", "error");
+                            return false;
+                        }
+                    });
+            });
+
+
+            $('.start_btn').click(function(){
+                poll_id = $(this).attr('id');
+                $.get(
+                    '/startpoll/' + poll_id,
+                    {},
+                    function(data){
+                        if(data.message){
+                            $.notify({
+                            title: "Response:",
+                            message: data.message
+
+                            },
+                            {
+                                type: data.status,
+                                animate: {
+                                            enter: 'animated flipInY',
+                                            exit: 'animated flipOutX'
+                                    }
+                            });
+                        };
+                    },
+                    'json'
+                );
+            });
+
+            $('.stop_btn').click(function(){
+                poll_id = $(this).attr('id');
+                $.get(
+                    '/stoppoll/' + poll_id,
+                    {},
+                    function(data){
+                        if(data.message){
+                            $.notify({
+                            title: "Response:",
+                            message: data.message
+
+                            },
+                            {
+                                type: data.status,
+                                animate: {
+                                            enter: 'animated flipInY',
+                                            exit: 'animated flipOutX'
+                                    }
+                            });
+                        };
+                    },
+                    'json'
+                );
+            });
         });
         </script>
     {% endcall %}
