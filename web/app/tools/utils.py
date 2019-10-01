@@ -288,15 +288,18 @@ def queue_rejected_reports(db, params):
 
 def queue_anonymous_report(db, params):
     try:
+        has_existing_report = False
         res = db.query(
             "SELECT id FROM anonymousreports WHERE contact_uuid = $contact_uuid "
             "AND created > NOW() - '3 days'::interval", {'contact_uuid': params['contact_uuid']})
         if not res:
-            db.query(
+            ret = db.query(
                 "INSERT INTO anonymousreports(contact_uuid, report) "
-                "VALUES ($contact_uuid, $report) ", params
+                "VALUES ($contact_uuid, $report) RETURNING id", params
             )
+            report_id = ret[0]['id']
         else:
+            has_existing_report = True
             report_id = res[0]['id']
             db.query(
                 "INSERT INTO anonymousreport_messages (report_id, message) "
@@ -305,8 +308,8 @@ def queue_anonymous_report(db, params):
 
     except Exception as e:
         print(">>> FAILED <<<<" + str(e))
-        return False
-    return True
+        return None, False
+    return report_id, has_existing_report
 
 
 def generate_raw_message(db, form, data, add_commads=False):

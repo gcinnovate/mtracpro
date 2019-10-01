@@ -25,6 +25,11 @@
                 <div class="ibox-title">
                     <h5>Anonymous Reports</h5>
                     <div class="ibox-tools">
+                        <a href="/static/downloads/AnonymousReports_{{ ses.username | capitalize }}.xlsx">
+                        <button class="btn btn-outline btn-success dim download_btn" name="anon_btn" type="button" value="Anonymous Reports">
+                            <i class="fa fa-download"></i> Anonymous Reports</button></a>
+                        &nbsp;&nbsp;&nbsp;
+
                         <button class="btn btn-outline btn-warning dim sms_btn2" name="abtn" value="SMS Selected">
                         <i class="fa fa-envelope"></i> SMS The Selected</button>
                         <a class="collapse-link">
@@ -54,13 +59,13 @@
                             {% for report in anonymous_reports %}
                                 <tr id="{{ report.id}}">
                                     <td><input name="reqid" class="topromote" value="{{ report.id }}" type="checkbox"/></td>
-                                    <td>{{ report.facility}}</td>
+                                    <td><small>{{ report.facility}}</small></td>
                                     <td><small>{{ report.district }}</small></td>
                                     <td><small>{{ report.created|datetimeformat }}</small></td>
-                                    <td>{{ report.report }}</td>
-                                    <td>{{ report.topic }}</td>
-                                    <td>{{ report.action }}</td>
-                                    <td>{{ report.action_center }}</td>
+                                    <td><small>{{ report.report }}</small></td>
+                                    <td><small>{{ report.topic }}</small></td>
+                                    <td><small>{{ report.action }}</small></td>
+                                    <td><small>{{ report.action_center }}</small></td>
                                     <td>{{ report.action_taken }}</td>
                                     <td>{{ report.comment }}</td>
                                     <td>
@@ -118,6 +123,7 @@
                         <h4 class="modal-title">Edit Anonymous Report</h4>
                 </div>
                 <div class="modal-body">
+	                <form role="form" id="edit_rpt_form" method="post" action="" data-toggle="validator">
                     <div class="row" id="modal_res4">
                         <input type="hidden" name="location" id="location" value="{{ location }}"/>
                         <div class="form-group"><label for="district" class="col-lg-3 control-label">District:</label>
@@ -128,17 +134,17 @@
                                     <option value="{{ d.id}}" {% if d.id == d.id %} selected="yes" {% endif %}>{{ d.name}}</option>
                                     {% endfor %}
                                 </select>
+                                <select name="subcounty" id="subcounty" style="display:none"></select>
                             </div>
                         </div>
                         <br/>
                         <br/>
                         <div class="form-group"><label class="col-lg-3 control-label">Facility:</label>
                             <div class="col-lg-9">
+                                <input type="hidden" name="facility_x" id="facility_x" value=""/>
+                                <input type="hidden" name="report_id" id="report_id" value=""/>
                                 <select name="facility" id="facility" class="form-control">
                                     <option value="">Select Health Facility</option>
-                                    {% for f in facilities %}
-                                    <option value="{{ f.id }}" {% if f.id == facilityid %} selected="yes" {% endif %}>{{ f.name}}</option>
-                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -162,7 +168,7 @@
                                 <select name="topic" id="topic" class="form-control">
                                     <option value="">Select Topic</option>
                                     {% for t in topics %}
-                                        <option value="{{ t.id }}" {% if t.id == topic %} selected="yes" {% endif %}>{{ t.name}}</option>
+                                        <option value="{{ t }}" {% if t == topic %} selected="yes" {% endif %}>{{ t}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -173,8 +179,8 @@
                             <div class="col-lg-9">
                                 <select name="action" id="action" class="form-control">
                                     <option value="">Select Action</option>
-                                    {% for t in actions %}
-                                        <option value="{{ t.id }}" {% if t.id == action %} selected="yes" {% endif %}>{{ t.name}}</option>
+                                    {% for t in ['Cancel', 'Close', 'Escalate', 'Ignore', 'Open'] %}
+                                        <option value="{{ t }}" {% if t == action %} selected="yes" {% endif %}>{{ t}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -185,8 +191,8 @@
                             <div class="col-lg-9">
                                 <select name="action_center" id="action_center" class="form-control">
                                     <option value="">Select Action Center</option>
-                                    {% for t in action_centers %}
-                                        <option value="{{ t.id }}" {% if t.id == action_center %} selected="yes" {% endif %}>{{ t.name}}</option>
+                                    {% for k, v in action_centers %}
+                                        <option value="{{ k }}" {% if k == action_center %} selected="yes" {% endif %}>{{ v }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -215,9 +221,10 @@
                         <br/>
 
                     </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" type="submit" id="save_rpt">Save</button>
+                    <button class="btn btn-primary" type="submit" id="save_rpt" name="save_rpt">Save</button>
                     <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -273,7 +280,8 @@
         <script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
 
         <script src="/static/js/plugins/bootstrap-validator/dist/validator.min.js"></script>
-        <script src="/static/js/mtrackpro/adminunits.js"></script>
+        <script src="/static/js/mtrackpro/hotline.js"></script>
+        <script src="/static/js/bootstrap-notify.min.js"></script>
         <script>
            $(document).ready(function() {
 			/*
@@ -341,7 +349,53 @@
 
             $('.edit_btn').click(function(){
                 id_val = $(this).attr('id');
-                $('#date').text("2019-01-10");
+                $('#report_id').val(id_val);
+                $.get(
+                    '/api/v1/anonreport/' + id_val,
+                    {},
+                    function(data){
+                        console.log(data);
+                        $('#facility_x').val(data.facilityid);
+                        console.log($('#facility_x').val());
+                        $('#report_id').val(data.id);
+                        $('#date').text(data.created);
+                        $('#district').val(data.districtid).change();
+                        $('#topic').val(data.topic);
+                        $('#report').text(data.report);
+                        $('#action').val(data.action);
+                        $('#action_center').val(data.action_center);
+                        $('#action_taken').val(data.action_taken);
+                        $('#comments').val(data.comment);
+
+
+                    },
+                    "json"
+                );
+            });
+
+            $('#save_rpt').click(function(){
+                id_val = $('#report_id').val();
+                $.post(
+                    '/api/v1/anonreport/' + id_val,
+                    $('#edit_rpt_form').serializeArray(),
+                    function(data){
+                        console.log(data);
+                        $.notify({
+                            title: "Response:",
+                            message: data.message
+
+                        },
+                        {
+                            type: data.status,
+                            animate: {
+                                enter: 'animated flipInY',
+                                exit: 'animated flipOutX'
+                            }
+                        });
+                    },
+                    "json"
+                );
+                return false;
             });
 
         });

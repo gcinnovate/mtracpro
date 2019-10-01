@@ -5,6 +5,18 @@ from app.tools.utils import audit_log, default, lit
 from app.tools.pagination2 import doquery, countquery, getPaginationString
 from settings import PAGE_LIMIT
 
+TOPICS = [
+    'Absenteeism', 'Drug Theft', 'Extortion', 'Fraud', 'General Complaint',
+    'General Inquiry', 'Good Service', 'Ignore/Delete', 'Illegal Schools',
+    'Impersonation', 'Malpractice', 'Negligence', 'Other Critical', 'Stock Out',
+    'Unknown', 'Working Hours of HCs'
+]
+ACTION_CENTERS = (
+    ('MoH', 'Ministry of Health'),
+    ('MU', 'Monintoring Unit'),
+    ('NMS', 'National Medical Stores'),
+)
+
 
 class Hotline:
     @require_login
@@ -17,6 +29,8 @@ class Hotline:
             page = 1
         limit = PAGE_LIMIT
         start = (page - 1) * limit if page > 0 else 0
+        topics = TOPICS
+        action_centers = ACTION_CENTERS
 
         session = get_session()
         if session.role == 'District User':

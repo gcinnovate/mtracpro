@@ -1,3 +1,4 @@
+# from __future__ import absolute_import
 import web
 import random
 import requests
@@ -33,7 +34,7 @@ def add_poll_recipients_task(poll_id, groups=[], districts=[], start_now=False, 
             poll_id, districts_str, groups_str))
 
     if start_now:
-        db.update("UPDATE polls SET start_date = NOW() WHERE id = $id", {'id': poll_id})
+        db.query("UPDATE polls SET start_date = NOW() WHERE id = $id", {'id': poll_id})
         rs = db.query(
             "SELECT array_agg(uuid) uuids FROM reporters WHERE id IN ("
             "SELECT reporter_id FROM poll_recipients WHERE poll_id = %s) " % (poll_id))
@@ -130,6 +131,7 @@ def record_poll_response_task(poll_id, reporter_id, response, category):
                     'message': response, 'category': category})
 
 
+@app.task(name="sendsms_to_uuids")
 def sendsms_to_uuids(uuid_list, msg):
     broadcasts_endpoint = apiv2_endpoint + "broadcasts.json"
     contacts_len = len(uuid_list)
@@ -186,3 +188,74 @@ def send_facility_sms_task(facilityid, msg, role=""):
 @app.task(name="sendsms_to_uuids_task")
 def sendsms_to_uuids_task(uuid_list, msg):
     sendsms_to_uuids(uuid_list, msg)
+
+
+# def send_threshold_alert(msg, district):
+#     try:
+#         threshold_alert_contacts = notifyingParties[allDistrictsByName[district]]['threshold_alert_contacts']
+#     except:
+#         threshold_alert_contacts = []
+#     if threshold_alert_contacts:
+#          sendsms_to_uuids_task(threshold_alert_contacts, msg)
+#
+#
+# @app.task(name="dhis2_queue")
+# def dhis2_queue(params, data):
+#     if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+#         dataValues = []
+#     else:
+#         dataValues = ""
+#     # print("FACILITYCODE:", params.facilitycode, "==>", params.facility)
+#     if params.facilitycode:
+#         if not USE_OLD_WEBHOOKS:
+#             values = json.loads(web.data())
+#             results = values.get('results', {})
+#             thresholds_list = []
+#             for key, v in results.iteritems():
+#                 val = v.get('value')
+#                 try:
+#                     val = int(float(val))
+#                 except:
+#                     pass
+#                 label = v.get('name')
+#                 slug = "%s_%s" % (params.form, label)
+#                 # print(slug)
+#                 if val.__str__().isdigit() or slug in TEXT_INDICATORS:
+#                     if not(val) and params.form in getattr(
+#                             settings, 'REPORTS_WITH_COMMANDS', ['cases', 'death', 'epc', 'epd']):  # XXX irregular forms
+#                         if label not in params.raw_msg.lower():
+#                             continue  # skip zero values for cases and death
+#                     if slug not in IndicatorMapping:
+#                         # print("Indicator Not Supported.::.", slug)
+#                         continue
+#                     # XXX check thresholds here
+#                     if IndicatorMapping[slug]['threshold']:
+#                         try:
+#                             threshold = int(float(IndicatorMapping[slug]['threshold']))
+#                             if val >= threshold:
+#                                 thresholds_list.append('{} {}'.format(val, IndicatorMapping[slug]['descr']))
+#                         except:
+#                             print("Threshold.::.Failed to Add threshold Message")
+#                             pass
+#                     # print("%s=>%s" % (slug, val), IndicatorMapping[slug])
+#                     if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+#                         dataValues.append(
+#                             {
+#                                 'dataElement': IndicatorMapping[slug]['dhis2_id'],
+#                                 'categoryOptionCombo': IndicatorMapping[slug]['dhis2_combo_id'],
+#                                 'value': val})
+#                     else:
+#                         dataValues += (
+#                             "<dataValue dataElement='%s' categoryOptionCombo="
+#                             "'%s' value='%s' />\n" %
+#                             (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
+#
+#             # Build alert message and send it
+#             # print("Thresholds List.::.", thresholds_list)
+#             if thresholds_list:
+#                 alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
+#                     params.reporter_name, params.msisdn, params.facility, params.district)
+#                 alert_message += '\n'.join(thresholds_list)
+#                 alert_message += '\n' + params.raw_msg
+#                 send_threshold_alert(alert_message, params.district)
+#                 # print(alert_message)
