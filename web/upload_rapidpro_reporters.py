@@ -11,6 +11,7 @@ import phonenumbers
 import getopt
 import sys
 import datetime
+import time
 
 cmd = sys.argv[1:]
 opts, args = getopt.getopt(
@@ -66,13 +67,13 @@ def format_msisdn(msisdn=None):
 
 def add_reporter_fields():
     our_fields = [
-        {'label': 'facility', 'value_type': 'T'},
-        {'label': 'facilitycode', 'value_type': 'T'},
-        {'label': 'district', 'value_type': 'D'},
-        {'label': 'Subcounty', 'value_type': 'T'},
-        {'label': 'village', 'value_type': 'T'},
-        {'label': 'type', 'value_type': 'T'},
-        {'label': 'reporting location', 'value_type': 'T'},
+        {'label': 'facility', 'value_type': 'text'},
+        {'label': 'facilitycode', 'value_type': 'text'},
+        {'label': 'district', 'value_type': 'text'},
+        {'label': 'Subcounty', 'value_type': 'text'},
+        {'label': 'village', 'value_type': 'text'},
+        {'label': 'Type', 'value_type': 'text'},
+        {'label': 'reporting location', 'value_type': 'text'},
     ]
     fields = get_available_fields()
     for f in our_fields:
@@ -94,7 +95,7 @@ cur.execute(
     "email, get_location_name(district_id) AS district, role, "
     "facility, facilitycode, loc_name, created, "
     "get_location_name(get_subcounty_id(reporting_location)) AS subcounty FROM reporters_view1 "
-    "WHERE created >= %s", [from_date]
+    "WHERE created >= %s AND uuid = ''", [from_date]
 )
 
 res = cur.fetchall()
@@ -106,13 +107,13 @@ if res:
             "reporting_location": r['loc_name'],
             "facilitycode": r['facilitycode'],
             "facility": r['facility'],
-            "type": "VHT" if 'VHT' in r['role'] else "HC",
-            "Subcounty": r['subcounty']
+            # "Type": "VHT" if 'VHT' in r['role'] else "HC",
+            # "Subcounty": r['subcounty']
         }
         if district:
             fields["district"] = district
-        phone = format_msisdn(r['telephone'])
-        alt_phone = r['alternate_tel']
+        phone = format_msisdn(r['telephone']) if r['telephone'] else ''
+        alt_phone = format_msisdn(r['alternate_tel']) if r['alternate_tel'] else ''
         if phone:
             data = {
                 "name": r['name'],
@@ -140,5 +141,6 @@ if res:
             data["phone"] = alt_phone
             post_data = json.dumps(data)
             resp = post_request(post_data)
+            time.sleep(0.3)
             # print resp.text
 conn.close()

@@ -19,8 +19,8 @@ PAGE_LIMIT = 25
 # The time it takes to send an SMS schedule after it is created. It gives a chance to edit
 SMS_OFFSET_TIME = 5
 
-HMIS_033B_DATASET = 'V1kJRs8CtW4'
-HMIS_033B_DATASET_ATTR_OPT_COMBO = 'gGhClrV5odI'  # DHIS2 v2.26 change
+HMIS_033B_DATASET = 'C4oUitImBPK'
+HMIS_033B_DATASET_ATTR_OPT_COMBO = 'HllvX50cXC0'  # DHIS2 v2.26 change
 CARAMAL_DATASET = 'kzIS9qjcF6W'
 CARAMAL_DATASET_ATTR_OPT_COMBO = 'bjDvmb4bfuf'  # DHIS2 v2.26 change
 
@@ -97,7 +97,7 @@ config = {
     'sync_passwd': 'admin',  # password for sync service
 
     # facility levels as in DHI2 instance
-    'hmis_033b_id': 'V1kJRs8CtW4',
+    'hmis_033b_id': 'C4oUitImBPK',
     'levels': {
         'jTolsq2vJv8': 'HC II',
         'GM7GlqjfGAW': 'HC III',
