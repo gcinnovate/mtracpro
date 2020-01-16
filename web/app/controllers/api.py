@@ -173,15 +173,19 @@ class ReportersEndpoint:
 class ReporterAPI:
     def GET(self, phonenumber):
         web.header("Content-Type", "application/json; charset=utf-8")
+        if len(phonenumber) < 10:
+            return json.dumps({})
         SQL = (
             "SELECT firstname || ' ' || lastname as name, telephone, "
             " get_district(district_id) as district, facilityid, facility, facilitycode, "
             "total_reports, to_char(last_reporting_date, 'YYYY-MM-DD HH:MI') last_reporting_date, role "
             " FROM reporters_view1 "
-            " WHERE substring(reverse(telephone), 0, 9) = substring(reverse($tel), 0, 9) "
-            " OR substring(reverse(alternate_tel), 0, 9) = substring(($tel), 0, 9) ")
+            # " WHERE substring(reverse(telephone), 0, 9) = substring(reverse($tel), 0, 9) "
+            # " OR substring(reverse(alternate_tel), 0, 9) = substring(($tel), 0, 9) ")
+            " WHERE telephone LIKE $tel "
+            " OR alternate_tel LIKE $tel ")
         # " WHERE telephone = $tel OR alternate_tel = $tel")
-        res = db.query(SQL, {'tel': phonenumber})
+        res = db.query(SQL, {'tel': '%%%s' % phonenumber[-9:]})
         ret = {}
         if res:
             r = res[0]
@@ -497,4 +501,3 @@ class Routing:
         destination_name = KEYWORD_SERVER_MAPPINGS.get(
             keyword, config['dispatcher2_destination'])
         source = config['dispatcher2_source']
-

@@ -123,7 +123,7 @@ URLS = (
     r'/api/v1/server_del/(\d+)/?', DeleteServer,  # controllers.api2.py
     r'/api/v1/editreport/(\d+)/?', EditReport,  # for retrospective report edits
     r'/api/v1/reportingweek/?', ReportingWeek,
-    r'/api/v1/reporter/\+?(\w+)/?', ReporterAPI,
+    r'/api/v1/reporter/(\+?\w+)/?', ReporterAPI,
     r'/reportersupload', ReportersUploadAPI,
     r'/api/v1/reporterhistory/(\+?\w+)/?', ReporterHistoryApi,
     r'/api/v1/indicators', IndicatorsAPI,
