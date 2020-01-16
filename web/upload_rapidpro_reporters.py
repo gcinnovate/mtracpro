@@ -15,7 +15,7 @@ import time
 
 cmd = sys.argv[1:]
 opts, args = getopt.getopt(
-    cmd, 'fd:',
+    cmd, 'fd:u:',
     [])
 
 now = datetime.datetime.now()
