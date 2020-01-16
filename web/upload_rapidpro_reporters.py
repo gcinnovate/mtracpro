@@ -21,12 +21,15 @@ opts, args = getopt.getopt(
 now = datetime.datetime.now()
 sdate = now - datetime.timedelta(days=1, minutes=5)
 from_date = sdate.strftime('%Y-%m-%d %H:%M')
+update_date = from_date
 
 ADD_FIELDS = False
 
 for option, parameter in opts:
     if option == '-d':
         from_date = parameter
+    if option == '-u':
+        update_date = parameter
     if option == '-f':
         ADD_FIELDS = True
 
@@ -95,7 +98,7 @@ cur.execute(
     "email, get_location_name(district_id) AS district, role, "
     "facility, facilitycode, loc_name, created, "
     "get_location_name(get_subcounty_id(reporting_location)) AS subcounty FROM reporters_view1 "
-    "WHERE created >= %s AND uuid = ''", [from_date]
+    "WHERE created >= %s AND updated >= ", [from_date, update_date]
 )
 
 res = cur.fetchall()
