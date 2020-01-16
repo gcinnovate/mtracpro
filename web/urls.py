@@ -8,7 +8,7 @@ from app.controllers.main_handler import Index, Logout
 from app.controllers.api import Location, LocationChildren, SubcountyLocations
 from app.controllers.api import DistrictFacilities, LocationFacilities, FacilityReporters
 from app.controllers.api import Cases, Deaths, OrderMessage, Dhis2Queue, Test, ReportsThisWeek
-from app.controllers.api import QueueForDhis2InstanceProcessing, ReporterAPI
+from app.controllers.api import QueueForDhis2InstanceProcessing, ReporterAPI, Routing
 from app.controllers.api2 import LocationsEndpoint, ReportersXLEndpoint
 from app.controllers.api2 import CreateFacility, ReportForms, IndicatorHtml
 from app.controllers.api2 import FacilitySMS, SendSMS, RequestDetails, SendBulkSMS
@@ -96,6 +96,7 @@ URLS = (
     r'/dhis2instancequeue', QueueForDhis2InstanceProcessing,  # queue reports in dispatcher2
     r'/api/v1/dispatch', Dispatch,  # Sends to other servers/apps via Dispatcher2  -> controllers.api8.py
     r'/sendalert', SendAlert,
+    r'/routing', Routing,
     r'/pollresponses', PollResponses,
     r'/test', Test,
     r'/api/v1/status/(\w+)/?', ReportingStatus,  # give status of reporters status
@@ -122,9 +123,9 @@ URLS = (
     r'/api/v1/server_del/(\d+)/?', DeleteServer,  # controllers.api2.py
     r'/api/v1/editreport/(\d+)/?', EditReport,  # for retrospective report edits
     r'/api/v1/reportingweek/?', ReportingWeek,
-    r'/api/v1/reporter/(\w+)/?', ReporterAPI,
+    r'/api/v1/reporter/\+?(\w+)/?', ReporterAPI,
     r'/reportersupload', ReportersUploadAPI,
-    r'/api/v1/reporterhistory/\+?(\w+)/?', ReporterHistoryApi,
+    r'/api/v1/reporterhistory/(\+?\w+)/?', ReporterHistoryApi,
     r'/api/v1/indicators', IndicatorsAPI,
 
 )

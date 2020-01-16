@@ -100,7 +100,7 @@ class ReporterHistoryApi:
         ret = []
         SQL = (
             "SELECT id, raw_msg, week, year, to_char(created, 'yyyy-mm-dd HH:MI') as created, "
-            "body, report_type FROM requests_view WHERE msisdn = $phone AND source = $source ")
+            "body, report_type FROM requests_view WHERE msisdn LIKE $phone AND source = $source ")
         if params.sdate:
             SQL += " AND created >= $sdate "
         if params.report_type:
@@ -110,7 +110,7 @@ class ReporterHistoryApi:
         res = db.query(
             SQL,
             {
-                'phone': phonenumber, 'sdate': params.sdate,
+                'phone': '%%%s' % phonenumber[-9:], 'sdate': params.sdate,
                 'report_type': params.report_type, 'source': serversByName['mTracPro_android']})
         if res:
             for r in res:

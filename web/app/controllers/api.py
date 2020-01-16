@@ -487,3 +487,14 @@ class QueueForDhis2InstanceProcessing:
         print("Resp:", resp)
 
         return json.dumps({"status": "success"})
+
+
+class Routing:
+    def GET(self):
+        params = web.input(raw_msg="", keyword="")
+        raw_msg = params.raw_msg
+        keyword = params.keyword
+        destination_name = KEYWORD_SERVER_MAPPINGS.get(
+            keyword, config['dispatcher2_destination'])
+        source = config['dispatcher2_source']
+

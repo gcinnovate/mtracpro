@@ -342,6 +342,7 @@ class SendSMS:
         try:
             resp = post_request(post_data, '%sbroadcasts.json' % config['api_url'])
             code = "%s" % resp.status_code
+            print(resp.text)
         except:
             code = "400"
         if code.startswith("4"):
