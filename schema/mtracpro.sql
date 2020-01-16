@@ -108,6 +108,7 @@ CREATE TABLE anonymousreport_messages(
     id BIGSERIAL NOT NULL PRIMARY KEY,
     report_id BIGINT REFERENCES anonymousreports(id),
     message TEXT NOT NULL DEFAULT '',
+    direction VARCHAR(1) NOT NULL DEFAULT 'I',
     created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -698,7 +699,7 @@ RETURNS TEXT AS $$
     if not j:
         return ''
     return json.dumps(json.loads(j), sort_keys=sort_keys, indent=indent)
-$$ LANGUAGE plpythonu;
+$$ LANGUAGE plpython2u;
 
 -- Dispatcher-2.1 comes with thes as well
 CREATE OR REPLACE FUNCTION is_valid_json(p_json text)
@@ -771,7 +772,7 @@ CREATE view reporters_view1 AS
 SELECT a.id,
     a.firstname, a.lastname, (a.firstname || ' '::text) || a.lastname AS name,
     a.telephone, a.alternate_tel, a.email, a.reporting_location, a.created_by, a.district_id,
-    a.uuid, a.total_reports, a.last_reporting_date, get_reporter_groups2(a.id) AS role, a.created,
+    a.uuid, a.total_reports, a.last_reporting_date, get_reporter_groups2(a.id) AS role, a.created, a.updated,
     b.name AS loc_name, b.code AS location_code, d.name AS facility, a.facilityid,
     a.jparents->>'p' as parishid, a.jparents->>'s' as subcountyid, d.code AS facilitycode
    FROM reporters a,
@@ -866,3 +867,17 @@ $delim$ LANGUAGE plpgsql;
 
 CREATE TRIGGER poll_recipients_after_insert AFTER INSERT ON poll_recipients
     FOR EACH ROW EXECUTE PROCEDURE poll_recipients_after_insert();
+
+CREATE VIEW polls_view AS
+    SELECT
+        a.firstname || ' ' || a.lastname as name,
+        a.telephone, b.name as distrtict, c.name as facility,
+        d.poll_id, d.message, d.category, to_char(d.created, 'YYYY-mm-dd HH:MI') as created
+    FROM
+        reporters a, locations b, healthfacilities c, poll_responses d
+    WHERE
+        d.reporter_id = a.id
+        AND
+        a.district_id = b.id
+        AND
+        c.id = a.facilityid;
