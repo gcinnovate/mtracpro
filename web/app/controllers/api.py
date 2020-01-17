@@ -1,6 +1,7 @@
 import json
 import web
 import datetime
+import random
 from . import (
     db, get_current_week, serversByName,
     IndicatorMapping, IndicatorsDataSet, notifyingParties, allDistrictsByName)
@@ -173,11 +174,12 @@ class ReportersEndpoint:
 class ReporterAPI:
     def GET(self, phonenumber):
         web.header("Content-Type", "application/json; charset=utf-8")
+        params = web.input(imei="")
         if len(phonenumber) < 10:
             return json.dumps({})
         SQL = (
-            "SELECT firstname || ' ' || lastname as name, telephone, "
-            " get_district(district_id) as district, facilityid, facility, facilitycode, "
+            "SELECT id, firstname || ' ' || lastname as name, telephone, "
+            " get_district(district_id) as district, imei, smscode, facilityid, facility, facilitycode, "
             "total_reports, to_char(last_reporting_date, 'YYYY-MM-DD HH:MI') last_reporting_date, role "
             " FROM reporters_view1 "
             # " WHERE substring(reverse(telephone), 0, 9) = substring(reverse($tel), 0, 9) "
@@ -189,12 +191,27 @@ class ReporterAPI:
         ret = {}
         if res:
             r = res[0]
+            smscode = r.smscode
+            deviceChanged = False
+            imei = params.imei
+            if r.imei != imei:
+                deviceChanged = True
+                smscode = ''.join(random.choice('0123456789') for i in range(5))
+                db.query(
+                    "UPDATE reporters SET (smscode, imei) = ($smscode, $imei) WHERE id = $id",
+                    {'smscode': smscode, 'imei': imei, 'id': r.id})
             ret = {
                 'name': r.name, 'phoneNumber': r.telephone,
                 'district': r.district, 'facility': r.facility,
                 'facilityId': r.facilitycode, 'totalReports': r.total_reports,
                 'lastReportingDate': r.last_reporting_date,
-                'roles': r.role}
+                'roles': r.role,
+                'deviceChanged': deviceChanged,
+                # 'smsCode': smscode
+                'smsCode': '11111'
+            }
+            # sendsms smscode to number
+
         return json.dumps(ret)
 
 
