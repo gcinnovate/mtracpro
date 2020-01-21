@@ -38,9 +38,6 @@ class QueueRejectedReports:
                 return msgs[0]['text']
         return ""
 
-    def GET(self):
-        return json.dumps({"status": "success"})
-
     def POST(self):
         params = web.input(
             facilitycode="", form="", district="", msisdn="",
