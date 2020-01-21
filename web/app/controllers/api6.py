@@ -41,7 +41,7 @@ class QueueRejectedReports:
     def POST(self):
         params = web.input(
             facilitycode="", form="", district="", msisdn="",
-            raw_msg="", report_type="", facility="", reporter_type="", uuid="")
+            raw_msg="", report_type="", facility="", reporter_type="", uuid="", reporter_name="")
         extras = {'reporter_type': params.reporter_type}
         # values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
