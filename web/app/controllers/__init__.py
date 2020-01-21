@@ -197,7 +197,7 @@ def datetimeformat2(value, fmt='%Y-%m-%d %H:%M'):
 
 def formatmsg(msg, form='cases'):
     ret = "<ul>"
-    ret_list = ['' for i in range(20)]  # make 12 here MAX_INDICATORS
+    ret_list = ['' for i in range(23)]  # make 12 here MAX_INDICATORS
     try:
         body = json.loads(msg)
     except:
