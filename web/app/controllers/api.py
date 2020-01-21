@@ -317,9 +317,9 @@ class Test:
 
 
 class Dhis2Queue:
-    def GET(self):
-        return json.dumps({"status": "success"})
-
+    # def GET(self):
+    #     return json.dumps({"status": "success"})
+    #
     def POST(self):
         params = web.input(
             facilitycode="", form="", district="", msisdn="",
