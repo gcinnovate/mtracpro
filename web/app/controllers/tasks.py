@@ -1,10 +1,11 @@
 # from __future__ import absolute_import
 import web
 import random
+import base64
 import requests
 import json
 from celery import Celery
-from celeryconfig import BROKER_URL, db_conf, poll_flows, apiv2_endpoint, api_token
+from celeryconfig import BROKER_URL, db_conf, poll_flows, apiv2_endpoint, api_token, config
 
 MAX_CHUNK_SIZE = 90
 
@@ -188,6 +189,25 @@ def send_facility_sms_task(facilityid, msg, role=""):
 @app.task(name="sendsms_to_uuids_task")
 def sendsms_to_uuids_task(uuid_list, msg):
     sendsms_to_uuids(uuid_list, msg)
+
+
+@app.task(name="queue_in_dispatcher2")
+def queue_in_dispatcher2(data, url=config['dispatcher2_queue_url'], ctype="json", params={}):
+    coded = base64.b64encode(
+        "%s:%s" % (config['dispatcher2_username'], config['dispatcher2_password']))
+    if 'xml' in ctype:
+        ct = 'text/xml'
+    elif 'json' in ctype:
+        ct = 'application/json'
+    else:
+        ct = 'text/plain'
+    response = requests.post(
+        url, data=data, headers={
+            'Content-Type': ct,
+            'Authorization': 'Basic ' + coded},
+        verify=False, params=params  # , cert=config['dispatcher2_certkey_file']
+    )
+    return response
 
 
 # def send_threshold_alert(msg, district):

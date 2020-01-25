@@ -17,6 +17,16 @@ poll_flows = {
     # Numeric
     'n': []
 }
+config = {
+    # Dipatcher 2
+    'dispatcher2_queue_url': 'http://localhost:9191/queue?',
+    'dispatcher2_username': 'admin',
+    'dispatcher2_password': 'admin',
+    'dispatcher2_source': 'mtrackpro',
+    'dispatcher2_destination': 'dhis2',
+    'dispatcher2_certkey_file': '/etc/dispatcher2/ssl.pem',
+    'default-queue-status': 'pending',
+}
 
 api_token = '90532182de6947ed4d3d202d95eb0e280aa305c5'
 apiv2_endpoint = 'http://localhost:8000/api/v2/'  # with trailing slash(/)

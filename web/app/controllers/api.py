@@ -16,7 +16,7 @@ from app.tools.utils import (
 from settings import DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS
 from settings import USE_OLD_WEBHOOKS
-from tasks import sendsms_to_uuids_task
+from tasks import sendsms_to_uuids_task, queue_in_dispatcher2
 
 
 def send_threshold_alert(msg, district):
@@ -25,7 +25,7 @@ def send_threshold_alert(msg, district):
     except:
         threshold_alert_contacts = []
     if threshold_alert_contacts:
-        sendsms_to_uuids_task(threshold_alert_contacts, msg)
+        sendsms_to_uuids_task.delay(threshold_alert_contacts, msg)
 
 
 class LocationChildren:
@@ -496,16 +496,25 @@ class QueueForDhis2InstanceProcessing:
             msisdn="", raw_msg="", report_type="", source="", destination="", is_qparams="t")
         year, week = get_current_week()
         payload = "message=%s&originator=%s" % (params.raw_msg, params.msisdn)
+        source = params.source
+        if not source:
+            source = config['dispatcher2_source']
+        destination = params.destination
+        if not destination:
+            destination = KEYWORD_SERVER_MAPPINGS.get(
+                params.report_type.lower(), config['dispatcher2_destination'])
+
         extra_params = {
             'week': week, 'year': year, 'msisdn': params.msisdn,
             'facility': '', 'raw_msg': params.raw_msg,
             'distrcit': '', 'report_type': params.report_type,
-            'source': params.source, 'destination': params.destination,
+            'source': source, 'destination': destination,
             'is_qparams': "t"}
         print(extra_params)
 
-        resp = post_request_to_dispatcher2(payload, ctype="text", params=extra_params)
-        print("Resp:", resp)
+        # resp = post_request_to_dispatcher2(payload, ctype="text", params=extra_params)
+        # print("Resp:", resp)
+        queue_in_dispatcher2.delay(payload, ctype="text", params=extra_params)
 
         return json.dumps({"status": "success"})
 
@@ -514,7 +523,8 @@ class Routing:
     def GET(self):
         params = web.input(raw_msg="", keyword="")
         raw_msg = params.raw_msg
-        keyword = params.keyword
+        keyword = params.keyword.lower()
+        year, week = get_current_week()
         destination_name = KEYWORD_SERVER_MAPPINGS.get(
             keyword, config['dispatcher2_destination'])
         source = config['dispatcher2_source']
