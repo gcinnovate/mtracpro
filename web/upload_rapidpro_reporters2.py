@@ -104,7 +104,7 @@ cur.execute(
 res = cur.fetchall()
 # print "==>", res
 if res:
-    for r in res[:10]:
+    for r in res:
         district = r["district"]
         existing_uuid = r["uuid"]
         endpoint = config["default_api_uri"]
