@@ -132,7 +132,7 @@ if res:
             post_data = json.dumps(data)
             if existing_uuid:
                 url = "{0}uuid={1}".format(endpoint, existing_uuid)
-                resp = post_request(post_data, url=endpoint)
+                resp = post_request(post_data, url=url)
             else:
                 resp = post_request(post_data)
             # print post_data
@@ -154,7 +154,7 @@ if res:
             post_data = json.dumps(data)
             if existing_uuid:
                 url = "{0}uuid={1}".format(endpoint, existing_uuid)
-                resp = post_request(post_data, url=endpoint)
+                resp = post_request(post_data, url=url)
             else:
                 resp = post_request(post_data)
             time.sleep(0.3)
