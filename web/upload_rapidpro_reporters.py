@@ -96,7 +96,7 @@ cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 cur.execute(
     "SELECT id, lastname || ' ' || firstname as name, telephone, alternate_tel, "
     "email, get_location_name(district_id) AS district, role, "
-    "facility, facilitycode, loc_name, created, "
+    "facility, facilitycode, loc_name, created, uuid, "
     "get_location_name(get_subcounty_id(reporting_location)) AS subcounty FROM reporters_view1 "
     "WHERE created >= %s AND updated >= %s", [from_date, update_date]
 )
@@ -106,6 +106,10 @@ print "==>", res
 if res:
     for r in res:
         district = r["district"]
+        existing_uuid = r["uuid"]
+        endpoint = config["default_api_uri"]
+        if '?' not in endpoint:
+            endpoint += "?"
         fields = {
             "reporting_location": r['loc_name'],
             "facilitycode": r['facilitycode'],
@@ -126,7 +130,11 @@ if res:
                 "fields": fields
             }
             post_data = json.dumps(data)
-            resp = post_request(post_data)
+            if existing_uuid:
+                url = "{0}uuid={1}".format(endpoint, existing_uuid)
+                resp = post_request(post_data, url=endpoint)
+            else:
+                resp = post_request(post_data)
             # print post_data
             try:
                 response_dict = json.loads(resp.text)
@@ -143,7 +151,11 @@ if res:
             alt_phone = format_msisdn(alt_phone)
             data["phone"] = alt_phone
             post_data = json.dumps(data)
-            resp = post_request(post_data)
+            if existing_uuid:
+                url = "{0}uuid={1}".format(endpoint, existing_uuid)
+                resp = post_request(post_data, url=endpoint)
+            else:
+                resp = post_request(post_data)
             time.sleep(0.3)
             # print resp.text
 conn.close()
