@@ -38,11 +38,11 @@ with open(filename, 'r') as f:
         # print tuple(reporter)
         names = name.split(' ', 1)
         if len(names) > 1:
-            firstname = names[1]
-            lastname = names[0]
+            firstname = names[1].title()
+            lastname = names[0].title()
         else:
             firstname = ''
-            lastname = names[0]
+            lastname = names[0].title()
         if is_active == 'f':
             continue
         cur.execute("SELECT id FROM reporters WHERE telephone='%s'" % phone)
@@ -72,7 +72,7 @@ with open(filename, 'r') as f:
                 conn.commit()
 
         else:  # new reporter
-            print tuple(reporter)
+            # print tuple(reporter)
             cur.execute(
                 "SELECT id, district_id, location, location_name "
                 "FROM healthfacilities WHERE code = %s", [facility_code])
@@ -97,7 +97,7 @@ with open(filename, 'r') as f:
                 # try DHO's Office
                 if facility.__contains__('DHO') or facility == district:
                     cur.execute(
-                        "SELECT id, district_id FROM healthfacilities WHERE name = %s",
+                        "SELECT id, district_id, location, location_name FROM healthfacilities WHERE name = %s",
                         [district + " DHO Office"])
                     dres = cur.fetchone()
                     if dres:
