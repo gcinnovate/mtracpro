@@ -143,8 +143,19 @@ if res:
                 conn.commit()
                 print("Added:", response_dict)
             except:
-                print("Exception:", response_dict)
-                pass
+                print("Exception: trying with urn", response_dict)
+                if 'urns' in response_dict:
+                    if len(response_dict['urns']):
+                        if 'belongs' in response_dict['urns'][0]:
+                            url = "{0}urn={1}".format(endpoint, "tel:" + phone)
+                            resp = post_request(post_data, url=url)
+                            try:
+                                response_dict = json.loads(resp.text)
+                                contact_uuid = response_dict["uuid"]
+                                cur.execute("UPDATE reporters SET uuid = %s WHERE id=%s", [contact_uuid, r["id"]])
+                                conn.commit()
+                            except:
+                                pass
 
             # print resp.text
 
