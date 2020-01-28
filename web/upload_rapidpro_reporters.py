@@ -138,18 +138,19 @@ if res:
             # print post_data
             try:
                 response_dict = json.loads(resp.text)
-                print response_dict
                 contact_uuid = response_dict["uuid"]
                 cur.execute("UPDATE reporters SET uuid = %s WHERE id=%s", [contact_uuid, r["id"]])
                 conn.commit()
+                print("Added:", response_dict)
             except:
+                print("Exception:", response_dict)
                 pass
 
             # print resp.text
 
         if alt_phone:
             alt_phone = format_msisdn(alt_phone)
-            data["phone"] = alt_phone
+            data["urns"].append("tel:" + alt_phone)
             post_data = json.dumps(data)
             if existing_uuid:
                 url = "{0}uuid={1}".format(endpoint, existing_uuid)
