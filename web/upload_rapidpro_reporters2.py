@@ -19,7 +19,7 @@ opts, args = getopt.getopt(
     [])
 
 now = datetime.datetime.now()
-sdate = now - datetime.timedelta(days=1, minutes=5)
+sdate = now - datetime.timedelta(days=0, minutes=30)
 from_date = sdate.strftime('%Y-%m-%d %H:%M')
 update_date = from_date
 
@@ -98,7 +98,7 @@ cur.execute(
     "email, get_location_name(district_id) AS district, role, "
     "facility, facilitycode, loc_name, created, uuid, "
     "get_location_name(get_subcounty_id(reporting_location)) AS subcounty FROM reporters_view1 "
-    "WHERE created >= %s AND updated >= %s", [from_date, update_date]
+    "WHERE updated >= %s", [update_date]
 )
 
 res = cur.fetchall()
