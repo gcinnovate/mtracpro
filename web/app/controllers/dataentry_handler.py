@@ -32,6 +32,7 @@ class DataEntry:
         reporting_weeks = []
         for i in range(1, int(week) + 1):
             reporting_weeks.append("%sW%s" % (year, i))
+        hmis_033b_dataset = HMIS_033B_DATASET
 
         l = locals()
         del l['self']
