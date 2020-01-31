@@ -5,7 +5,7 @@
 
 import web
 from . import render
-from . import csrf_protected, db, get_session, put_session
+from . import csrf_protected, db, get_session, put_session, allDistricts
 from app.tools.utils import auth_user, audit_log
 
 
@@ -30,6 +30,9 @@ class Index:
             session.sesid = info.id
             session.role = info.role
             session.districts = info.districts
+            # districts_string to be used in a SIMILAR TO statment while getting reports from requests table
+            session.districts_string = '|'.join(['%s' % allDistricts[d] for d in info.districts])
+            print(session.districts_string)
             session.districts_array = str([int(x) for x in info.districts]).replace(
                 '[', '{').replace(']', '}').replace('\'', '\"')
             session.criteria = ""

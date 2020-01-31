@@ -2,7 +2,7 @@ import web
 from . import csrf_protected, db, require_login, render, get_session
 from app.tools.pagination2 import doquery, countquery, getPaginationString
 from app.tools.utils import default, lit
-from settings import PAGE_LIMIT
+import settings
 
 
 class Approve:
@@ -16,12 +16,15 @@ class Approve:
         except:
             page = 1
 
-        limit = PAGE_LIMIT
+        limit = settings.PAGE_LIMIT
         start = (page - 1) * limit if page > 0 else 0
 
         if session.role == 'District User':
             district = '%s' % session.username.capitalize()
-            criteria = "district='%s'" % district
+            if session.username in getattr(settings, 'NATIONAL_USERS', []):
+                criteria = " TRUE "
+            else:
+                criteria = "district SIMILAR TO '%%(%s)%%'" % session.districts_string
             dic = lit(
                 relations='requests_view',
                 fields=(

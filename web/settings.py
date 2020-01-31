@@ -58,6 +58,9 @@ THRESHOLD_ALERT_ROLES = ['Biostatistician']
 
 GENERAL_ALERT_ROLES = ['Biostatistician']
 
+# usernames for national accounts - for proper filtering of reports
+NATIONAL_USERS = []
+
 
 def absolute(path):
     """Get the absolute path of the given file/folder.

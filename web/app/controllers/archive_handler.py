@@ -22,9 +22,14 @@ class Archive:
 
         if session.role == 'District User':
             district = '%s' % session.username.capitalize()
-            criteria = "district='%s' AND report_type IN %s" % (
-                district, getattr(settings, 'MTRAC_FORMS', str(
-                    ('cases', 'death', 'epc', 'epd', 'tra', 'arv', 'ip', 'tb', 'gp', 'apt', 'mat'))))
+            if session.username in getattr(settings, 'NATIONAL_USERS', []):
+                criteria = "report_type IN %s" % (
+                    getattr(settings, 'MTRAC_FORMS', str(
+                        ('cases', 'death', 'epc', 'epd', 'tra', 'arv', 'tpt', 'tb', 'gp', 'apt', 'mat'))))
+            else:
+                criteria = "district SIMILAR TO '%%(%s)%%' AND report_type IN %s" % (
+                    session.districts_string, getattr(settings, 'MTRAC_FORMS', str(
+                        ('cases', 'death', 'epc', 'epd', 'tra', 'arv', 'tpt', 'tb', 'gp', 'apt', 'mat'))))
             dic = lit(
                 relations='requests_view',
                 fields=(
