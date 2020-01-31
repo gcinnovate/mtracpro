@@ -57,6 +57,9 @@ REPORTS_WITH_COMMANDS = ['cases', 'death', 'epc', 'epd']
 THRESHOLD_ALERT_ROLES = ['Biostatistician']
 
 GENERAL_ALERT_ROLES = ['Biostatistician']
+# if we want to pass routed sms a query params to DHIS 2 inbound sms endpoint
+PASS_ROUTED_SMS_AS_QUERY_PARAMS = False
+USE_INTERNATIONAL_NUMBER_FORMAT = True
 
 # usernames for national accounts - for proper filtering of reports
 NATIONAL_USERS = []

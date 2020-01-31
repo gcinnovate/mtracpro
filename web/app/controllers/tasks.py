@@ -210,6 +210,17 @@ def queue_in_dispatcher2(data, url=config['dispatcher2_queue_url'], ctype="json"
     return response
 
 
+@app.task(name="invalidate_older_similar_reports")
+def invalidate_older_similar_reports(reporter, report_type, year, week):
+    db.query(
+        "UPDATE requests SET status = 'canceled' WHERE msisdn=$reporter AND "
+        "report_type = $rtype AND year=$year AND week = $week", {
+            'reporter': reporter,
+            'rtype': report_type,
+            'year': '{0}'.format(year),
+            'week': '{0}'.format(week)
+        })
+
 # def send_threshold_alert(msg, district):
 #     try:
 #         threshold_alert_contacts = notifyingParties[allDistrictsByName[district]]['threshold_alert_contacts']

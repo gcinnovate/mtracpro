@@ -9,14 +9,14 @@ from settings import config, KEYWORD_SERVER_MAPPINGS
 import settings
 from app.tools.utils import (
     get_basic_auth_credentials, auth_user, get_webhook_msg_old,
-    queue_request, parse_message, post_request_to_dispatcher2, get_reporting_week,
+    queue_request, parse_message, get_reporting_week,
     get_webhook_msg
 )
 # from app.tools.utils import get_location_role_reporters, queue_schedule, log_schedule, update_queued_sms
 from settings import DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS
 from settings import USE_OLD_WEBHOOKS
-from tasks import sendsms_to_uuids_task, queue_in_dispatcher2
+from tasks import sendsms_to_uuids_task, queue_in_dispatcher2, invalidate_older_similar_reports
 
 
 def send_threshold_alert(msg, district):
@@ -325,7 +325,11 @@ class Dhis2Queue:
             facilitycode="", form="", district="", msisdn="",
             raw_msg="", report_type="", facility="", reporter_type="", reporter_name="")
         extras = {'reporter_type': params.reporter_type}
-        # values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
+
+        # Invalidate the older similar reports
+        yr, wk = get_current_week()
+        invalidate_older_similar_reports.delay(
+            params.msisdn, params.report_type, yr, wk)
 
         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
             dataValues = []
@@ -361,7 +365,7 @@ class Dhis2Queue:
                                 if val >= threshold:
                                     thresholds_list.append('{} {}'.format(val, IndicatorMapping[slug]['descr']))
                             except:
-                                print("Threshold.::.Failed to Add threshold Message")
+                                # print("Threshold.::.Failed to Add threshold Message")
                                 pass
                         # print("%s=>%s" % (slug, val), IndicatorMapping[slug])
                         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
@@ -409,6 +413,7 @@ class Dhis2Queue:
                         if IndicatorMapping[slug]['threshold']:
                             try:
                                 threshold = int(float(IndicatorMapping[slug]['threshold']))
+                                print("++++++++++ val:", val, "+++++ threshold", threshold)
                                 if val > threshold:
                                     thresholds_list.append('{} {}'.format(val, IndicatorMapping[slug]['descr']))
                             except Exception as e:
@@ -495,7 +500,19 @@ class QueueForDhis2InstanceProcessing:
         params = web.input(
             msisdn="", raw_msg="", report_type="", source="", destination="", is_qparams="t")
         year, week = get_current_week()
-        payload = "message=%s&originator=%s" % (params.raw_msg, params.msisdn)
+        if getattr(settings, "USE_INTERNATIONAL_NUMBER_FORMAT", True):
+            msisdn = params.msisdn
+        else:
+            msisdn = params.msisdn.replace('+', '')
+        if getattr(settings, "PASS_ROUTED_SMS_AS_QUERY_PARAMS", False):
+            is_qparams = "t"
+            payload = "message=%s&originator=%s" % (params.raw_msg, params.msisdn)
+        else:
+            is_qparams = "f"
+            payload = {
+                'text': params.raw_msg,
+                'originator': msisdn
+            }
         source = params.source
         if not source:
             source = config['dispatcher2_source']
@@ -509,22 +526,14 @@ class QueueForDhis2InstanceProcessing:
             'facility': '', 'raw_msg': params.raw_msg,
             'distrcit': '', 'report_type': params.report_type,
             'source': source, 'destination': destination,
-            'is_qparams': "t"}
+            'is_qparams': is_qparams}
         print(extra_params)
 
         # resp = post_request_to_dispatcher2(payload, ctype="text", params=extra_params)
         # print("Resp:", resp)
-        queue_in_dispatcher2.delay(payload, ctype="text", params=extra_params)
+        if is_qparams == "f":
+            queue_in_dispatcher2.delay(json.dumps(payload), ctype="json", params=extra_params)
+        else:
+            queue_in_dispatcher2.delay(json.dumps(payload), ctype="html", params=extra_params)
 
         return json.dumps({"status": "success"})
-
-
-class Routing:
-    def GET(self):
-        params = web.input(raw_msg="", keyword="")
-        raw_msg = params.raw_msg
-        keyword = params.keyword.lower()
-        year, week = get_current_week()
-        destination_name = KEYWORD_SERVER_MAPPINGS.get(
-            keyword, config['dispatcher2_destination'])
-        source = config['dispatcher2_source']
