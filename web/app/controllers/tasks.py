@@ -25,7 +25,6 @@ app = Celery("mtrackpro", broker=BROKER_URL)
 def add_poll_recipients_task(poll_id, groups=[], districts=[], start_now=False, poll_type="", qn="", d_resp=""):
     print("Gona asynchronously add poll recipients:[{0}]".format(poll_id))
     db = web.database(dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], host=db_conf['host'], port=db_conf['port'])
-    db = web
     # format input postgresql style
     groups_str = str([int(x) for x in groups]).replace('[', '{').replace(']', '}').replace('\'', '\"')
     districts_str = str([int(x) for x in districts]).replace('[', '{').replace(']', '}').replace('\'', '\"')
@@ -79,7 +78,7 @@ def add_poll_recipients_task(poll_id, groups=[], districts=[], start_now=False, 
 @app.task(name="start_poll_task")
 def start_poll_task(poll_id):
     db = web.database(
-        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'],
+        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], db=db_conf["name"],
         host=db_conf['host'], port=db_conf['port'])
     res = db.query(
         "SELECT question, default_response, type FROM polls WHERE id = $id ", {'id': poll_id})
@@ -133,7 +132,7 @@ def record_poll_response_task(poll_id, reporter_id, response, category):
     """ records poll responses from RapidPro """
     # check whether poll is still active
     db = web.database(
-        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'],
+        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], db=db_conf["name"],
         host=db_conf['host'], port=db_conf['port'])
     rs = db.query(
         "SELECT CASE WHEN end_date IS NOT NULL THEN end_date > NOW() "
@@ -175,7 +174,7 @@ def sendsms_to_uuids(uuid_list, msg):
 @app.task(name="send_bulksms_task")
 def send_bulksms_task(msg, sms_roles=[], district="", facility=""):
     db = web.database(
-        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'],
+        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], db=db_conf["name"],
         host=db_conf['host'], port=db_conf['port'])
     SQL = (
         "SELECT array_agg(uuid) uuids FROM reporters_view WHERE district_id=$district "
@@ -199,7 +198,7 @@ def send_bulksms_task(msg, sms_roles=[], district="", facility=""):
 @app.task(name="send_facility_sms_task")
 def send_facility_sms_task(facilityid, msg, role=""):
     db = web.database(
-        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'],
+        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], db=db_conf["name"],
         host=db_conf['host'], port=db_conf['port'])
     SQL = (
         "SELECT array_agg(uuid) uuids FROM reporters_view WHERE facilityid=$fid "
@@ -243,10 +242,7 @@ def queue_in_dispatcher2(data, url=config['dispatcher2_queue_url'], ctype="json"
 @app.task(name="invalidate_older_similar_reports")
 def invalidate_older_similar_reports(reporter, report_type, year, week):
     db = web.database(
-        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'],
-        host=db_conf['host'], port=db_conf['port'])
-    db = web.database(
-        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'],
+        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], db=db_conf["name"],
         host=db_conf['host'], port=db_conf['port'])
     db.query(
         "UPDATE requests SET status = 'canceled' WHERE msisdn=$reporter AND "
