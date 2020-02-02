@@ -9,14 +9,14 @@ from celeryconfig import BROKER_URL, db_conf, poll_flows, apiv2_endpoint, api_to
 
 MAX_CHUNK_SIZE = 90
 
-db = web.database(
-    dbn='postgres',
-    user=db_conf['user'],
-    pw=db_conf['passwd'],
-    db=db_conf['name'],
-    host=db_conf['host'],
-    port=db_conf['port']
-)
+# db1 = web.database(
+#     dbn='postgres',
+#     user=db_conf['user'],
+#     pw=db_conf['passwd'],
+#     db=db_conf['name'],
+#     host=db_conf['host'],
+#     port=db_conf['port']
+# )
 # celery -A tasks worker --loglevel=info
 app = Celery("mtrackpro", broker=BROKER_URL)
 
@@ -24,6 +24,8 @@ app = Celery("mtrackpro", broker=BROKER_URL)
 @app.task(name="add_poll_recipients_task")
 def add_poll_recipients_task(poll_id, groups=[], districts=[], start_now=False, poll_type="", qn="", d_resp=""):
     print("Gona asynchronously add poll recipients:[{0}]".format(poll_id))
+    db = web.database(dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], host=db_conf['host'], port=db_conf['port'])
+    db = web
     # format input postgresql style
     groups_str = str([int(x) for x in groups]).replace('[', '{').replace(']', '}').replace('\'', '\"')
     districts_str = str([int(x) for x in districts]).replace('[', '{').replace(']', '}').replace('\'', '\"')
@@ -68,10 +70,17 @@ def add_poll_recipients_task(poll_id, groups=[], districts=[], start_now=False, 
                         print("ERROR Startig Flow [uuid: {0}]".format(flow_uuid))
                     j = i
                 print("Finished Starting Contacts in Flow [uuid:{0}]".format(flow_uuid))
+    try:
+        db._ctx.db.close()
+    except:
+        pass
 
 
 @app.task(name="start_poll_task")
 def start_poll_task(poll_id):
+    db = web.database(
+        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'],
+        host=db_conf['host'], port=db_conf['port'])
     res = db.query(
         "SELECT question, default_response, type FROM polls WHERE id = $id ", {'id': poll_id})
     if res:
@@ -113,12 +122,19 @@ def start_poll_task(poll_id):
                     j = i
                 db.query("UPDATE polls set start_date = NOW() WHERE id=$id", {'id': poll_id})
                 print("Finished Starting Contacts in Flow [uuid:{0}]".format(flow_uuid))
+    try:
+        db._ctx.db.close()
+    except:
+        pass
 
 
 @app.task(name="record_poll_response_task")
 def record_poll_response_task(poll_id, reporter_id, response, category):
     """ records poll responses from RapidPro """
     # check whether poll is still active
+    db = web.database(
+        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'],
+        host=db_conf['host'], port=db_conf['port'])
     rs = db.query(
         "SELECT CASE WHEN end_date IS NOT NULL THEN end_date > NOW() "
         " ELSE TRUE END AS active FROM polls WHERE id = $id", {'id': poll_id})
@@ -158,6 +174,9 @@ def sendsms_to_uuids(uuid_list, msg):
 
 @app.task(name="send_bulksms_task")
 def send_bulksms_task(msg, sms_roles=[], district="", facility=""):
+    db = web.database(
+        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'],
+        host=db_conf['host'], port=db_conf['port'])
     SQL = (
         "SELECT array_agg(uuid) uuids FROM reporters_view WHERE district_id=$district "
     )
@@ -171,10 +190,17 @@ def send_bulksms_task(msg, sms_roles=[], district="", facility=""):
     if res:
         recipient_uuids = list(res[0]['uuids'])
         sendsms_to_uuids(recipient_uuids, msg)
+    try:
+        db._ctx.db.close()
+    except:
+        pass
 
 
 @app.task(name="send_facility_sms_task")
 def send_facility_sms_task(facilityid, msg, role=""):
+    db = web.database(
+        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'],
+        host=db_conf['host'], port=db_conf['port'])
     SQL = (
         "SELECT array_agg(uuid) uuids FROM reporters_view WHERE facilityid=$fid "
     )
@@ -184,6 +210,10 @@ def send_facility_sms_task(facilityid, msg, role=""):
     if res:
         recipient_uuids = list(res[0]['uuids'])
         sendsms_to_uuids(recipient_uuids, msg)
+    try:
+        db._ctx.db.close()
+    except:
+        pass
 
 
 @app.task(name="sendsms_to_uuids_task")
@@ -212,6 +242,12 @@ def queue_in_dispatcher2(data, url=config['dispatcher2_queue_url'], ctype="json"
 
 @app.task(name="invalidate_older_similar_reports")
 def invalidate_older_similar_reports(reporter, report_type, year, week):
+    db = web.database(
+        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'],
+        host=db_conf['host'], port=db_conf['port'])
+    db = web.database(
+        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'],
+        host=db_conf['host'], port=db_conf['port'])
     db.query(
         "UPDATE requests SET status = 'canceled' WHERE msisdn=$reporter AND "
         "report_type = $rtype AND year=$year AND week = $week", {
@@ -220,6 +256,10 @@ def invalidate_older_similar_reports(reporter, report_type, year, week):
             'year': '{0}'.format(year),
             'week': '{0}'.format(week)
         })
+    try:
+        db._ctx.db.close()
+    except:
+        pass
 
 # def send_threshold_alert(msg, district):
 #     try:
