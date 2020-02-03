@@ -505,7 +505,7 @@ class QueueForDhis2InstanceProcessing:
             msisdn = params.msisdn.replace('+', '')
         if getattr(settings, "PASS_ROUTED_SMS_AS_QUERY_PARAMS", False):
             is_qparams = "t"
-            payload = "message=%s&originator=%s" % (params.raw_msg, params.msisdn)
+            payload = "message=%s&originator=%s" % (params.raw_msg, msisdn)
         else:
             is_qparams = "f"
             payload = {
