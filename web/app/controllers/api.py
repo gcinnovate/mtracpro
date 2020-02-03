@@ -326,11 +326,6 @@ class Dhis2Queue:
             raw_msg="", report_type="", facility="", reporter_type="", reporter_name="")
         extras = {'reporter_type': params.reporter_type}
 
-        # Invalidate the older similar reports
-        yr, wk = get_current_week()
-        invalidate_older_similar_reports.delay(
-            params.msisdn, params.report_type, yr, wk)
-
         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
             dataValues = []
         else:
@@ -483,13 +478,17 @@ class Dhis2Queue:
                     # resp = post_request_to_dispatcher2(
                     #    payload, params=extra_params, ctype='json')
                     extra_params['body'] = payload
-                    queue_request(db, extra_params)
+                    report_id = queue_request(db, extra_params)
                 else:
                     extra_params['ctype'] = 'xml'
                     # resp = post_request_to_dispatcher2(payload, params=extra_params)
                     extra_params['body'] = payload
-                    queue_request(db, extra_params)
+                    report_id = queue_request(db, extra_params)
                 # print "Resp:", resp
+                # Invalidate the older similar reports
+                yr, wk = get_current_week()
+                invalidate_older_similar_reports.delay(
+                    params.msisdn, params.report_type, yr, wk, report_id)
 
         return json.dumps({"status": "success"})
 

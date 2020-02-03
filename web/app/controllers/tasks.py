@@ -240,17 +240,18 @@ def queue_in_dispatcher2(data, url=config['dispatcher2_queue_url'], ctype="json"
 
 
 @app.task(name="invalidate_older_similar_reports")
-def invalidate_older_similar_reports(reporter, report_type, year, week):
+def invalidate_older_similar_reports(reporter, report_type, year, week, report_id):
     db = web.database(
         dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], db=db_conf["name"],
         host=db_conf['host'], port=db_conf['port'])
     db.query(
         "UPDATE requests SET status = 'canceled' WHERE msisdn=$reporter AND "
-        "report_type = $rtype AND year=$year AND week = $week", {
+        "report_type = $rtype AND year=$year AND week = $week AND id != $id", {
             'reporter': reporter,
             'rtype': report_type,
             'year': '{0}'.format(year),
-            'week': '{0}'.format(week)
+            'week': '{0}'.format(week),
+            'id': report_id
         })
     try:
         db._ctx.db.close()
