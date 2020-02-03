@@ -533,6 +533,6 @@ class QueueForDhis2InstanceProcessing:
         if is_qparams == "f":
             queue_in_dispatcher2.delay(json.dumps(payload), ctype="json", params=extra_params)
         else:
-            queue_in_dispatcher2.delay(json.dumps(payload), ctype="text", params=extra_params)
+            queue_in_dispatcher2.delay(payload, ctype="text", params=extra_params)
 
         return json.dumps({"status": "success"})
