@@ -359,7 +359,7 @@ class Dhis2Queue:
                             try:
                                 threshold = int(float(IndicatorMapping[slug]['threshold']))
                                 if val >= threshold:
-                                    thresholds_list.append('{} {}'.format(val, IndicatorMapping[slug]['descr']))
+                                    thresholds_list.append('{0} {1}'.format(val, IndicatorMapping[slug]['descr']))
                             except:
                                 # print("Threshold.::.Failed to Add threshold Message")
                                 pass
@@ -411,7 +411,7 @@ class Dhis2Queue:
                                 threshold = int(float(IndicatorMapping[slug]['threshold']))
                                 print("++++++++++ val:", val, "+++++ threshold", threshold)
                                 if val > threshold:
-                                    thresholds_list.append('{} {}'.format(val, IndicatorMapping[slug]['descr']))
+                                    thresholds_list.append('{0} {1}'.format(val, IndicatorMapping[slug]['descr']))
                             except Exception as e:
                                 print("Threshold.::.Failed to Add threshold Message=>", str(e))
                                 pass
