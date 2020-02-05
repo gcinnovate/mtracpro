@@ -262,15 +262,17 @@ def queue_submission(db, serverid, post_xml, year, week):
 
 def queue_request(db, params):
     try:
-        db.query(
+        r = db.query(
             "INSERT INTO requests (source, destination, body, week, year, district, facility, "
             "msisdn, raw_msg, report_type, extras, status, ctype) "
             "VALUES($source, $destination, $body, $week, $year, $district, $facility, "
-            "$msisdn, $raw_msg, $report_type, $extras, $status, $ctype)", params)
+            "$msisdn, $raw_msg, $report_type, $extras, $status, $ctype) RETURNING id", params)
+        if r:
+            return r[0]['id']
     except Exception as e:
         print(">>> FAILED <<<<", str(e))
-        return False
-    return True
+        return 0
+    return 0
 
 
 def queue_rejected_reports(db, params):
