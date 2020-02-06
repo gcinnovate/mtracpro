@@ -26,7 +26,7 @@ class Facilities:
         else:
             criteria = ""
         dic = lit(
-            relations='healthfacilities', fields="id, name, type_id, district, location_name, is_033b, code",
+            relations='healthfacilities', fields="id, name, type_id, district, location_name, is_033b, code, last_reporting_date",
             criteria=criteria,
             order="district, name asc",
             limit=limit, offset=start)
