@@ -383,8 +383,9 @@ class Dhis2Queue:
                         params.reporter_name, params.msisdn, params.facility, params.district)
                     alert_message += '\n'.join(thresholds_list)
                     alert_message += '\n' + params.raw_msg
-                    send_threshold_alert(alert_message, params.district)
-                    # print(alert_message)
+                    if len(params.facility) > 11:
+                        send_threshold_alert(alert_message, params.district)
+                        # print(alert_message)
 
             else:
                 values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
@@ -435,8 +436,9 @@ class Dhis2Queue:
                         params.reporter_name, params.msisdn, params.facility, params.district)
                     alert_message += '\n'.join(thresholds_list)
                     alert_message += '\n' + params.raw_msg
-                    send_threshold_alert(alert_message, params.district)
-                    print(alert_message)
+                    if len(params.facility) > 11:
+                        send_threshold_alert(alert_message, params.district)
+                        print(alert_message)
 
             if not dataValues and params.form in ('cases', 'death'):
                 if PREFERED_DHIS2_CONTENT_TYPE == 'json':
