@@ -185,10 +185,12 @@ class ReporterAPI:
             " FROM reporters_view1 "
             # " WHERE substring(reverse(telephone), 0, 9) = substring(reverse($tel), 0, 9) "
             # " OR substring(reverse(alternate_tel), 0, 9) = substring(($tel), 0, 9) ")
-            " WHERE telephone LIKE $tel "
-            " OR alternate_tel LIKE $tel ")
+            " WHERE role SIMILAR TO $roles AND (telephone LIKE $tel "
+            " OR alternate_tel LIKE $tel )")
         # " WHERE telephone = $tel OR alternate_tel = $tel")
-        res = db.query(SQL, {'tel': '%%%s' % phonenumber[-9:]})
+        res = db.query(SQL, {
+            'tel': '%%%s' % phonenumber[-9:],
+            'roles': '(%s)' % '|'.join(getattr(settings, 'ALLOWED_REPORTER_ROLES', ['HC', 'Records', 'Incharge']))})
         ret = {}
         if res:
             r = res[0]

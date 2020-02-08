@@ -50,6 +50,10 @@ KEYWORDS_DATA_LENGTH = {
     'epc': 26,
     'epd': 26
 }
+
+# Allowed Reporter Roles
+ALLOWED_REPORTER_ROLES = ['HC', 'Incharge', 'Records Assistant']
+
 # reports with commands - or irregular forms
 REPORTS_WITH_COMMANDS = ['cases', 'death', 'epc', 'epd']
 
