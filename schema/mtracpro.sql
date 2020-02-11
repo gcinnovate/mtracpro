@@ -374,8 +374,11 @@ CREATE TABLE reporters(
     telephone TEXT NOT NULL DEFAULT '',
     alternate_tel TEXT NOT NULL DEFAULT '',
     email TEXT NOT NULL DEFAULT '',
+    imei TEXT NOT NULL DEFAULT '',
+    smscode TEXT NOT NULL DEFAULT '',
     reporting_location BIGINT REFERENCES locations(id), --village
     uuid TEXT NOT NULL DEFAULT '', -- this is the rapidpro uuid
+    uuid2 TEXT NOT NULL DEFAULT '', -- rapidpro uuid for alternate_tel
     district_id BIGINT REFERENCES locations,
     reporting_location_name text not null default '',
     is_active BOOLEAN NOT NULL DEFAULT 't',
@@ -701,6 +704,13 @@ RETURNS TEXT AS $$
     return json.dumps(json.loads(j), sort_keys=sort_keys, indent=indent)
 $$ LANGUAGE plpython2u;
 
+CREATE OR REPLACE FUNCTION urlencode(msg TEXT)
+RETURNS TEXT AS $$
+    import requests
+    return requests.utils.quote(msg)
+$$ LANGUAGE plpython2u;
+
+
 -- Dispatcher-2.1 comes with thes as well
 CREATE OR REPLACE FUNCTION is_valid_json(p_json text)
   RETURNS BOOLEAN
@@ -771,8 +781,8 @@ DROP VIEW IF EXISTS reporters_view1;
 CREATE view reporters_view1 AS
 SELECT a.id,
     a.firstname, a.lastname, (a.firstname || ' '::text) || a.lastname AS name,
-    a.telephone, a.alternate_tel, a.email, a.reporting_location, a.created_by, a.district_id,
-    a.uuid, a.total_reports, a.last_reporting_date, get_reporter_groups2(a.id) AS role, a.created, a.updated,
+    a.telephone, a.alternate_tel, a.email, a.imei, a.smscode, a.reporting_location, a.created_by, a.district_id,
+    a.uuid, a.uuid2, a.total_reports, a.last_reporting_date, get_reporter_groups2(a.id) AS role, a.created, a.updated,
     b.name AS loc_name, b.code AS location_code, d.name AS facility, a.facilityid,
     a.jparents->>'p' as parishid, a.jparents->>'s' as subcountyid, d.code AS facilitycode
    FROM reporters a,

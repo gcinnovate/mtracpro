@@ -96,7 +96,7 @@ cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 cur.execute(
     "SELECT id, initcap(trim(lastname)) || ' ' || initcap(trim(firstname)) as name, telephone, alternate_tel, "
     "email, get_location_name(district_id) AS district, role, "
-    "facility, facilitycode, loc_name, created, uuid, "
+    "facility, facilitycode, loc_name, created, uuid, uuid2"
     "get_location_name(get_subcounty_id(reporting_location)) AS subcounty FROM reporters_view1 "
     "WHERE updated >= %s", [update_date]
 )
@@ -164,6 +164,10 @@ if res:
             # print resp.text
 
         if alt_phone:
+            existing_uuid = r["uuid2"]
+            endpoint = config["default_api_uri"]
+            if '?' not in endpoint:
+                endpoint += "?"
             alt_phone = format_msisdn(alt_phone)
             post_data = json.dumps(data)
             data = {
@@ -197,13 +201,13 @@ if res:
 
             print "=>", resp.json()
             response_dict = resp.json()
-            # if 'uuid' in response_dict:
-            #     contact_uuid = response_dict["uuid"]
-            #     cur.execute("UPDATE reporters SET uuid = %s WHERE id=%s", [contact_uuid, r["id"]])
-            #     conn.commit()
-            #     print("Added/Updated:", response_dict)
-            # else:
-            #     pass
-            # print resp.text
+            if 'uuid' in response_dict:
+                contact_uuid = response_dict["uuid"]
+                cur.execute("UPDATE reporters SET uuid2 = %s WHERE id=%s", [contact_uuid, r["id"]])
+                conn.commit()
+                print("Added/Updated:", response_dict)
+            else:
+                pass
+            print resp.text
             time.sleep(0.3)
 conn.close()

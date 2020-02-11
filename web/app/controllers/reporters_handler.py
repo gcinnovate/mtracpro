@@ -198,7 +198,7 @@ class Reporters:
                     "UPDATE reporters SET firstname=$firstname, lastname=$lastname, "
                     "telephone=$telephone, email=$email, reporting_location=$location, "
                     "alternate_tel=$alt_tel, district_id = $district_id, "
-                    " facilityid = $facility "
+                    " facilityid = $facility, updated = NOW()"
                     "WHERE id=$id RETURNING id", {
                         'firstname': params.firstname, 'lastname': params.lastname,
                         'telephone': params.telephone, 'email': params.email,
