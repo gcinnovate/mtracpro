@@ -96,7 +96,7 @@ cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 cur.execute(
     "SELECT id, initcap(trim(lastname)) || ' ' || initcap(trim(firstname)) as name, telephone, alternate_tel, "
     "email, get_location_name(district_id) AS district, role, "
-    "facility, facilitycode, loc_name, created, uuid, uuid2"
+    "facility, facilitycode, loc_name, created, uuid, uuid2, "
     "get_location_name(get_subcounty_id(reporting_location)) AS subcounty FROM reporters_view1 "
     "WHERE updated >= %s", [update_date]
 )
