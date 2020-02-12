@@ -329,7 +329,7 @@ class FacilitySMS:
 class SendBulkSMS:
     def POST(self):
         web.header("Content-Type", "application/json; charset=utf-8")
-        params = web.input(sms_roles=[], msg="", district="", facility="")
+        params = web.input(sms_roles=[], msg="", district="", sms_facility="")
         if not params.district or params.district == "0":
             return json.dumps({'message': 'Please select District before sending!'})
         if not params.msg:
@@ -337,7 +337,7 @@ class SendBulkSMS:
         if not params.sms_roles:
             return json.dumps({'message': 'Please specify a role or list of roles!'})
 
-        send_bulksms_task.delay(params.msg, params.sms_roles, params.district, params.facility)
+        send_bulksms_task.delay(params.msg, params.sms_roles, params.district, params.sms_facility)
 
         return json.dumps({'message': 'SMS Queued For Submission'})
 
