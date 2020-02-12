@@ -62,7 +62,11 @@
                                     <td>
                                         {{ report.facility_name }}
                                         <ul>
-                                            <li><a href="/messagehistory/{{ report.msisdn }}/" target="_blank">{{report.msisdn}}</a></li>
+                                            <li><a href="/messagehistory/{{ report.msisdn }}/" target="_blank">{{report.msisdn}}</a>
+                                            {% if report.source|fromAndroid == True%}
+                                                &nbsp;<i class="fa fa-android"></i>
+                                            {% endif %}
+                                            </li>
                                         </ul>
                                     </td>
                                     <td>

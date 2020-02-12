@@ -33,7 +33,7 @@ class Archive:
             dic = lit(
                 relations='requests_view',
                 fields=(
-                    "id, facility, facility_name, district, msisdn, body, status,"
+                    "id, facility, facility_name, district, msisdn, body, status, source, "
                     "raw_msg, year, week, created, report_type, is_edited, edited_raw_msg"),
                 criteria=criteria,
                 order="id desc",
@@ -44,7 +44,7 @@ class Archive:
             dic = lit(
                 relations='requests_view',
                 fields=(
-                    "id, facility, facility_name, district, msisdn, body, status, "
+                    "id, facility, facility_name, district, msisdn, body, status, source, "
                     "raw_msg, year, week, created, report_type, is_edited, edited_raw_msg"),
                 criteria=criteria,
                 order="id desc",

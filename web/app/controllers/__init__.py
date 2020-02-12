@@ -284,6 +284,12 @@ def server_apps(val):
     ret += "</ul>"
     return ret
 
+
+def fromAndroid(sid):
+    if serversById[sid] == 'mTracPro_android':
+        return True
+    return False
+
 myFilters = {
     'datetimeformat': datetimeformat,
     'datetimeformat2': datetimeformat2,
@@ -291,7 +297,8 @@ myFilters = {
     'facilityLevel': facilityLevel,
     'getDistrict': getDistrict,
     'hasCompleteReport': hasCompleteReport,
-    'server_apps': server_apps
+    'server_apps': server_apps,
+    'fromAndroid': fromAndroid
 }
 
 # Jinja2 Template options

@@ -55,7 +55,11 @@
                                 <tr class="">
                                     <td><input name="reqid" class="topromote" value="{{ report.id }}" type="checkbox"/></td>
                                     <td>{{ report.facility_name }}</td>
-                                    <td><a href="/messagehistory/{{ report.msisdn }}/" target="_blank">{{report.msisdn}}</a></td>
+                                    <td><a href="/messagehistory/{{ report.msisdn }}/" target="_blank">{{report.msisdn}}</a>
+                                        {% if report.source|fromAndroid == True%}
+                                            &nbsp;<i class="fa fa-android"></i>
+                                        {% endif %}
+                                    </td>
                                     <td>{% if report.is_edited == True %}
                                             {{ report.edited_raw_msg }}
                                             &nbsp;&nbsp;<i class="fa fa-pencil"></i>

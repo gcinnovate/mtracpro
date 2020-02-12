@@ -28,7 +28,7 @@ class Approve:
             dic = lit(
                 relations='requests_view',
                 fields=(
-                    "id, facility, facility_name, district, msisdn, body, "
+                    "id, facility, facility_name, district, msisdn, body, source, "
                     "raw_msg, year, week, created, report_type, is_edited, edited_raw_msg"),
                 criteria=criteria + " AND status='pending'",
                 order="id desc",
@@ -37,7 +37,7 @@ class Approve:
             dic = lit(
                 relations='requests_view',
                 fields=(
-                    "id, facility, facility_name, district, msisdn, body, "
+                    "id, facility, facility_name, district, msisdn, body, source, "
                     "raw_msg, year, week, created, report_type, is_edited, edited_raw_msg"),
                 criteria="status='pending'",
                 order="id desc",

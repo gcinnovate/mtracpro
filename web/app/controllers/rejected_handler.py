@@ -28,7 +28,7 @@ class Rejected:
             dic = lit(
                 relations='rejected_reports_view',
                 fields=(
-                    "id, facility, facility_name, district, msisdn, body, "
+                    "id, facility, facility_name, district, msisdn, body, source, "
                     "raw_msg, year, week, created, report_type, is_edited, edited_raw_msg"),
                 criteria=criteria,
                 order="id desc",
@@ -37,7 +37,7 @@ class Rejected:
             dic = lit(
                 relations='rejected_reports_view',
                 fields=(
-                    "id, facility, facility_name, district, msisdn, body, "
+                    "id, facility, facility_name, district, msisdn, body, source, "
                     "raw_msg, year, week, created, report_type, is_edited, edited_raw_msg"),
                 # criteria="status='pending'",
                 order="id desc",
