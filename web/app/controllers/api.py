@@ -179,7 +179,7 @@ class ReporterAPI:
         if len(phonenumber) < 10:
             return json.dumps({})
         SQL = (
-            "SELECT id, firstname || ' ' || lastname as name, telephone, "
+            "SELECT id, firstname || ' ' || lastname as name, telephone, uuid, "
             " get_district(district_id) as district, imei, smscode, facilityid, facility, facilitycode, "
             "total_reports, to_char(last_reporting_date, 'YYYY-MM-DD HH:MI') last_reporting_date, role "
             " FROM reporters_view1 "
@@ -210,10 +210,11 @@ class ReporterAPI:
                 'lastReportingDate': r.last_reporting_date,
                 'roles': r.role,
                 'deviceChanged': deviceChanged,
-                # 'smsCode': smscode
-                'smsCode': '11111'
+                'smsCode': smscode
+                # 'smsCode': '11111'
             }
             # sendsms smscode to number
+            sendsms_to_uuids_task.delay([r.uuid], smscode)
 
         return json.dumps(ret)
 
