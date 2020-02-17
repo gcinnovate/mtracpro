@@ -200,6 +200,8 @@ class ReporterAPI:
             if r.imei != imei:
                 deviceChanged = True
                 smscode = ''.join(random.choice('0123456789') for i in range(5))
+                # sendsms smscode to number
+                sendsms_to_uuids_task.delay([r.uuid], smscode)
                 db.query(
                     "UPDATE reporters SET (smscode, imei) = ($smscode, $imei) WHERE id = $id",
                     {'smscode': smscode, 'imei': imei, 'id': r.id})
@@ -213,8 +215,6 @@ class ReporterAPI:
                 'smsCode': smscode
                 # 'smsCode': '11111'
             }
-            # sendsms smscode to number
-            sendsms_to_uuids_task.delay([r.uuid], smscode)
 
         return json.dumps(ret)
 
