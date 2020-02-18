@@ -148,7 +148,7 @@ class CreateFacility:
                                 "SELECT id FROM locations "
                                 "WHERE name ilike $name AND type_id = 4"
                                 " AND tree_parent_id = $district",
-                                {'name': '%%%s%%' % params.subcounty, 'district': district_id})
+                                {'name': '%s' % params.subcounty, 'district': district_id})
                             if res2:
                                 # we have a sub county in mTrac
                                 subcounty_id = res2[0]["id"]
@@ -197,7 +197,7 @@ class CreateFacility:
                         res2 = db.query(
                             "SELECT id FROM locations WHERE name ilike $name AND type_id = 4"
                             " AND tree_parent_id = $district",
-                            {'name': '%%%s%%' % params.subcounty.strip(), 'district': district_id})
+                            {'name': '%s' % params.subcounty.strip(), 'district': district_id})
                         if res2:
                             # we have a sub county in mTrac
                             subcounty_id = res2[0]["id"]
