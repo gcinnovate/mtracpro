@@ -8,12 +8,6 @@ from tasks import sendsms_to_uuids_task
 
 
 class AnonymousReports:
-    def GET(self):
-        # params = web.input(
-        #     contact_uuid="", msg="")
-
-        return json.dumps({})
-
     def POST(self):
         params = web.input(
             contact_uuid="", msg="")
