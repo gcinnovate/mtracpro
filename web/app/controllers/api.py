@@ -563,8 +563,7 @@ class StartSurvey:
         survey = params.survey.lower()
         phone = params.phone
 
-        if initiator in getattr(SURVEY_INITIATORS, []) and \
-                survey in getattr(SURVEY_RAPIDPRO_UUIDS, {}):
+        if initiator in SURVEY_INITIATORS and survey in SURVEY_RAPIDPRO_UUIDS:
             flow_starts_endpoint = config['api_url'] + "flow_starts.json"
             flowstart_params = {
                 'flow': SURVEY_RAPIDPRO_UUIDS.get(survey),
