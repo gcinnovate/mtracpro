@@ -5,14 +5,18 @@ class handlers.
 """
 
 from app.controllers.main_handler import Index, Logout
-from app.controllers.api import Location, LocationChildren, SubcountyLocations
-from app.controllers.api import DistrictFacilities, LocationFacilities, FacilityReporters
-from app.controllers.api import Cases, Deaths, OrderMessage, Dhis2Queue, Test, ReportsThisWeek
-from app.controllers.api import QueueForDhis2InstanceProcessing, ReporterAPI
-from app.controllers.api2 import LocationsEndpoint, ReportersXLEndpoint
-from app.controllers.api2 import CreateFacility, ReportForms, IndicatorHtml
-from app.controllers.api2 import FacilitySMS, SendSMS, RequestDetails, SendBulkSMS
-from app.controllers.api2 import DeleteRequest, DeleteServer, ServerDetails
+from app.controllers.api import (
+    Location, LocationChildren, SubcountyLocations,
+    DistrictFacilities, LocationFacilities, FacilityReporters,
+    Cases, Deaths, OrderMessage, Dhis2Queue, Test, ReportsThisWeek,
+    QueueForDhis2InstanceProcessing, ReporterAPI, StartSurvey
+)
+from app.controllers.api2 import (
+    LocationsEndpoint, ReportersXLEndpoint,
+    CreateFacility, ReportForms, IndicatorHtml,
+    FacilitySMS, SendSMS, RequestDetails, SendBulkSMS,
+    DeleteRequest, DeleteServer, ServerDetails
+)
 from app.controllers.api3 import EditReport, ReportingWeek, ReporterHistoryApi
 from app.controllers.api4 import ReportersUploadAPI
 from app.controllers.api5 import CaramalReminders
@@ -123,6 +127,7 @@ URLS = (
     r'/api/v1/editreport/(\d+)/?', EditReport,  # for retrospective report edits
     r'/api/v1/reportingweek/?', ReportingWeek,
     r'/api/v1/reporter/(\+?\w+)/?', ReporterAPI,
+    r'/api/v1/startsurvey/?', StartSurvey,
     r'/reportersupload', ReportersUploadAPI,
     r'/api/v1/reporterhistory/(\+?\w+)/?', ReporterHistoryApi,
     r'/api/v1/indicators', IndicatorsAPI,

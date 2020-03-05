@@ -54,6 +54,11 @@ KEYWORDS_DATA_LENGTH = {
 # Allowed Reporter Roles
 ALLOWED_REPORTER_ROLES = ['HC', 'Incharge', 'Records Assistant']
 
+# Contacts of those allowed to initiate surveys
+SURVEY_INITIATORS = []
+# The RapidPro uuids for the flows used for interventions: {'covid19': '', ....}
+SURVEY_RAPIDPRO_UUIDS = {}
+
 # reports with commands - or irregular forms
 REPORTS_WITH_COMMANDS = ['cases', 'death', 'epc', 'epd']
 

@@ -14,10 +14,15 @@ from app.tools.utils import (
     get_webhook_msg
 )
 # from app.tools.utils import get_location_role_reporters, queue_schedule, log_schedule, update_queued_sms
-from settings import DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
-from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS
-from settings import USE_OLD_WEBHOOKS
-from tasks import sendsms_to_uuids_task, queue_in_dispatcher2, invalidate_older_similar_reports
+from settings import (
+    DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE,
+    HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS,
+    USE_OLD_WEBHOOKS, SURVEY_INITIATORS, SURVEY_RAPIDPRO_UUIDS
+)
+from tasks import (
+    sendsms_to_uuids_task, queue_in_dispatcher2, invalidate_older_similar_reports,
+    post_request_to_rapidpro
+)
 
 
 def send_threshold_alert(msg, district):
@@ -542,3 +547,38 @@ class QueueForDhis2InstanceProcessing:
             queue_in_dispatcher2.delay(payload, ctype="text", params=extra_params)
 
         return json.dumps({"status": "success"})
+
+
+class StartSurvey:
+    """We use this endpoint to start survey interventions via android app - implemented as flows in RapidPro
+        initiator = the phone number of person using app
+        phone = contact to start in flow
+        survey = the name of the survey (will be mapped to RapidPro uuid)
+        language = language to use for contact responding to survey
+    """
+    def GET(self):
+        web.header("Content-Type", "application/json; charset=utf-8")
+        params = web.input(initiator="", phone="", survey="", language="en")
+        initiator = params.initiator
+        survey = params.survey
+        phone = params.phone
+
+        if initiator in getattr(SURVEY_INITIATORS, []) and \
+                survey in getattr(SURVEY_RAPIDPRO_UUIDS, {}):
+            flow_starts_endpoint = config['api_url'] + "flow_starts.json"
+            flowstart_params = {
+                'flow': SURVEY_RAPIDPRO_UUIDS.get(survey),
+                'urns': ["tel:{0}".format(phone.strip())],
+            }
+            post_data = json.dumps(flowstart_params)
+            post_request_to_rapidpro.delay(flow_starts_endpoint, post_data)
+            ret = {
+                "status": "Success",
+                "message": "Follow up started for {0}".format(phone)
+            }
+        else:
+            ret = {
+                "status": "Failed",
+                "message": "User Not permited to start such interventions/surveys"
+            }
+        return json.dumps(ret)
