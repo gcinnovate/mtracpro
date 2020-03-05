@@ -560,7 +560,7 @@ class StartSurvey:
         web.header("Content-Type", "application/json; charset=utf-8")
         params = web.input(initiator="", phone="", survey="", language="en")
         initiator = params.initiator
-        survey = params.survey
+        survey = params.survey.lower()
         phone = params.phone
 
         if initiator in getattr(SURVEY_INITIATORS, []) and \
