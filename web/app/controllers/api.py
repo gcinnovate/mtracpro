@@ -226,7 +226,7 @@ class ReporterAPI:
 
 class ReportsThisWeek:
     def GET(self, facilitycode):
-        year, week = get_current_week()
+        year, week = get_current_week(datetime.datetime.now())
         reports = db.query(
             "SELECT raw_msg, msisdn FROM requests WHERE year = $yr AND week = $wk "
             "AND facility = $fcode AND status IN ('pending', 'ready', 'completed', 'failed') "
