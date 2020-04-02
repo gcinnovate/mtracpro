@@ -1,6 +1,6 @@
 import json
 import web
-from . import db
+from . import db, anonymous_report_responses
 from settings import USE_OLD_WEBHOOKS
 from app.tools.utils import get_webhook_msg_old, get_webhook_msg
 from app.tools.utils import queue_anonymous_report
@@ -51,7 +51,7 @@ class AnonymousReportDetails:
             htmlStr += "<tr><td>Action Center</td><td>%s</td></tr>" % rpt['action_center']
             htmlStr += "<tr><td>Comments</td><td>%s</td></tr>" % rpt['comment']
             htmlStr += "<tr><td>Action Taken</td><td>%s</td></tr>" % rpt['action_taken']
-            htmlStr += "<tr><td>Responses</td><td>%s</td></tr>" % ''
+            htmlStr += "<tr><td>Responses</td><td>%s</td></tr>" % anonymous_report_responses(rpt['id'])
 
         htmlStr += "</tbody></table>"
         return htmlStr
@@ -67,18 +67,14 @@ class AnonReport:
             "WHERE id = $id", {'id': report_id})
         if rs:
             rpt = rs[0]
-            rpt_messages = db.query(
-                "SELECT message FROM anonymousreport_messages WHERE report_id=$id", {'id': rpt['id']})
-            msgs = []
-            for m in rpt_messages:
-                msgs.append(m['message'])
+
             report = {
                 'id': rpt['id'], 'facility': rpt['facility'], 'district': rpt['district'],
                 'created': rpt['created'], 'report': rpt['report'], 'action': rpt['action'],
                 'topic': rpt['topic'], 'action_taken': rpt['action_taken'],
                 'action_center': rpt['action_center'], 'comment': rpt['comment'],
                 'facilityid': rpt['facilityid'], 'districtid': rpt['districtid'],
-                'responses': msgs
+                'responses': anonymous_report_responses(rpt['id'])
             }
             return json.dumps(report)
         return json.dumps({})
@@ -97,8 +93,9 @@ class AnonReport:
                 "topic, action_taken) = ($facility, $district, $action, $action_center, "
                 "$topic, $action_taken) "
                 " WHERE id = $id", {
-                    'id': report_id, 'facility': params.facility,
-                    'district': params.district, 'action': params.action,
+                    'id': report_id, 'facility': params.facility if params.facility else None,
+                    'district': params.district if params.district else None,
+                    'action': params.action,
                     'action_center': params.action_center, 'topic': params.topic,
                     'action_taken': params.action_taken})
 

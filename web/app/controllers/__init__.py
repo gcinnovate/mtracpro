@@ -285,6 +285,21 @@ def server_apps(val):
     return ret
 
 
+def anonymous_report_responses(report_id):
+    ret = "<ul>"
+    x = db.query(
+        "SELECT message, direction FROM anonymousreport_messages "
+        "WHERE report_id = $id ORDER by id", {'id': report_id})
+    for rpt in x:
+        if rpt['direction'] == 'O':
+            prefix = ">> "
+        else:
+            prefix = "<< "
+        ret += "<li>%s</li>" % (prefix + rpt['message'])
+    ret += "</ul>"
+    return ret
+
+
 def fromAndroid(sid):
     if serversById[sid] == 'mTracPro_android':
         return True
@@ -298,7 +313,8 @@ myFilters = {
     'getDistrict': getDistrict,
     'hasCompleteReport': hasCompleteReport,
     'server_apps': server_apps,
-    'fromAndroid': fromAndroid
+    'fromAndroid': fromAndroid,
+    'anonymousResponses': anonymous_report_responses
 }
 
 # Jinja2 Template options
