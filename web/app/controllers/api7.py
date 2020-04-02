@@ -12,21 +12,22 @@ class AnonymousReports:
         params = web.input(
             contact_uuid="", msg="")
         contact_uuid = params.contact_uuid
-        if USE_OLD_WEBHOOKS:
-            msg = get_webhook_msg_old(params, 'msg')
-        else:
-            payload = json.loads(web.data())
-            msg = get_webhook_msg(payload, 'msg')
+        msg = params.msg
+        # if USE_OLD_WEBHOOKS:
+        #     msg = get_webhook_msg_old(params, 'msg')
+        # else:
+        #     payload = json.loads(web.data())
+        #     msg = get_webhook_msg(payload, 'msg')
         print(contact_uuid + "=> " + msg)
         extra_params = {'contact_uuid': contact_uuid, 'report': msg}
         report_id, has_report = queue_anonymous_report(db, extra_params)
         if has_report:
-            resp_msg = ""
+            resp_msg = "Thank you for your consistent feedback about this health facility."
         else:
-            resp_msg = ""
-        db.query(
-            "INSERT INTO anonymousreport_messages (report_id, message, direction) "
-            "VALUES($report_id, $msg, 'O') ", {'report_id': report_id, 'msg': resp_msg})
+            resp_msg = (
+                "Your report has been sent to relevant authorities. You can also call Ministry "
+                "of Health on 0800100066 (toll free) for further help and inquires. "
+                "If this is an emergency contact your nearest facility")
 
         return json.dumps({'message': resp_msg})
 
