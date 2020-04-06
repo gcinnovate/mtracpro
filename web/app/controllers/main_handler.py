@@ -36,6 +36,13 @@ class Index:
             session.districts_array = str([int(x) for x in info.districts]).replace(
                 '[', '{').replace(']', '}').replace('\'', '\"')
             session.criteria = ""
+            user_perms = []
+            perms = db.query(
+                "SELECT codename FROM permissions WHERE id IN "
+                " (SELECT permission_id FROM user_permissions WHERE user_id = $user_id)", {'user_id': info.id})
+            for p in perms:
+                user_perms.append(p['codename'])
+            session.permissions = user_perms
             put_session(session)
             log_dict = {
                 'logtype': 'Web', 'action': 'Login', 'actor': username,

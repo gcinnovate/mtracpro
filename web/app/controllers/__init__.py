@@ -60,10 +60,19 @@ for r in rs:
     rolesById[r['id']] = r['name']
     reporterRolesByName[r['name']] = r['id']
 
+userRolePermissions = {}  # eg {'Administrator': []}
 userRolesByName = {}
 rs = db.query("SELECT id, name from user_roles order by name")
 for r in rs:
     userRolesByName[r['name']] = r['id']
+    userRolePermissions[r['name']] = []
+
+# Populate userRolePermissions
+rs = db.query(
+    "SELECT a.name, b.codename from user_roles a, permissions b, user_role_permissions c "
+    "WHERE (c.user_role = a.id) AND (c.permission_id = b.id)")
+for r in rs:
+    userRolePermissions[r['name']].append(r['codename'])
 
 notifyingParties = {}
 ourDistricts = []
@@ -305,6 +314,15 @@ def fromAndroid(sid):
         return True
     return False
 
+
+def hasPermission(perm, user_group, user_perms):
+    if user_group in userRolePermissions:
+        if perm in userRolePermissions[user_group]:
+            return True
+    if perm in user_perms:
+        return True
+    return False
+
 myFilters = {
     'datetimeformat': datetimeformat,
     'datetimeformat2': datetimeformat2,
@@ -314,7 +332,8 @@ myFilters = {
     'hasCompleteReport': hasCompleteReport,
     'server_apps': server_apps,
     'fromAndroid': fromAndroid,
-    'anonymousResponses': anonymous_report_responses
+    'anonymousResponses': anonymous_report_responses,
+    'hasPermission': hasPermission
 }
 
 # Jinja2 Template options

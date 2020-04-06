@@ -112,39 +112,50 @@
                     <a href="/dasboard"><i class="fa fa-th-large"></i> <span class="nav-label">Dashboards</span> <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li class=""><a href="/dashboard"><i class="fa fa-bar-chart-o"></i>Dashboard</a></li>
+                        {% if 'can_approve_report' | hasPermission(ses.role, ses.permissions) %}
                         <li>
                             <a href="/archive"><i class="fa fa-archive"></i> <span class="nav-label">Reports Archive</span></a>
                         </li>
                         <li>
                             <a href="/rejected"><i class="fa fa-times-circle"></i> <span class="nav-label">Rejected Reports</span></a>
                         </li>
+                        {% endif %}
                         <li><a href="/downloads"><i class="fa fa-download"></i>My Downloads</a></li>
                     </ul>
                 </li>
-                {% if ses.role in ('District User', 'Administrator') %}
+                {% if 'can_approve_report' | hasPermission(ses.role, ses.permissions) %}
                 <li>
                     <a href="/approve"><i class="fa fa-thumbs-o-up"></i> <span class="nav-label">Approve</span></a>
                 </li>
+                {% endif %}
+                {% if 'can_view_caramal_reports' | hasPermission(ses.role, ses.permissions) %}
                 <li>
                     <a href="/caramalreports"><i class="fa fa-medkit"></i> <span class="nav-label">Caramal</span></a>
                 </li>
+                {% endif %}
+                {% if 'can_view_anonymous_reports' | hasPermission(ses.role, ses.permissions) %}
                 <li>
                     <a href="/hotline"><i class="fa fa-h-square"></i> <span class="nav-label">Hotline</span></a>
                 </li>
+                {% endif %}
+                {% if 'can_view_reporters' | hasPermission(ses.role, ses.permissions) %}
                 <li>
                     <a href="/reporters"><i class="fa fa-group"></i> <span class="nav-label">Users</span></a>
                 </li>
+                {% endif %}
                 <li>
                     <a href="/facilities"><i class="fa fa-university"></i> <span class="nav-label">Facilities</span></a>
                 </li>
+                {% if 'can_view_polls' | hasPermission(ses.role, ses.permissions) %}
                 <li>
                     <a href="/polling"><i class="fa fa-pie-chart"></i> <span class="nav-label">Polls</span></a>
                 </li>
+                {% endif %}
+                {% if 'can_add_report' | hasPermission(ses.role, ses.permissions) %}
                 <li>
                     <a href="/dataentry"><i class="fa fa-plus-square-o"></i> <span class="nav-label">Data Entry</span></a>
                 </li>
                 {% endif %}
-
                 {% if ses.role in ('Data Manager') %}
                 <li>
                     <a href="/adminunits"><i class="fa fa-map-marker"></i><span class="nav-label">Admin Units</span></a>
@@ -155,7 +166,7 @@
                 <!-- Put Other links here-->
                     {{ caller() }}
                 <!-- -->
-                {% if ses.role == 'Administrator' %}
+                {% if 'can_manage_dhis2_integration' | hasPermission(ses.role, ses.permissions) %}
                 <li>
                     <a href="#"><i class="fa fa-cogs"></i> <span class="nav-label">DHIS 2 Integration</span><span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse">
@@ -168,6 +179,8 @@
                         <li><a href="/indicators"><i class="fa fa-eyedropper"></i>Indicator Mapping</a></li>
                     </ul>
                 </li>
+                {% endif %}
+                {% if ses.role == 'Administrator' %}
                 <li>
                     <a href="#"><i class="fa fa-wrench"></i> <span class="nav-label">Admin</span><span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse">
