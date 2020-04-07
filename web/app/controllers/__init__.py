@@ -69,10 +69,16 @@ for r in rs:
 
 # Populate userRolePermissions
 rs = db.query(
-    "SELECT a.name, b.codename from user_roles a, permissions b, user_role_permissions c "
+    "SELECT a.name, b.codename "
+    "FROM user_roles a, permissions b, user_role_permissions c "
     "WHERE (c.user_role = a.id) AND (c.permission_id = b.id)")
 for r in rs:
     userRolePermissions[r['name']].append(r['codename'])
+
+Permissions = []
+rs = db.query("SELECT id, name || ' -> [' || sys_module || ']' As name FROM permissions ORDER BY sys_module, id")
+for r in rs:
+    Permissions.append({'id': r['id'], 'name': r['name']})
 
 notifyingParties = {}
 ourDistricts = []
@@ -343,7 +349,7 @@ render = render_jinja(
 )
 
 render._lookup.globals.update(
-    ses=get_session(), roles=roles, districts=ourDistricts,
+    ses=get_session(), roles=roles, districts=ourDistricts, permissions=Permissions,
     year=datetime.datetime.now().strftime('%Y')
 )
 render._lookup.filters.update(myFilters)

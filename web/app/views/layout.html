@@ -97,7 +97,7 @@
                             <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">{{ ses.username }}</strong>
                              </span> <span class="text-muted text-xs block">My Account<b class="caret"></b></span> </span> </a>
                         <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                            {% if ses.role in ('Administrator') %}
+                            {% if 'can_change_profile' | hasPermission(ses.role, ses.permissions) %}
                                 <li><a href="/users">Profile</a></li>
                                 <li class="divider"></li>
                             {% endif %}
@@ -143,9 +143,11 @@
                     <a href="/reporters"><i class="fa fa-group"></i> <span class="nav-label">Users</span></a>
                 </li>
                 {% endif %}
+                {% if 'can_view_facilities' | hasPermission(ses.role, ses.permissions) %}
                 <li>
                     <a href="/facilities"><i class="fa fa-university"></i> <span class="nav-label">Facilities</span></a>
                 </li>
+                {% endif %}
                 {% if 'can_view_polls' | hasPermission(ses.role, ses.permissions) %}
                 <li>
                     <a href="/polling"><i class="fa fa-pie-chart"></i> <span class="nav-label">Polls</span></a>
@@ -186,6 +188,7 @@
                     <ul class="nav nav-second-level collapse">
                         <li><a href="/users"><i class="fa fa-user"></i>Users</a></li>
                         <li><a href="/groups"><i class="fa fa-group"></i>Groups</a></li>
+                        <li><a href="/permissions"><i class="fa fa-times-circle"></i>Permissions</a></li>
                         <li><a href="/settings"><i class="fa fa-gear"></i>Settings</a></li>
                         <li><a href="/fsync"><i class="fa fa-refresh"></i>Facility Sync</a></li>
                         <li><a href="/schedules"><i class="fa fa-calendar"></i><span class="nav-label">Schedules</span></a></li>

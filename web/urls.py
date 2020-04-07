@@ -26,6 +26,7 @@ from app.controllers.api8 import IndicatorsAPI, ReportingStatus, Dispatch, SendA
 from app.controllers.reporters_handler import Reporters
 from app.controllers.users_handler import Users
 from app.controllers.groups_handler import Groups
+from app.controllers.permissions_handler import Permissions
 from app.controllers.dashboard_handler import Dashboard
 from app.controllers.approve_handler import Approve
 from app.controllers.auditlog_handler import AuditLog
@@ -71,6 +72,7 @@ URLS = (
     r'/dashboard', Dashboard,
     r'/users', Users,
     r'/groups', Groups,
+    r'/permissions', Permissions,
     r'/logout', Logout,
     r'/forgotpass', ForgotPass,
     r'/create', CreateFacility,
