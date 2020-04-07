@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from 'layout.html' import navbar, myscripts, err %}
+{% from 'layout.html' import navbar, myscripts, err, busted %}
 
 {% block title %}mTracPro.::.Reporters{% endblock%}
 {% block stylesheets %}
@@ -21,6 +21,7 @@
 {% endblock %}
 
 {% block content %}
+    {% if 'can_view_reporters' | hasPermission(ses.role, ses.permissions) %}
     {{ err(ses.rdata_err)}}
     <!-- TABS -->
     <div class="row">
@@ -37,8 +38,10 @@
                         <form role="form" class="form-horizontal" data-toggle="validator" action="" method="post">
                         <div class="panel-body">
                             <div class="row">
+                                {% if ('can_change_reporter' | hasPermission(ses.role, ses.permissions)) or
+                                    ('can_add_reporter' | hasPermission(ses.role, ses.permissions)) %}
                                 <!-- LEFT-->
-                                <div class="col-lg-6 b-r">
+                                <div class="col-lg-6">
                                     <div class="row">
                                         <input type="hidden" name="location" id="location" value="{{ location }}"/>
                                         <div class="form-group"><label for="district" class="col-lg-3 control-label">District:</label>
@@ -133,6 +136,11 @@
                                     </div><!-- end right row-->
                                 </div>
                                 <!-- END RIGHT-->
+                                {% else %}
+                                    <div class="col-lg-6">
+                                        <p>You have no permission to add or edit reporters</p>
+                                    </div>
+                                {% endif %}
 
                             </div><!-- end inner row -->
                         </div>
@@ -164,16 +172,18 @@
 
                     <!-- tab3 -->
                     <div id="tab-3" class="tab-pane">
-                        <form role="form" id="sms_form" class="form-horizontal" data-toggle="validator" action="" method="post">
+                        <form id="sms_form" class="form-horizontal" role="form" action="" method="post"  data-toggle="validator">
                         <div class="panel-body">
                             <div class="row">
+                                {% if ('can_send_sms' | hasPermission(ses.role, ses.permissions)) or
+                                    ('can_send_bulk_sms' | hasPermission(ses.role, ses.permissions)) %}
                                 <!-- LEFT -->
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="form-group"><label for="district" class="col-lg-3 control-label">District:</label>
                                             <div class="col-lg-9">
                                                 <select name="district" id="district_1" class="form-control" required>
-                                                    <option value="">Select District</option>
+                                                    <option value="0">Select District</option>
                                                     {% for d in districts_1 %}
                                                     <option value="{{ d.id}}" {% if d.id == district.id %} selected="yes" {% endif %}>{{ d.name}}</option>
                                                     {% endfor %}
@@ -238,6 +248,12 @@
                                     </div>
                                 </div>
                                 <!-- END RIGHT-->
+                                {% else %}
+                                    <div class="col-lg-6">
+                                        <p>You have no permission to Send SMS</p>
+                                    </div>
+
+                                {% endif %}
                             </div>
                         </div>
                         </form>
@@ -257,9 +273,9 @@
                 <div class="ibox-title">
                     <h5>Registered Reporters</h5>
                     <div class="ibox-tools">
-                        <!--
-                        <button class="btn btn-outline btn-warning dim sms_btn" name="abtn" value="SMS Selected">
-                        <i class="fa fa-envelope"></i> SMS Selected</button> -->
+
+                        <!--<button class="btn btn-outline btn-warning dim sync_btn" name="abtn" value="Sync">
+                        <i class="fa fa-repeat"></i> Sync To RapidPro</button>-->
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
@@ -291,15 +307,21 @@
                                     <td>{{ reporter.facility }}</td>
                                     <td>{{ reporter.last_reporting_date|datetimeformat }}</td>
                                     <td>
+                                        {% if 'can_change_reporter' | hasPermission(ses.role, ses.permissions) %}
                                         <a href="/reporters?ed={{ reporter.id }}" class="btn btn-primary btn-xs" value={{ reporter.id }}>
                                             <i class="fa fa-edit"></i></a>
                                                             &nbsp;&nbsp;&nbsp;
+                                        {% endif %}
+                                        {% if 'can_send_sms' | hasPermission(ses.role, ses.permissions) %}
                                         <button type="button" class="btn btn-white btn-xs sms_btn" id="{{reporter.id}}" data-toggle="modal"
 											data-target="#myModal3">
 												<i title="SMS" class="fa fa-envelope-o"></i>
 										</button>
                                                             &nbsp;&nbsp;&nbsp;
+                                        {% endif %}
+                                        {% if 'can_delete_reporter' | hasPermission(ses.role, ses.permissions) %}
                                         <button class="btn btn-danger btn-xs delete_btn" id={{ reporter.id}}><i class="fa fa-trash-o"></i></button>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -360,6 +382,9 @@
         </div>
     </div>
     </form>
+    {% else %}
+        {{ busted() }}
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -527,5 +552,4 @@
         </script>
     {% endcall %}
 {% endblock %}
-
 

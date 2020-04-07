@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from 'layout.html' import navbar, myscripts, err %}
+{% from 'layout.html' import navbar, myscripts, err, busted %}
 
 {% block title %}mTracPro.::.Facilities{% endblock%}
 {% block stylesheets %}
@@ -21,6 +21,7 @@
 {% endblock %}
 
 {% block content %}
+    {% if 'can_view_facilities' | hasPermission(ses.role, ses.permissions) %}
     {{ err(ses.rdata_err)}}
 
     <!-- DATA TABLE -->
@@ -76,10 +77,12 @@
                                                  <i title="Details" class="fa fa-list-alt"></i>
                                         </button>
                                         &nbsp;&nbsp;
+                                        {% if 'can_send_bulk_sms' | hasPermission(ses.role, ses.permissions) %}
 										<button type="button" class="btn btn-white btn-xs sms_btn" id="{{facility.id}}" data-toggle="modal"
 											data-target="#myModal3">
 												<i title="SMS" class="fa fa-envelope-o"></i>
 										</button>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -188,6 +191,9 @@
         </div>
     </div>
     </form>
+    {% else %}
+        {{ busted() }}
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -243,6 +249,7 @@
                     var facilityid = currentRow.attr('id');
                     $('#facilityid').val(facilityid);
                     var facility = currentRow.find("td:eq(1)").text();
+                    $('#sms').val("");
                     $('#facility_name').html("<strong>" + facility + "</strong>");
                 });
 

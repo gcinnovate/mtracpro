@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from 'layout.html' import navbar, myscripts, err %}
+{% from 'layout.html' import navbar, myscripts, err, busted %}
 
 {% block title %}mTracPro.::.DHIS2 Indicators{% endblock%}
 {% block stylesheets %}
@@ -16,10 +16,13 @@
 {% endblock %}
 
 {% block content %}
+    {% if 'can_manage_dhis2_integration' | hasPermission(ses.role, ses.permissions) %}
     {{ err(ses.idata_err)}}
     <form class="form-horizontal" role="form" method="post">
 	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <div class="row">
+        {% if ('can_change_indicator' | hasPermission(ses.role, ses.permissions)) or
+            ('can_add_indicator' | hasPermission(ses.role, ses.permissions)) %}
         <!-- LEFT-->
         <div class="col-lg-6">
             <div class="ibox float-e-margins">
@@ -132,6 +135,11 @@
             </div>
         </div>
         <!-- END RIGHT-->
+        {% else %}
+            <div class="col-lg-6">
+                <p>You have no permission to add or edit indicator mappings</p>
+            </div>
+        {% endif %}
     </div>
 </form>
 
@@ -184,11 +192,15 @@
                                         </button>
 										&nbsp;&nbsp;
                                         -->
+                                        {% if 'can_change_indicator' | hasPermission(ses.role, ses.permissions) %}
 										<a href="/indicators?ed={{ mapping.id }}&page={{ page}}" class="btn btn-primary btn-xs" value={{ mapping.id }}>
                                             <i class="fa fa-edit"></i>
                                         </a>
+                                        {% endif %}
+                                        {% if ('can_delete_indicator' | hasPermission(ses.role, ses.permissions)) %}
                                         &nbsp;&nbsp;
                                         <button class="btn btn-danger btn-xs delete_btn" id={{ mapping.id}}><i class="fa fa-trash-o"></i></button>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -201,6 +213,9 @@
         </div>
     </div>
     <!-- END DATA TABLE -->
+    {% else %}
+        {{ busted() }}
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}

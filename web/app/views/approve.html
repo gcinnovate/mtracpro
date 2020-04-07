@@ -27,9 +27,13 @@
                 <div class="ibox-title">
                     <h5>Reports to Approve</h5>
                     <div class="ibox-tools">
+                        {% if 'can_approve_report' | hasPermission(ses.role, ses.permissions) %}
                         <button class="btn btn-primary btn-outline dim delete_btn" name="abtn" value="Approve Selected"><i class="fa fa-thumbs-o-up"></i> Approve Selected</button>
                         &nbsp;&nbsp;&nbsp;
+                        {% endif %}
+                        {% if 'can_cancel_report' | hasPermission(ses.role, ses.permissions) %}
                         <button class="btn btn-danger btn-outline dim delete_btn" name="abtn" value="Cancel Selected"><i class="fa fa-thumbs-o-down"></i> Cancel Selected</button>
+                        {% endif %}
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
@@ -72,8 +76,10 @@
                                     <td>{{ report.created|datetimeformat2 }}</td>
 									<!--<td>Yes</td>-->
                                     <td>
+                                        {% if 'can_change_report' | hasPermission(ses.role, ses.permissions) %}
                                         <button type="button" class="btn btn-primary btn-xs edit_btn"
                                             id={{ report.id}} report="{{ report.report_type }}" data-toggle="modal" data-target="#myModal4"><i class="fa fa-edit"></i> Edit</button>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}

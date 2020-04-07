@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from 'layout.html' import navbar, myscripts %}
+{% from 'layout.html' import navbar, myscripts, busted %}
 
 {% block title %}mTracPro.::.Ready{% endblock%}
 {% block stylesheets %}
@@ -19,6 +19,7 @@
 {% endblock %}
 
 {% block content %}
+    {% if 'can_manage_dhis2_integration' | hasPermission(ses.role, ses.permissions) %}
    <!-- DATA TABLE -->
     <form class="form-horizontal" role="form" method="post" action="">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -29,7 +30,9 @@
                     <h5>Ready Requests</h5>
                     <div class="ibox-tools">
                         <button class="btn btn-danger" name="abtn"
+                        {% if 'can_cancel_request' | hasPermission(ses.role, ses.permissions) %}
                             value="Cancel Selected"><i class="fa fa-thumbs-o-down"></i> Cancel Selected</button>
+                        {% endif %}
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
@@ -97,6 +100,9 @@
             </div>
         </div>
     </div>
+    {% else %}
+        {{ busted() }}
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}

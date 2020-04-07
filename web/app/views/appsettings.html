@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from 'layout.html' import navbar, myscripts %}
+{% from 'layout.html' import navbar, myscripts, busted %}
 
 {% block title %}Dispatcher2.::.App Settings{% endblock%}
 {% block stylesheets %}
@@ -19,9 +19,12 @@
 {% endblock %}
 
 {% block content %}
+    {% if 'can_manage_dhis2_integration' | hasPermission(ses.role, ses.permissions) %}
     <form class="form-horizontal" role="form" method="post">
 	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <div class="row">
+        {% if ('can_add_dispatcher2_server' | hasPermission(ses.role, ses.permissions)) or
+            ('can_change_dispatcher2_server' | hasPermission(ses.role, ses.permissions)) %}
         <!-- LEFT-->
         <div class="col-lg-6">
             <div class="ibox float-e-margins">
@@ -173,6 +176,11 @@
             </div>
         </div>
         <!-- END RIGHT-->
+        {% else %}
+            <div class="col-lg-6">
+                <p>You have no permission to add or edit dispatcher2 servers/apps</p>
+            </div>
+        {% endif %}
     </div>
 </form>
 <!-- DATA TABLE -->
@@ -251,7 +259,9 @@
             </div>
         </div>
     </div>
-
+    {% else %}
+        {{ busted() }}
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}
