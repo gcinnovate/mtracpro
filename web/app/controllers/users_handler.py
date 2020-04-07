@@ -42,6 +42,13 @@ class Users:
                 for d in rx:
                     district_ids.append(d['id'])
 
+                permission_ids = []
+                rx = db.query(
+                    "SELECT permission_id AS id FROM user_permissions WHERE user_id = $user_id ",
+                    {'user_id': params.ed})
+                for p in rx:
+                    permission_ids.append(p['id'])
+
         if params.d_id:
             if session.role == 'Administrator':
                 db.query("DELETE FROM users WHERE id=$id", {'id': params.d_id})
@@ -75,7 +82,7 @@ class Users:
     def POST(self):
         params = web.input(
             firstname="", lastname="", telephone="", username="", email="", passwd="", districts=[],
-            cpasswd="", is_active="", is_super="", page="1", ed="", d_id="", user_role="")
+            cpasswd="", is_active="", is_super="", page="1", ed="", d_id="", user_role="", permissions=[])
         try:
             page = int(params.page)
         except:
@@ -99,14 +106,37 @@ class Users:
                             '[', '{').replace(']', '}').replace('\'', '\"')
                     }
                 )
+
+                newPermissions = [int(x) for x in params.permissions]
+                previousPermissions = []
+                rx = db.query(
+                    "SELECT permission_id FROM user_permissions WHERE user_id = $user_id",
+                    {'user_id': params.ed})
+                for p in rx:
+                    previousPermissions.append(p['permission_id'])
+
+                for perm in newPermissions:
+                    if perm in previousPermissions:
+                        continue
+                    else:
+                        db.query(
+                            "INSERT INTO user_permissions (user_id, permission_id) "
+                            "VALUES($user_id, $permission_id)",
+                            {'user_id': params.ed, 'permission_id': perm})
+                for perm in previousPermissions:
+                    if perm not in newPermissions:
+                        db.query(
+                            "DELETE FROM user_permissions WHERE "
+                            "user_id=$user_id AND permission_id = $permission_id",
+                            {'user_id': params.ed, 'permission_id': perm})
                 return web.seeother("/users")
             else:
-                db.query(
+                r = db.query(
                     "INSERT INTO users (firstname, lastname, telephone, email, "
                     "username, password, is_active, user_role, districts) "
                     "VALUES($firstname, $lastname, $telephone, $email, $username, "
                     "crypt($cpasswd, gen_salt('bf')), $is_active, "
-                    "$role, $districts)", {
+                    "$role, $districts) RETURNING id", {
                         'firstname': params.firstname, 'lastname': params.lastname,
                         'telephone': params.telephone, 'email': params.email,
                         'username': params.username, 'cpasswd': params.cpasswd,
@@ -115,6 +145,14 @@ class Users:
                             '[', '{').replace(']', '}').replace('\'', '\"')
                     }
                 )
+                newPermissions = [int(x) for x in params.permissions]
+                if r:
+                    newUser = r[0]
+                    for perm in newPermissions:
+                        db.query(
+                            "INSERT INTO user_permissions (user_id, permission_id) "
+                            "VALUES($user_id, $permission_id)",
+                            {'user_id': newUser.id, 'permission_id': perm})
                 return web.seeother("/users")
         l = locals()
         del l['self']

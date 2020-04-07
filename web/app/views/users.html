@@ -87,6 +87,9 @@
                                         </select>
                                     </div>
                                 </div>
+                                <br/>
+                                <br/>
+                                <br/>
                                 <!--
                                 <div class="form-group"><label for="" class="col-lg-2 control-label"></label>
                                     <div class="col-lg-10">
@@ -138,8 +141,16 @@
                                         checked = "yes"
                                     {% endif %}
                                                                                                                                                                                             class="" />
+                            &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;
+                            <label for="is_super" control-label">Is Super:</label>
+                            <input name="is_super" id="is_super" type="checkbox"
+                                {% if is_super == True %}
+                                    checked = "yes"
+                                {% endif %}
+                                class="" />
                             </div>
                         </div>
+                        <!--
                         <div class="form-group"><label for="is_super" class="col-lg-3 control-label">Is Super:</label>
                             <div class="col-lg-9">
                                 <input name="is_super" id="is_super" type="checkbox"
@@ -147,6 +158,23 @@
                                     checked = "yes"
                                 {% endif %}
                                 class="" />
+                            </div>
+                        </div>
+                        -->
+                        <div class="form-group"><label for="permissions" class="col-lg-3 control-label">Permissions:</label>
+                            <div class="col-lg-9">
+                                <select name="permissions" id="role" class="form-control" multiple="yes" size="8">
+                                    {% if edit_val %}
+                                        {% for perm in permissions %}
+                                            <option value="{{ perm.id}}" {% if perm.id in permission_ids %} selected="yes" {% endif %}>
+                                            {{ perm.name }}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for perm in permissions %}
+                                            <option value="{{ perm.id}}">{{ perm.name }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                                </select>
                             </div>
                         </div>
                         {% endif %}

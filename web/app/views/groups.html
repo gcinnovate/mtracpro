@@ -42,7 +42,7 @@
 
                                 <div class="form-group"><label for="descr" class="col-lg-3 control-label">Description:</label>
                                     <div class="col-lg-9">
-                                        <input name="descr" id="descr" type="text" value="{{ descr }}" class="form-control"/>
+                                        <input name="descr" id="descr" type="text" value="{{ description }}" class="form-control"/>
                                     </div>
                                 </div>
                                 <!--
@@ -52,6 +52,13 @@
                                     </div>
                                 </div>
                                 -->
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
                                 <br/>
                                 <br/>
                                 <br/>
@@ -74,32 +81,25 @@
                         </div>
                         <div class="ibox-content">
                             <div class="row">
-                                <div class="form-group"><label for="name" class="col-lg-5 control-label">Approve Reports:</label>
-                                    <div class="col-lg-7">
-                                    <input type="checkbox" name="wread" value="r" id="wread"> Read &nbsp; &nbsp; &nbsp;
-                                    <input type="checkbox" name="wmodify" value="w" id="wmodify"> Modify
+                                <div class="form-group"><label for="permissions" class="col-lg-3 control-label">Permissions:</label>
+                                    <div class="col-lg-9">
+                                        <select name="permissions" id="role" class="form-control" multiple="yes" size="10">
+                                            {% if edit_val %}
+                                                {% for perm in permissions %}
+                                                    <option value="{{ perm.id}}" {% if perm.id in permission_ids %} selected="yes" {% endif %}>
+                                                    {{ perm.name }}</option>
+                                                {% endfor %}
+                                            {% else %}
+                                                {% for perm in permissions %}
+                                                    <option value="{{ perm.id}}">{{ perm.name }}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
                                     </div>
                                 </div>
 
-                                <div class="form-group"><label for="descr" class="col-lg-5 control-label">Reporter Management:</label>
-                                    <div class="col-lg-7">
-                                    <input type="checkbox" name="rread" value="r" id="rread"> Read &nbsp; &nbsp; &nbsp;
-                                    <input type="checkbox" name="rmodify" value="w" id="rmodify"> Modify
-                                    </div>
-                                </div>
-                                <div class="form-group"><label for="descr" class="col-lg-5 control-label">Polls Management:</label>
-                                    <div class="col-lg-7">
-                                    <input type="checkbox" name="dpread" value="r" id="rread"> Read &nbsp; &nbsp; &nbsp;
-                                    <input type="checkbox" name="dpmodify" value="w" id="rmodify"> Modify
-                                    </div>
-                                </div>
-                                <div class="form-group"><label for="descr" class="col-lg-5 control-label">Reports:</label>
-                                    <div class="col-lg-7">
-                                    <input type="checkbox" name="rptread" value="r" id="rptread"> Read
-                                    </div>
-                                </div>
                                 <div class="form-group">
-                                    <div class="col-lg-offset-5 col-lg-7">
+                                    <div class="col-lg-offset-3 col-lg-9">
                                         <button class="btn btn-sm btn-primary" type="submit">Save Group</button>
                                     </div>
                                 </div>
@@ -150,6 +150,7 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+                        {{ pagination_str }}
                     </div>
                 </div>
             </div>
@@ -208,10 +209,10 @@
                                 },
                                 'json'
                             );
-                            swal("Deleted!", "Reporter has been deleted." + del_id, "success");
+                            swal("Deleted!", "Group has been deleted." + del_id, "success");
                             return false;
                         } else {
-                            swal("Cancelled", "Reporter details are safe!", "error");
+                            swal("Cancelled", "Group details are safe!", "error");
                             return false;
                         }
                     });
