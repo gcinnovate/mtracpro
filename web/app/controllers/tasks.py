@@ -172,17 +172,20 @@ def sendsms_to_uuids(uuid_list, msg):
 
 
 @app.task(name="send_bulksms_task")
-def send_bulksms_task(msg, sms_roles=[], district="", facility=""):
+def send_bulksms_task(msg, sms_roles=[], district="", facility="", check_districts=True):
     db = web.database(
         dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], db=db_conf["name"],
         host=db_conf['host'], port=db_conf['port'])
     SQL = (
-        "SELECT array_agg(uuid) uuids FROM reporters_view WHERE district_id=$district "
+        "SELECT array_agg(uuid) uuids FROM reporters_view WHERE uuid <> ''  "
     )
+    if check_districts:
+        if district:
+            SQL += " AND district_id IN %s " % str(district).replace('[', '(').replace(']', ')')
     if facility:
-        SQL += "AND facilityid=$facility "
+        SQL += " AND facilityid=$facility "
     if sms_roles:
-        SQL += "AND role SIMILAR TO '%%(%s)%%'" % '|'.join(sms_roles)
+        SQL += " AND role SIMILAR TO '%%(%s)%%'" % '|'.join(sms_roles)
     res = db.query(SQL, {
         'district': district, 'facility': facility})
 
@@ -201,7 +204,7 @@ def send_facility_sms_task(facilityid, msg, role=""):
         dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], db=db_conf["name"],
         host=db_conf['host'], port=db_conf['port'])
     SQL = (
-        "SELECT array_agg(uuid) uuids FROM reporters_view WHERE facilityid=$fid "
+        "SELECT array_agg(uuid) uuids FROM reporters_view WHERE uuid <> '' AND facilityid=$fid "
     )
     if role:
         SQL += (" AND role like $role ")

@@ -1,6 +1,6 @@
 import json
 import logging
-from . import db, Indicators, IndicatorsByFormOrder, IndicatorsCategoryCombos, server_apps
+from . import db, Indicators, IndicatorsByFormOrder, IndicatorsCategoryCombos, server_apps, get_session
 import web
 from app.tools.utils import post_request
 from settings import config
@@ -330,6 +330,7 @@ class SendBulkSMS:
     def POST(self):
         web.header("Content-Type", "application/json; charset=utf-8")
         params = web.input(sms_roles=[], msg="", district="", sms_facility="")
+        session = get_session()
         if not params.district or params.district == "0":
             return json.dumps({'message': 'Please select District before sending!'})
         if not params.msg:
@@ -337,7 +338,18 @@ class SendBulkSMS:
         if not params.sms_roles:
             return json.dumps({'message': 'Please specify a role or list of roles!'})
 
-        send_bulksms_task.delay(params.msg, params.sms_roles, params.district, params.sms_facility)
+        districts = [params.district]
+        if '{' in params.district:  # for the Send SMS to All we pass districts like so, {1, 2, 3} as a string
+            districts = session.districts
+
+        if session.role == 'Administrator' and params.district == '{}':
+            # for administrators, you may not specify the districts
+            check_districts = False
+        else:
+            check_districts = True
+
+        send_bulksms_task.delay(
+            params.msg, params.sms_roles, districts, params.sms_facility, check_districts)
 
         return json.dumps({'message': 'SMS Queued For Submission'})
 
