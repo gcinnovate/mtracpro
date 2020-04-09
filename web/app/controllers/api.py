@@ -228,7 +228,8 @@ class ReportsThisWeek:
     def GET(self, facilitycode):
         year, week = get_current_week(datetime.datetime.now())
         reports = db.query(
-            "SELECT raw_msg, msisdn FROM requests WHERE year = $yr AND week = $wk "
+            "SELECT raw_msg, msisdn, get_reporter_name(msisdn) reporter_name "
+            "FROM requests WHERE year = $yr AND week = $wk "
             "AND facility = $fcode AND status IN ('pending', 'ready', 'completed', 'failed') "
             " ORDER BY id DESC",
             {'yr': year, 'wk': '%s' % week, 'fcode': facilitycode})
@@ -242,8 +243,9 @@ class ReportsThisWeek:
 
             for x, r in enumerate(reports):
                 html_str += "<tr><td>%s" % (x + 1) + "</td><td>" + r['raw_msg'] + "</td></tr>"
-                if r['msisdn'] not in reporters:
-                    reporters.append(r['msisdn'])
+                reporter_details = '{0} {1}'.format(r['reporter_name'], r['msisdn'])
+                if reporter_details not in reporters:
+                    reporters.append(reporter_details)
             html_str += "</table></td></tr>"
             html_str += "<tr><td><strong>Reporters</strong></td>"
             html_str += '<td><table class="table table-striped table-bordered table-hover">'
