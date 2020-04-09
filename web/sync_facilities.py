@@ -86,16 +86,17 @@ def get_facility_details(facilityJson):
     for k, v in config["owners"].iteritems():
         if k in orgunitGroupsIds:
             owner = v
-    if config["non_functional_facility_group_uid"] in orgunitGroupsIds:
-        is_active = False
 
     has_no_datasets = False
     dataSets = facilityJson["dataSets"]
     if not dataSets:
         has_no_datasets = True
     dataSetsIds = ["%s" % k["id"] for k in dataSets]
-    if getattr(config, "hmis_033b_id", "V1kJRs8CtW4") in dataSetsIds:
-        is_033b = 't'
+    if getattr(config, "hmis_033b_id", "C4oUitImBPK") in dataSetsIds:
+        is_033b = True
+
+    if (config["non_functional_facility_group_uid"] in orgunitGroupsIds) and not is_033b:
+        is_active = False
     # we return tuple (Subcounty, District, Level, is033B)
     return has_no_datasets, parent, district, level, is_033b, owner, is_active
 
