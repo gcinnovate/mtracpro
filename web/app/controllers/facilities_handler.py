@@ -22,9 +22,9 @@ class Facilities:
         start = (page - 1) * limit if page > 0 else 0
         if session.role == 'District User':
             # criteria = "district='%s'" % session.username.capitalize()
-            criteria = "district_id = ANY('%s'::INT[]) " % session.districts_array
+            criteria = "is_active = 't' AND district_id = ANY('%s'::INT[]) " % session.districts_array
         else:
-            criteria = ""
+            criteria = " is_active = 't' "
         dic = lit(
             relations='healthfacilities', fields="id, name, type_id, district, location_name, is_033b, code, last_reporting_date",
             criteria=criteria,

@@ -103,7 +103,7 @@ class CreateFacility:
         params = web.input(
             name="", ftype="", district="",
             code="", is_033b='f', dhis2id="", subcounty="",
-            username="", password=""
+            username="", password="", is_active="t"
         )
         username = params.username
         password = params.password
@@ -125,12 +125,12 @@ class CreateFacility:
                     logging.debug("Creating facility with ID:%s" % params.code)
                     new = db.query(
                         "INSERT INTO healthfacilities "
-                        "(name, code, type_id, district, is_033b) VALUES "
-                        "($name, $dhis2id, $type, $district, $is_033b) RETURNING id",
+                        "(name, code, type_id, district, is_033b, is_active) VALUES "
+                        "($name, $dhis2id, $type, $district, $is_033b, $active) RETURNING id",
                         {
                             'name': params.name, 'dhis2id': params.dhis2id,
                             'code': params.code, 'type': type_id, 'district': params.district,
-                            'active': True, 'deleted': False,
+                            'active': params.is_active, 'deleted': False,
                             'is_033b': params.is_033b
                         })
                     if new:
@@ -178,10 +178,10 @@ class CreateFacility:
                     db.query(
                         "UPDATE healthfacilities SET "
                         "name = $name, code = $dhis2id, type_id = $type, district = $district, "
-                        "is_033b = $is_033b "
+                        "is_033b = $is_033b, is_active = $active "
                         " WHERE id = $facility ",
                         {
-                            'name': params.name, 'dhis2id': params.dhis2id, 'type': type_id,
+                            'name': params.name, 'dhis2id': params.dhis2id, 'type': type_id, 'active': params.is_active,
                             'district': params.district, 'facility': facility_id, 'is_033b': params.is_033b})
 
                     logging.debug("Set h033b for facility with ID:%s to %s" % (params.code, params.is_033b))

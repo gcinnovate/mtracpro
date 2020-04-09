@@ -52,6 +52,7 @@ def get_facility_details(facilityJson):
     is_033b = False
     level = ""
     owner = ""
+    is_active = True
     parent = facilityJson["parent"]["name"].replace('Subcounty', '').strip()
     parent = re.sub(
         'Subcounty.*$|Sub\ County.*$', "", facilityJson["parent"]["name"],
@@ -74,6 +75,8 @@ def get_facility_details(facilityJson):
     for k, v in config["owners"].iteritems():
         if k in orgunitGroupsIds:
             owner = v
+    if config["non_functional_facility_group_uid"] in orgunitGroupsIds:
+        is_active = False
 
     has_no_datasets = False
     dataSets = facilityJson["dataSets"]
@@ -83,7 +86,7 @@ def get_facility_details(facilityJson):
     if getattr(config, "hmis_033b_id", "C4oUitImBPK") in dataSetsIds:
         is_033b = True
     # we return tuple (Subcounty, District, Level, is033B)
-    return has_no_datasets, parent, district, level, is_033b, owner
+    return has_no_datasets, parent, district, level, is_033b, owner, is_active
 
 if not dhis2_ids:
     cur.execute(
@@ -109,7 +112,7 @@ for dhis2id in dhis2_ids:
         # just keep quiet for now
 
     for orgunit in orgunits:
-        hasNoDatasets, subcounty, district, level, is_033b, owner = get_facility_details(orgunit)
+        hasNoDatasets, subcounty, district, level, is_033b, owner, is_active = get_facility_details(orgunit)
         if not level:
             continue
         if hasNoDatasets:
@@ -119,7 +122,7 @@ for dhis2id in dhis2_ids:
             'name': orgunit["name"],
             'dhis2id': orgunit["id"], 'ftype': level, 'district': district,
             'subcounty': subcounty, 'is_033b': is_033b, 'owner': owner,
-            'code': orgunit["id"]
+            'code': orgunit["id"], 'is_active': 't' if is_active else 'f'
         }
         try:
             resp = get_url(config["sync_url"], sync_params)

@@ -63,6 +63,8 @@ def get_url(url, payload={}):
 def get_facility_details(facilityJson):
     is_033b = 'f'
     level = ""
+    owner = ""
+    is_active = True
     # parent = facilityJson["parent"]["name"].replace('Subcounty', '').strip()
     parent = re.sub(
         'Subcounty.*$|Sub\ County.*$', "", facilityJson["parent"]["name"],
@@ -81,13 +83,21 @@ def get_facility_details(facilityJson):
     for k, v in config["levels"].iteritems():
         if k in orgunitGroupsIds:
             level = v
+    for k, v in config["owners"].iteritems():
+        if k in orgunitGroupsIds:
+            owner = v
+    if config["non_functional_facility_group_uid"] in orgunitGroupsIds:
+        is_active = False
 
+    has_no_datasets = False
     dataSets = facilityJson["dataSets"]
+    if not dataSets:
+        has_no_datasets = True
     dataSetsIds = ["%s" % k["id"] for k in dataSets]
     if getattr(config, "hmis_033b_id", "V1kJRs8CtW4") in dataSetsIds:
         is_033b = 't'
     # we return tuple (Subcounty, District, Level, is033B)
-    return parent, district, level, is_033b
+    return has_no_datasets, parent, district, level, is_033b, owner, is_active
 
 if SYNC_ALL:
     SYNC_URL = ("%s.json?level=5&fields=id,name&paging=false")
@@ -167,9 +177,13 @@ print(URL)
 print(orgunits)
 for orgunit in orgunits:
     try:
-        subcounty, district, level, is_033b = get_facility_details(orgunit)
+        hasNoDatasets, subcounty, district, level, is_033b, is_active = get_facility_details(orgunit)
     except:
         print(">>>>FAILED: ", orgunit)
+        continue
+    if not level:
+        continue
+    if hasNoDatasets:
         continue
     cur.execute(
         "SELECT id, name, dhis2id, district, subcounty, level, is_033b "
@@ -186,7 +200,7 @@ for orgunit in orgunits:
             'username': config["sync_user"], 'password': config["sync_passwd"],
             'name': orgunit["name"], 'code': orgunit["id"],
             'dhis2id': orgunit["id"], 'ftype': level, 'district': district,
-            'subcounty': subcounty, 'is_033b': is_033b
+            'subcounty': subcounty, 'is_033b': is_033b, 'is_active': 't' if is_active else 'f'
         }
         try:
             resp = get_url(config["sync_url"], sync_params)

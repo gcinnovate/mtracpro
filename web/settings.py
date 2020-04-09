@@ -122,7 +122,7 @@ config = {
         '2zEq4xZRpOp': 'RR Hospital',
         'YNsYaUOqAIs': 'Clinic',
     },
-
+    'non_functional_facility_group_uid': 'eZv6nNETJYJ',
     # Network RegEx for Kannel logs
     'network_regex': {
         'mtn': '256(3[19]|7[78])',
