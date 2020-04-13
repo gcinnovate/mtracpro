@@ -181,7 +181,8 @@ def send_bulksms_task(msg, sms_roles=[], district="", facility="", check_distric
     )
     if check_districts:
         if district:
-            SQL += " AND district_id IN %s " % str(district).replace('[', '(').replace(']', ')')
+            SQL += " AND district_id = ANY('%s'::INT[]) " % str(district).replace(
+                '[', '{').replace(']', '}').replace("\'", '\"')
     if facility:
         SQL += " AND facilityid=$facility "
     if sms_roles:
