@@ -181,14 +181,16 @@ def send_bulksms_task(msg, sms_roles=[], district="", facility="", check_distric
     )
     if check_districts:
         if district:
-            SQL += " AND district_id = ANY('%s'::INT[]) " % str(district).replace(
-                '[', '{').replace(']', '}').replace("\'", '\"')
+            SQL += " AND district_id = ANY($district::INT[]) "
     if facility:
         SQL += " AND facilityid=$facility "
     if sms_roles:
-        SQL += " AND role SIMILAR TO '%%(%s)%%'" % '|'.join(sms_roles)
+        SQL += " AND role SIMILAR TO $role "
     res = db.query(SQL, {
-        'district': district, 'facility': facility})
+        'district': str(district).replace(
+            '[', '{').replace(']', '}').replace("\'", '\"'),
+        'facility': facility,
+        'role': '%%(%s)%%' % '|'.join(sms_roles)})
 
     if res:
         recipient_uuids = list(res[0]['uuids'])
