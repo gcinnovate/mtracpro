@@ -127,6 +127,7 @@ $(function(){
             'json'
         );
 	});
+    /*
 
     $('#sendsms_2').click(function(){
         return false;
@@ -142,4 +143,5 @@ $(function(){
         });
         return false;
     });
+    */
 });
