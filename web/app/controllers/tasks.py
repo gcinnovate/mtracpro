@@ -188,7 +188,7 @@ def send_bulksms_task(msg, sms_roles=[], district="", facility="", check_distric
         SQL += " AND role SIMILAR TO $role "
     res = db.query(SQL, {
         'district': str(district).replace(
-            '[', '{').replace(']', '}').replace("\'", '\"'),
+            '[', '{').replace(']', '}').replace("\'", '\"').replace('u', ''),
         'facility': facility,
         'role': '%%(%s)%%' % '|'.join(sms_roles)})
 

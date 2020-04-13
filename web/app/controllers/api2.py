@@ -338,7 +338,7 @@ class SendBulkSMS:
         if not params.sms_roles:
             return json.dumps({'message': 'Please specify a role or list of roles!'})
 
-        districts = ['%s' % str(params.district)]
+        districts = ['{0}'.format(params.district)]
         if '{' in params.district:  # for the Send SMS to All we pass districts like so, {1, 2, 3} as a string
             districts = session.districts
 
