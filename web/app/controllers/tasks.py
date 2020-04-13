@@ -211,8 +211,10 @@ def send_facility_sms_task(facilityid, msg, role=""):
         SQL += (" AND role like $role ")
     res = db.query(SQL, {'fid': facilityid, 'role': '%%%s%%' % role})
     if res:
-        recipient_uuids = list(res[0]['uuids'])
-        sendsms_to_uuids(recipient_uuids, msg)
+        uuids = res[0]['uuids']
+        if uuids:
+            recipient_uuids = list(uuids)
+            sendsms_to_uuids(recipient_uuids, msg)
     try:
         db._ctx.db.close()
     except:
