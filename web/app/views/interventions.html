@@ -63,6 +63,8 @@
                                         <button id="send_btn" class="btn btn-sm btn-primary" type="button">Send Results</button>
                                     </div>
                                 </div>
+                                <br/>
+                                <br/>
                             </div>
                         </div>
                     </div>
@@ -82,14 +84,30 @@
                         <div class="ibox-content">
                             <div class="well">
                                 <p>
-                                    In the message template, you can insert the supported contact fields, and the value will be populated correctly for each contact/record when the SMS is sent. To do this, enclose the field name with an opening and closing curly bracket, but place a dollar sign befor the starting curly bracket. </p>
+                                    In the message template, you can insert the supported contact fields, and the value will be populated correctly for each contact/record when the SMS is sent. To do this, enclose the field name with an opening and closing curly bracket, but place a dollar sign befor the opening curly bracket.
+                                </p>
                                 <p>
                                     Eg, <code>${Name}</code>
                                     <br/>
                                     <br/>
                                     Dear <code>${name}</code>,
-                                    Your result for test sample (LabID: <code>${labid}</code>) taken on <code>${date}</code> is ${results}.
+                                    Your result for test sample (LabID: <code>${labid}</code>) taken on <code>${date}</code> is <code>${results}</code>.
                                 </p>
+
+                                <p>The following are the supported fields:</p>
+
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr><th>Field</th><th>Description</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><code>${labid}</code></td><td>The LabID for the test sample</td></tr>
+                                        <tr><td><code>${date}</code></td><td>The date sample was taken</td></tr>
+                                        <tr><td><code>${name}</code></td><td>The name of person that took sample</td></tr>
+                                        <tr><td><code>${results}</code></td><td>The results</td></tr>
+                                    </tbody>
+                                </table>
+
 
                             </div>
                         </div>
