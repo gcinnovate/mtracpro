@@ -303,7 +303,10 @@ def send_sms_from_excel(excel_file, msg_template=""):
     for record in records:
         kws = {
             'name': record['Name'], 'Name': record['Name'],
-            'results': record['Results'], 'Results': record['Results']
+            'results': record['Results'], 'Results': record['Results'],
+            'result': record['Results'], 'Result': record['Results'],
+            'labid': record['LabID'], 'LabID': record['LabID'],
+            'date': record['Sample Date'], 'Date': record['Sample Date']
         }
         message = Template(msg_template).safe_substitute(kws)
         telephone = format_msisdn(record["Telephone"])

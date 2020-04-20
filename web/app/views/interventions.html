@@ -8,8 +8,8 @@
     <link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
     <link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
 
-    <!-- Sweet Alert -->
-    <link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <!-- Toastr style -->
+    <link href="/static/css/plugins/toastr/toastr.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block nav %}
@@ -39,10 +39,10 @@
                                 </h3>
                                 <table class="table table-bordered">
                                     <thead>
-                                        <tr><th>Name</th><th>Telephone</th><th>Results</th></tr>
+                                        <tr><th>LabID</th><th>Sample Date</th><th>Name</th><th>Telephone</th><th>Results</th></tr>
                                     </thead>
                                     <tbody>
-                                        <tr><td>Samuel</td><td>0782820208</td><td>Negative</td></tr>
+                                        <tr><td>UVRI-COV-02</td><td>20/04/2020</td><td>Samuel</td><td>0782820208</td><td>Negative</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -73,7 +73,7 @@
             <div class="col-lg-6">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5>Send COVID-19 Results<small></small></h5>
+                        <h5>Message Template Format<small></small></h5>
                         <div class="ibox-tools">
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
@@ -81,9 +81,15 @@
                         </div>
                         <div class="ibox-content">
                             <div class="well">
-                                <h3>
-                                    Usage!
-                                </h3>
+                                <p>
+                                    In the message template, you can insert the supported contact fields, and the value will be populated correctly for each contact/record when the SMS is sent. To do this, enclose the field name with an opening and closing curly bracket, but place a dollar sign befor the starting curly bracket. </p>
+                                <p>
+                                    Eg, <code>${Name}</code>
+                                    <br/>
+                                    <br/>
+                                    Dear <code>${name}</code>,
+                                    Your result for test sample (LabID: <code>${labid}</code>) taken on <code>${date}</code> is ${results}.
+                                </p>
 
                             </div>
                         </div>
@@ -101,7 +107,9 @@
 
         <script src="/static/js/plugins/bootstrap-validator/dist/validator.min.js"></script>
         <script src="/static/js/bootstrap-notify.min.js"></script>
-        <script>
+        <!-- Toastr script -->
+        <script src="/static/js/plugins/toastr/toastr.min.js"></script>
+        <script type="text/javascript">
         $(document).ready(function() {
             $('#send_btn').click(function(){
                 // Get form
@@ -119,28 +127,29 @@
                     data: data,
                     contentType: false,
                     processData: false,
-                    cache: false,
                     timeout: 600000,
+                    dataType: 'json',
                     success: function(data){
                         $("#send_btn").prop("disabled", false);
-                        var parsed_data = JSON.parse(data);
-                        // alert(parsed_data.message);
+                        toastr.success('Queued for submission');
+                        /*
                         $.notify({
                             title: "Response:",
-                            message: parsed_data.message
+                            message: data.message
 
                         },
                         {
-                            type: parsed_data.status,
+                            type: data.status,
                             animate: {
                                 enter: 'animated flipInY',
                                 exit: 'animated flipOutX'
                             }
                         });
+                        */
                     },
                     error: function (e) {
                         $("#send_btn").prop("disabled", false);
-                        alert(e.responseText);
+                        // alert(e.responseText);
                     }
                 });
                 // return false;
