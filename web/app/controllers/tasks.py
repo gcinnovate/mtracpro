@@ -4,6 +4,10 @@ import random
 import base64
 import requests
 import json
+import pyexcel as pe
+import os
+import phonenumbers
+from string import Template
 from celery import Celery
 from celeryconfig import BROKER_URL, db_conf, poll_flows, apiv2_endpoint, api_token, config
 
@@ -19,6 +23,19 @@ MAX_CHUNK_SIZE = 90
 # )
 # celery -A tasks worker --loglevel=info
 app = Celery("mtrackpro", broker=BROKER_URL)
+
+
+def format_msisdn(msisdn=None):
+    """ given a msisdn, return in E164 format """
+    if not msisdn and len(msisdn) < 10:
+        return None
+    msisdn = msisdn.replace(' ', '')
+    num = phonenumbers.parse(msisdn, getattr(config, 'country', 'UG'))
+    is_valid = phonenumbers.is_valid_number(num)
+    if not is_valid:
+        return None
+    return phonenumbers.format_number(
+        num, phonenumbers.PhoneNumberFormat.E164)
 
 
 @app.task(name="add_poll_recipients_task")
@@ -275,3 +292,35 @@ def post_request_to_rapidpro(url, data):
             'Authorization': 'Token %s' % api_token})
     except:
         print("Failed to POST request to RapidPro [url: {0}] Data: {1}".format(url, data))
+
+
+@app.task(name="task.send_sms_from_excel")
+def send_sms_from_excel(excel_file, msg_template=""):
+
+    broadcasts_endpoint = apiv2_endpoint + "broadcasts.json"
+
+    records = pe.iget_records(file_name=excel_file)
+    for record in records:
+        kws = {
+            'name': record['Name'], 'Name': record['Name'],
+            'results': record['Results'], 'Results': record['Results']
+        }
+        message = Template(msg_template).safe_substitute(kws)
+        telephone = format_msisdn(record["Telephone"])
+        if not telephone:
+            continue
+        print("TO:{}, MSG:{}".format(telephone, message))
+        params = {
+            'urns': ["tel:{}".format(telephone)],
+            'text': message
+        }
+        post_data = json.dumps(params)
+        try:
+            requests.post(broadcasts_endpoint, post_data, headers={
+                'Content-type': 'application/json',
+                'Authorization': 'Token %s' % api_token})
+            # print("Broadcast Response: ", resp.text)
+        except:
+            print("ERROR Sending Broadcast")
+    pe.free_resources()
+    os.unlink(excel_file)

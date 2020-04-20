@@ -5,4 +5,10 @@ phonenumbers
 requests
 simplejson
 celery==4.3.0
+redis
 xlwt
+xlsxwriter
+pyexcel==0.5.15
+pyexcel-io==0.5.20
+pyexcel-xls==0.5.5
+pyexcel-xlsx==0.5.5

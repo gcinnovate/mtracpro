@@ -1,0 +1,152 @@
+{% extends "layout.html" %}
+{% from 'layout.html' import navbar, myscripts %}
+
+{% block title %}mTracPro.::.Interventions{% endblock%}
+{% block stylesheets %}
+    <!-- Data Tables -->
+    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+    <link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+
+    <!-- Sweet Alert -->
+    <link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+{% endblock %}
+
+{% block nav %}
+    {% call navbar() %}
+
+    {% endcall %}
+{% endblock %}
+
+{% block content %}
+    <form id="file_form" role="form" method="post" enctype="multipart/form-data" action="" class="form-horizontal" data-toggle="validator">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <div class="row">
+            <!-- LEFT -->
+            <div class="col-lg-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Send COVID-19 Results<small></small></h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="well">
+                                <h3>
+                                    <a href="/static/downloads/results.xlsx">Excel file upload format <i class="fa fa-file-excel-o"></i></a>
+                                </h3>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr><th>Name</th><th>Telephone</th><th>Results</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Samuel</td><td>0782820208</td><td>Negative</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="row">
+                                <div class="form-group"><label for="excel_file" class="col-lg-4 control-label">Excel Spreadsheet:</label>
+                                    <div class="col-lg-8">
+                                        <input name="excel_file" id="excel_file" type="file" value="" class="form-control" required/>
+                                    </div>
+                                </div>
+                                <div class="form-group"><label for="msg" class="col-lg-4 control-label">Message Template:</label>
+                                    <div class="col-lg-8">
+                                    <textarea name="msg" id="msg" class="form-control" size="6" rows="5" required></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-lg-offset-4 col-lg-8">
+                                        <button id="send_btn" class="btn btn-sm btn-primary" type="button">Send Results</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END LEFT -->
+            <!-- RIGHT -->
+            <div class="col-lg-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Send COVID-19 Results<small></small></h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="well">
+                                <h3>
+                                    Usage!
+                                </h3>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END RIGHT -->
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block scripts %}
+    {% call myscripts() %}
+
+        <script src="/static/js/plugins/bootstrap-validator/dist/validator.min.js"></script>
+        <script src="/static/js/bootstrap-notify.min.js"></script>
+        <script>
+        $(document).ready(function() {
+            $('#send_btn').click(function(){
+                // Get form
+                var form = $('#file_form')[0];
+                // Create formData object
+                var data = new FormData(form);
+
+                // data.append('myfile',files);
+
+                $("#send_btn").prop("disabled", true);
+                $.ajax({
+                    url: '/interventions',
+                    type: 'POST',
+                    enctype: 'multipart/form-data',
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                    timeout: 600000,
+                    success: function(data){
+                        $("#send_btn").prop("disabled", false);
+                        var parsed_data = JSON.parse(data);
+                        // alert(parsed_data.message);
+                        $.notify({
+                            title: "Response:",
+                            message: parsed_data.message
+
+                        },
+                        {
+                            type: parsed_data.status,
+                            animate: {
+                                enter: 'animated flipInY',
+                                exit: 'animated flipOutX'
+                            }
+                        });
+                    },
+                    error: function (e) {
+                        $("#send_btn").prop("disabled", false);
+                        alert(e.responseText);
+                    }
+                });
+                // return false;
+            });
+
+        });
+        </script>
+    {% endcall %}
+{% endblock %}

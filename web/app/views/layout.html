@@ -133,6 +133,11 @@
                     <a href="/caramalreports"><i class="fa fa-medkit"></i> <span class="nav-label">Caramal</span></a>
                 </li>
                 {% endif %}
+                {% if 'can_manage_interventions' | hasPermission(ses.role, ses.permissions) %}
+                <li>
+                    <a href="/interventions"><i class="fa fa-ge"></i> <span class="nav-label">COVID-19</span></a>
+                </li>
+                {% endif %}
                 {% if 'can_view_anonymous_reports' | hasPermission(ses.role, ses.permissions) %}
                 <li>
                     <a href="/hotline"><i class="fa fa-h-square"></i> <span class="nav-label">Hotline</span></a>

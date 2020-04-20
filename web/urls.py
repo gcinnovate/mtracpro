@@ -53,6 +53,7 @@ from app.controllers.archive_handler import Archive
 from app.controllers.indicators_handler import Indicators
 from app.controllers.rejected_handler import Rejected
 from app.controllers.schedules_handler import Schedules
+from app.controllers.interventions_handler import Interventions
 
 URLS = (
     r'^/', Index,
@@ -64,6 +65,7 @@ URLS = (
     r'/hotline', Hotline,
     r'/caramalreports', CaramalReports,
     r'/caramalreminders', CaramalReminders,
+    r'/interventions', Interventions,
     r'/facilities', Facilities,
     r'/auditlog', AuditLog,
     r'/settings', Settings,
