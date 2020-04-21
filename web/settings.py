@@ -74,6 +74,16 @@ USE_INTERNATIONAL_NUMBER_FORMAT = True
 # usernames for national accounts - for proper filtering of reports
 NATIONAL_USERS = []
 
+# SAMBA File Sever Settings
+SMB_SERVER_NAME = 'moh-svr-mpro-haproxy-02'
+SMB_SERVER_IP = 'localhost'
+SMB_DOMAIN_NAME = ''
+SMB_PORT = 445
+SMB_USER = 'ssekiwere'
+SMB_PASSWORD = 'samba'
+SMB_CLIENT_HOSTNAME = 'moh-svr-mpro-web-01'
+SMB_SHARED_FOLDER = 'share'
+
 
 def absolute(path):
     """Get the absolute path of the given file/folder.

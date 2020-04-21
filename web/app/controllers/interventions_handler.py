@@ -1,9 +1,10 @@
 import web
 import tempfile
 import json
-from . import csrf_protected, db, require_login, render
+import os
+from . import db, require_login, render
 from tasks import send_sms_from_excel
-from settings import NETWORK_SHARED_DIR
+from app.tools.utils import store_file_on_samba_server
 
 
 class Interventions:
@@ -24,11 +25,16 @@ class Interventions:
         if 'vnd.openxmlformats-officedocument' not in getattr(fp, 'type'):
             return json.dumps({
                 "message": "File type unsupported. use .xlsx files", "status": "Failed"})
-        f = tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False, dir=NETWORK_SHARED_DIR)
+        f = tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False)
         f.write(fp.file.read())
-        print(f.name)
-        # os.unlink(f.name)
-        send_sms_from_excel.delay(f.name, data.msg)
+        file_name = f.name
+        f.close()
+        file_saved = store_file_on_samba_server(file_name)
+        if not file_saved:
+            return json.dumps({
+                "message": "Failed to upload file", "status": "Failed"})
+        send_sms_from_excel.delay(os.path.basename(file_name), data.msg)
+        os.unlink(file_name)
         return json.dumps({
             "message": "Results submission queued!", "status": "Success"})
 

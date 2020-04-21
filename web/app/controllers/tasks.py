@@ -7,9 +7,15 @@ import json
 import pyexcel as pe
 import os
 import phonenumbers
+import tempfile
 from string import Template
 from celery import Celery
-from celeryconfig import BROKER_URL, db_conf, poll_flows, apiv2_endpoint, api_token, config
+from celeryconfig import (
+    BROKER_URL, db_conf, poll_flows, apiv2_endpoint, api_token, config,
+    SMB_SERVER_IP, SMB_SERVER_NAME, SMB_USER, SMB_PASSWORD, SMB_DOMAIN_NAME,
+    SMB_CLIENT_HOSTNAME, SMB_SHARED_FOLDER, SMB_PORT)
+
+from smb.SMBConnection import SMBConnection
 
 MAX_CHUNK_SIZE = 90
 
@@ -23,6 +29,20 @@ MAX_CHUNK_SIZE = 90
 # )
 # celery -A tasks worker --loglevel=info
 app = Celery("mtrackpro", broker=BROKER_URL)
+
+
+def read_remote_samba_file(filename, suffix='.xlsx'):
+    """ Read remote samba file, and suffix is appened to filename of returned object """
+    try:
+        conn = SMBConnection(
+            SMB_USER, SMB_PASSWORD, SMB_CLIENT_HOSTNAME, SMB_SERVER_NAME,
+            domain=SMB_DOMAIN_NAME, use_ntlm_v2=True, is_direct_tcp=True)
+        conn.connect(SMB_SERVER_IP, SMB_PORT)
+        file_obj = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+        file_attributes, filesize = conn.retrieveFile(SMB_SHARED_FOLDER, filename, file_obj)
+        return file_obj
+    except:
+        return None
 
 
 def format_msisdn(msisdn=None):
@@ -299,7 +319,14 @@ def send_sms_from_excel(excel_file, msg_template=""):
 
     broadcasts_endpoint = apiv2_endpoint + "broadcasts.json"
 
-    records = pe.iget_records(file_name=excel_file)
+    obj = read_remote_samba_file(excel_file)
+    if not obj:
+        print("Failed to read file: {} from SAMBA server:".format(excel_file))
+        return
+    file_name = obj.name
+    obj.close()
+
+    records = pe.iget_records(file_name=file_name)
     for record in records:
         kws = {
             'name': record['Name'], 'Name': record['Name'],
@@ -326,4 +353,4 @@ def send_sms_from_excel(excel_file, msg_template=""):
         except:
             print("ERROR Sending Broadcast")
     pe.free_resources()
-    os.unlink(excel_file)
+    os.unlink(file_name)

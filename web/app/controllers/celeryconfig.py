@@ -31,6 +31,16 @@ config = {
 api_token = '90532182de6947ed4d3d202d95eb0e280aa305c5'
 apiv2_endpoint = 'http://localhost:8000/api/v2/'  # with trailing slash(/)
 
+# SAMBA File Sever Settings
+SMB_SERVER_NAME = 'moh-svr-mpro-haproxy-02'
+SMB_SERVER_IP = 'localhost'
+SMB_DOMAIN_NAME = ''
+SMB_PORT = 445
+SMB_USER = 'ssekiwere'
+SMB_PASSWORD = 'samba'
+SMB_CLIENT_HOSTNAME = 'moh-svr-mpro-web-01'
+SMB_SHARED_FOLDER = 'share'
+
 try:
     from local_celeryconfig import *
 except ImportError:

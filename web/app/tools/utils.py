@@ -7,8 +7,14 @@ import phonenumbers
 import simplejson
 import datetime
 import psycopg2.extras
+import os
 from settings import config
-from settings import DELIMITER, CASES_POSITIONS, KEYWORDS_DATA_LENGTH
+from settings import (
+    DELIMITER, CASES_POSITIONS, KEYWORDS_DATA_LENGTH,
+    SMB_SERVER_IP, SMB_SERVER_NAME, SMB_USER, SMB_PASSWORD, SMB_DOMAIN_NAME,
+    SMB_CLIENT_HOSTNAME, SMB_SHARED_FOLDER, SMB_PORT)
+
+from smb.SMBConnection import SMBConnection
 
 
 def format_msisdn(msisdn=None):
@@ -335,3 +341,17 @@ def generate_raw_message(db, form, data, add_commads=False):
     if add_commads:
         return '.'.join(ret)
     return '.'.join(values)
+
+
+def store_file_on_samba_server(file_name):
+    """ file_name is a full file path"""
+    try:
+        conn = SMBConnection(
+            SMB_USER, SMB_PASSWORD, SMB_CLIENT_HOSTNAME, SMB_SERVER_NAME,
+            domain=SMB_DOMAIN_NAME, use_ntlm_v2=True, is_direct_tcp=True)
+        conn.connect(SMB_SERVER_IP, SMB_PORT)
+        with open(file_name, 'rb') as f:
+            conn.storeFile(SMB_SHARED_FOLDER, os.path.basename(file_name), f)
+        return True
+    except:
+        False
