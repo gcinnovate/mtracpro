@@ -12,6 +12,7 @@ VALIDATE_KEY = ''
 ENCRYPT_KEY = ''
 SECRET_KEY = ''
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+NETWORK_SHARED_DIR = "/tmp"
 
 # No of items to show on each age
 PAGE_LIMIT = 25

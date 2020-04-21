@@ -3,6 +3,7 @@ import tempfile
 import json
 from . import csrf_protected, db, require_login, render
 from tasks import send_sms_from_excel
+from settings import NETWORK_SHARED_DIR
 
 
 class Interventions:
@@ -23,7 +24,7 @@ class Interventions:
         if 'vnd.openxmlformats-officedocument' not in getattr(fp, 'type'):
             return json.dumps({
                 "message": "File type unsupported. use .xlsx files", "status": "Failed"})
-        f = tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False)
+        f = tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False, dir=NETWORK_SHARED_DIR)
         f.write(fp.file.read())
         print(f.name)
         # os.unlink(f.name)
