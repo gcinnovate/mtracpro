@@ -45,6 +45,18 @@ def read_remote_samba_file(filename, suffix='.xlsx'):
         return None
 
 
+def delete_remote_samba_file(file_name):
+    try:
+        conn = SMBConnection(
+            SMB_USER, SMB_PASSWORD, SMB_CLIENT_HOSTNAME, SMB_SERVER_NAME,
+            domain=SMB_DOMAIN_NAME, use_ntlm_v2=True, is_direct_tcp=True)
+        conn.connect(SMB_SERVER_IP, SMB_PORT)
+        conn.deleteFiles(SMB_SHARED_FOLDER, file_name)
+        return True
+    except:
+        return False
+
+
 def format_msisdn(msisdn=None):
     """ given a msisdn, return in E164 format """
     if not msisdn and len(msisdn) < 10:
@@ -319,6 +331,7 @@ def send_sms_from_excel(excel_file, msg_template=""):
 
     broadcasts_endpoint = apiv2_endpoint + "broadcasts.json"
 
+    # excel_file is the remote samba file name
     obj = read_remote_samba_file(excel_file)
     if not obj:
         print("Failed to read file: {} from SAMBA server:".format(excel_file))
@@ -352,5 +365,8 @@ def send_sms_from_excel(excel_file, msg_template=""):
             # print("Broadcast Response: ", resp.text)
         except:
             print("ERROR Sending Broadcast")
+    deleted = delete_remote_samba_file(excel_file)
+    if deleted:
+        print("Remote SAMBA file:{} successfully deleted".format(excel_file))
     pe.free_resources()
     os.unlink(file_name)
