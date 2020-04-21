@@ -149,7 +149,7 @@
                     dataType: 'json',
                     success: function(data){
                         $("#send_btn").prop("disabled", false);
-                        toastr.success('Queued for submission');
+                        toastr.success(data.message);
                         /*
                         $.notify({
                             title: "Response:",
