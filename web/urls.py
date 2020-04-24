@@ -53,7 +53,7 @@ from app.controllers.archive_handler import Archive
 from app.controllers.indicators_handler import Indicators
 from app.controllers.rejected_handler import Rejected
 from app.controllers.schedules_handler import Schedules
-from app.controllers.interventions_handler import Interventions
+from app.controllers.interventions_handler import Interventions, Preview
 
 URLS = (
     r'^/', Index,
@@ -106,6 +106,7 @@ URLS = (
     r'/sendalert', SendAlert,
     r'/pollresponses', PollResponses,
     r'/test', Test,
+    r'/api/v1/preview', Preview,  # give status of reporters status
     r'/api/v1/status/(\w+)/?', ReportingStatus,  # give status of reporters status
     r'/api/v1/anonreport/(\d+)/?', AnonReport,
     r'/api/v1/anonymousreports', AnonymousReports,

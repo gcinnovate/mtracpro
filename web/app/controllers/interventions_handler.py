@@ -2,6 +2,7 @@ import web
 import tempfile
 import json
 import os
+from string import Template
 from . import db, require_login, render
 from tasks import send_sms_from_excel
 from app.tools.utils import store_file_on_samba_server
@@ -44,3 +45,18 @@ class Interventions:
         l = locals()
         del l['self']
         return render.interventions(**l)
+
+
+class Preview:
+    def GET(self):
+        params = web.input(msg="")
+        kws = {
+            'name': 'Samuel', 'Name': 'Samuel',
+            'results': 'Negative', 'Results': 'Negative',
+            'result': 'Negative', 'Result': 'Negative',
+            'labid': 'UVRI-COV-02', 'LabID': 'UVRI-COV-02',
+            'date': '20/04/2020', 'Date': '20/04/2020'
+        }
+        message = Template(params.msg).safe_substitute(kws)
+        print(message)
+        return "<p>{}</p>".format(message)
