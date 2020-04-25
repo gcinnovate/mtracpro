@@ -53,7 +53,7 @@ def get_facility_details(facilityJson):
     level = ""
     owner = ""
     is_active = True
-    parent = facilityJson["parent"]["name"].replace('Subcounty', '').strip()
+    parent = facilityJson["parent"]["name"]
     parent = re.sub(
         'Subcounty.*$|Sub\ County.*$', "", facilityJson["parent"]["name"],
         flags=re.IGNORECASE).strip()
