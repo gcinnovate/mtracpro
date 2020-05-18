@@ -274,7 +274,7 @@ def getDistrict(districtid):
 
 
 def hasCompleteReport(facilitycode):
-    year, week = get_current_week()
+    year, week = get_current_week(datetime.datetime.now())
     res = db.query(
         "SELECT get_facility_week_reports($fcode, $yr, $wk) as reports",
         {'fcode': facilitycode, 'yr': year, 'wk': '%s' % week})
