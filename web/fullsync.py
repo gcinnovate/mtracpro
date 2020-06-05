@@ -53,10 +53,10 @@ def get_facility_details(facilityJson):
     level = ""
     owner = ""
     is_active = True
-    parent = facilityJson["parent"]["name"]
     parent = re.sub(
-        'Subcounty.*$|Sub\ County.*$', "", facilityJson["parent"]["name"],
+        'Subcounty$|Sub\ County.*$', "", facilityJson["parent"]["name"],
         flags=re.IGNORECASE).strip()
+    parent_id = facilityJson["parent"]["id"]
     # parent = facilityJson["parent"]["name"]
     district_url = "%s/%s.json?fields=id,name,parent[id,name]" % (config["orgunits_url"], facilityJson["parent"]["id"])
     print(district_url)
@@ -87,7 +87,7 @@ def get_facility_details(facilityJson):
     if (config["non_functional_facility_group_uid"] in orgunitGroupsIds) and not is_033b:
         is_active = False
     # we return tuple (Subcounty, District, Level, is033B)
-    return has_no_datasets, parent, district, level, is_033b, owner, is_active
+    return has_no_datasets, parent, parent_id, district, level, is_033b, owner, is_active
 
 if not dhis2_ids:
     cur.execute(
@@ -113,7 +113,7 @@ for dhis2id in dhis2_ids:
         # just keep quiet for now
 
     for orgunit in orgunits:
-        hasNoDatasets, subcounty, district, level, is_033b, owner, is_active = get_facility_details(orgunit)
+        hasNoDatasets, subcounty, subcounty_uid, district, level, is_033b, owner, is_active = get_facility_details(orgunit)
         if not level:
             continue
         if hasNoDatasets:
@@ -122,7 +122,7 @@ for dhis2id in dhis2_ids:
             'username': config["sync_user"], 'password': config["sync_passwd"],
             'name': orgunit["name"],
             'dhis2id': orgunit["id"], 'ftype': level, 'district': district,
-            'subcounty': subcounty, 'is_033b': is_033b, 'owner': owner,
+            'subcounty': subcounty, 'subcounty_uid': subcounty_uid, 'is_033b': is_033b, 'owner': owner,
             'code': orgunit["id"], 'is_active': 't' if is_active else 'f'
         }
         try:
