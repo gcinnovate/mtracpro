@@ -188,17 +188,21 @@ class ReporterAPI:
             " get_district(district_id) as district, imei, smscode, facilityid, facility, facilitycode, "
             "total_reports, to_char(last_reporting_date, 'YYYY-MM-DD HH:MI') last_reporting_date, role "
             " FROM reporters_view1 "
-            # " WHERE substring(reverse(telephone), 0, 9) = substring(reverse($tel), 0, 9) "
-            # " OR substring(reverse(alternate_tel), 0, 9) = substring(($tel), 0, 9) ")
-            " WHERE role SIMILAR TO $roles AND (telephone LIKE $tel "
-            " OR alternate_tel LIKE $tel )")
+            " WHERE telephone LIKE $tel OR alternate_tel LIKE $tel ")
         # " WHERE telephone = $tel OR alternate_tel = $tel")
         res = db.query(SQL, {
-            'tel': '%%%s' % phonenumber[-9:],
-            'roles': '(%s)' % '|'.join(getattr(settings, 'ALLOWED_REPORTER_ROLES', ['HC', 'Records', 'Incharge']))})
+            'tel': '%%%s' % phonenumber[-9:]})
         ret = {}
+        allowed_roles = getattr(settings, 'ALLOWED_REPORTER_ROLES', ['HC', 'Records', 'Incharge'])
+        can_report = False
         if res:
             r = res[0]
+            roles = r.role.split(',')
+            for role in roles:
+                if role in allowed_roles:
+                    can_report = True
+            if not can_report:
+                return json.dumps({})
             smscode = r.smscode
             deviceChanged = False
             imei = params.imei
