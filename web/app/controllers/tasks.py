@@ -231,14 +231,22 @@ def send_bulksms_task(msg, sms_roles=[], district="", facility="", check_distric
     if check_districts:
         if district:
             SQL += " AND district_id = ANY($district::INT[]) "
-    if facility:
+
+    facilityStr = ''
+    if facility and (type(facility) == type('')):
         SQL += " AND facilityid=$facility "
+        facilityStr = facility
+    if facility and (type(facility) == type([])):
+        SQL += " AND facilityid = ANY($facility::INT[]) "
+        facilityStr = str(facility).replace(
+                '[', '{').replace(']', '}').replace("\'", '\"').replace('u', '')
+
     if sms_roles:
         SQL += " AND role SIMILAR TO $role "
     res = db.query(SQL, {
         'district': str(district).replace(
             '[', '{').replace(']', '}').replace("\'", '\"').replace('u', ''),
-        'facility': facility,
+        'facility': facilityStr,
         'role': '%%(%s)%%' % '|'.join(sms_roles)})
 
     if res:

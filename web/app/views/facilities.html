@@ -24,6 +24,171 @@
     {% if 'can_view_facilities' | hasPermission(ses.role, ses.permissions) %}
     {{ err(ses.rdata_err)}}
 
+    <!-- TABS -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="tabs-container">
+
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-university"></i>Search Facilities</a></li>
+                    <li class=""><a data-toggle="tab" href="#tab-2"><i class="fa fa-envelope"></i> Send SMS To Many Facilities</a></li>
+                </ul>
+                
+                <div class="tab-content">
+
+                    <!-- tab-1 -->
+                    <div id="tab-1" class="tab-pane active">
+                        <div class="panel-body">
+                            <form class="form-horizontal" role="form" method="get" data-toggle="validator">
+
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <div class="form-group"><label for="search" class="col-lg-3 control-label">Free Form Search:</label>
+                                        <div class="col-lg-5">
+                                            <input name="search" id="search" type="text" class="form-control"/>
+                                        </div>
+                                        <div class="col-lg-3">
+                                                <button class="btn btn-sm btn-primary" type="submit">Search Facility</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group"><label for="district" class="col-lg-3 control-label">District:</label>
+                                        <div class="col-lg-5">
+                                            <select name="district" id="district" class="form-control">
+                                                <option value="">Select District</option>
+                                                {% for d in districts_1 %}
+                                                <option value="{{ d.id}}" {% if d.id == district.id %} selected="yes" {% endif %}>{{ d.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group"><label class="col-lg-3 control-label">Subcounty:</label>
+                                        <div class="col-lg-5">
+                                            <select name="subcounty" id="subcounty" class="form-control">
+                                                <option value="">Select Sub County</option>
+                                                {% for s in subcounties %}
+                                                <option value="{{ s.id }}" {% if s.id == subcounty.id %} selected="yes" {% endif %}>{{ s.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            
+                            </form>
+                        </div>
+                    </div>
+                    <!-- End tab-1 -->
+
+                    <!-- tab-2 -->
+                    <div id="tab-2" class="tab-pane">
+                        <form id="sms_form" class="form-horizontal" role="form" action="" method="post"  data-toggle="validator">
+                        <div class="panel-body">
+                            <div class="row">
+                                {% if ('can_send_sms' | hasPermission(ses.role, ses.permissions)) or
+                                    ('can_send_bulk_sms' | hasPermission(ses.role, ses.permissions)) %}
+                                <!-- LEFT -->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="form-group"><label for="district" class="col-lg-3 control-label">District:</label>
+                                            <div class="col-lg-9">
+                                                <select name="district" id="district_1" class="form-control" required>
+                                                    <option value="0">Select District</option>
+                                                    {% for d in districts_2 %}
+                                                    <option value="{{ d.id}}" {% if d.id == district.id %} selected="yes" {% endif %}>{{ d.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group"><label class="col-lg-3 control-label">Subcounty:</label>
+                                            <div class="col-lg-9">
+                                                <select name="subcounty" id="subcounty_1" class="form-control">
+                                                    <option value="">Select Sub County</option>
+                                                    {% for s in subcounties %}
+                                                    <option value="{{ s.id }}" {% if s.id == subcounty.id %} selected="yes" {% endif %}>{{ s.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group"><label class="col-lg-3 control-label">Facility:</label>
+                                            <div class="col-lg-9">
+                                                <select name="sms_facility" id="sms_facility" multiple="yes" size="6" class="form-control" required>
+                                                    <option value="">Select Health Facility</option>
+                                                    {% for f in facilitiesx %}
+                                                    <option value="{{ f.id }}" {% if f.id == facilityid %} selected="yes" {% endif %}>{{ f.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        
+                                    </div><!-- end left row -->
+                                </div>
+                                <!-- END LEFT-->
+
+                                <!-- RIGHT -->
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="form-group"><label for="role" class="col-lg-3 control-label">Role:</label>
+                                            <div class="col-lg-9">
+                                                <select name="sms_roles" id="sms_roles" class="form-control" multiple="yes" size="4">
+                                                    {% for v in roles %}
+                                                    <option value="{{ v.name }}" {% if v.name in role %} selected="yes" {% endif %}>{{ v.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group"><label for="role" class="col-lg-3 control-label">Message:</label>
+                                            <div class="col-lg-9">
+                                                <textarea name="msg" id="msg" class="form-control" size="5" rows="5" required></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" style="margin-top:5px;">
+                                            <div class="col-lg-2 col-lg-offset-10">
+                                                <input type="text" name="counter_2" size="7" id="counter_2" readonly/>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-lg-offset-3 col-lg-3">
+                                                <button class="btn btn-sm btn-primary" id="sendsms_2" type="submit">Send SMS</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- END RIGHT-->
+                                {% else %}
+                                    <div class="col-lg-6">
+                                        <p>You have no permission to Send SMS</p>
+                                    </div>
+
+                                {% endif %}
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                    <!-- End tab-4 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- END TABS -->
+
+    <br/>
     <!-- DATA TABLE -->
     <div class="row">
         <div class="col-lg-12">
@@ -217,7 +382,9 @@
         <!-- Sweet alert -->
         <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>
 
+        <script src="/static/js/mtrackpro/reporters.js"></script>
         <script src="/static/js/mtrackpro/facility.js"></script>
+        <script src="/static/js/bootstrap-notify.min.js"></script>
         <script>
             $(document).ready(function() {
                 $('#mydata').DataTable({
@@ -252,6 +419,42 @@
                     $('#sms').val("");
                     $('#facility_name').html("<strong>" + facility + "</strong>");
                 });
+
+                $('#msg').keyup(function(){
+                    var obj = $('#msg');
+                    var cc = $('#counter_2');
+                    var x = obj.val();
+                    var l = obj.val().length;
+                    cc.val(l);
+                    if(x.length >= 160){
+                            $('#counter_2').css("color", "red");
+                            /*var y = obj.val().substring(0,160);
+                            obj.val(y);
+                            cc.val(160);*/
+                    } else {
+                        $('#counter_2').css("color", "black");
+                    }
+                });
+
+                $('#sendsms_2').click(function(){
+                    $.post('/api/v1/sendbulksms?',
+                        $('#sms_form').serializeArray(),
+                        function(data){
+                            $.notify({
+                                title: "Response:",
+                                message: data.message
+
+                            },
+                            {
+                                type: data.status,
+                                animate: {
+                                    enter: 'animated flipInY',
+                                    exit: 'animated flipOutX'
+                                }
+                            });
+                        }, "json");
+                    return false;
+                }); 
 
             });
         </script>
