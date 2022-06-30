@@ -110,14 +110,14 @@
                                         <div class="form-group"><label for="tel" class="col-lg-3 control-label">Telephone:</label>
                                             <div class="col-lg-9">
                                                 <input name="telephone" id="tel" type="text" value="{{ telephone }}"
-                                                pattern="^(\+256|0)(3[19]|41|7[015789])[0-9]{7}$" placeholder="+256" required class="form-control"/>
+                                                pattern="^(\+256|0)(3[19]|41|7[01456789])[0-9]{7}$" placeholder="+256" required class="form-control"/>
                                             </div>
                                         </div>
 
                                         <div class="form-group"><label for="alt_tel" class="col-lg-3 control-label">Other Tel:</label>
                                             <div class="col-lg-9">
                                                 <input name="alt_telephone" id="alt_telephone" type="text" value="{{ alt_telephone }}"
-                                                pattern="^(\+256|0)(3[19]|41|7[015789])[0-9]{7}$" class="form-control" placeholder="+256"/>
+                                                pattern="^(\+256|0)(3[19]|41|7[01456789])[0-9]{7}$" class="form-control" placeholder="+256"/>
                                             </div>
                                         </div>
                                         <div class="form-group"><label for="alt_tel" class="col-lg-3 control-label">Email:</label>
@@ -154,9 +154,9 @@
                     <!-- tab2 -->
                     <div id="tab-2" class="tab-pane">
                         <div class="panel-body">
+                            <form class="form-horizontal" role="form" method="get" data-toggle="validator">
                             <div class="row">
                                 <div class="col-lg-12">
-                                        <form class="form-horizontal" role="form" method="get" data-toggle="validator">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                         <div class="form-group"><label for="search" class="col-lg-3 control-label">Free Form Search:</label>
                                             <div class="col-lg-5">
@@ -166,9 +166,53 @@
                                                     <button class="btn btn-sm btn-primary" type="submit">Search Reporter</button>
                                             </div>
                                         </div>
-                                        </form>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group"><label for="district" class="col-lg-3 control-label">District:</label>
+                                        <div class="col-lg-5">
+                                            <select name="district3" id="district3" class="form-control" required>
+                                                <option value="">Select District</option>
+                                                {% for d in districts_3 %}
+                                                <option value="{{ d.id}}" {% if d.id == district.id %} selected="yes" {% endif %}>{{ d.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group"><label class="col-lg-3 control-label">Subcounty:</label>
+                                        <div class="col-lg-5">
+                                            <select name="subcounty3" id="subcounty3" class="form-control">
+                                                <option value="">Select Sub County</option>
+                                                {% for s in subcounties %}
+                                                <option value="{{ s.id }}" {% if s.id == subcounty.id %} selected="yes" {% endif %}>{{ s.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group"><label class="col-lg-3 control-label">Facility:</label>
+                                        <div class="col-lg-5">
+                                            <select name="facility3" id="facility3" class="form-control" required>
+                                                <option value="">Select Health Facility</option>
+                                                {% for f in facilities %}
+                                                <option value="{{ f.id }}" {% if f.id == facilityid %} selected="yes" {% endif %}>{{ f.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group"><label for="role3" class="col-lg-3 control-label">Role:</label>
+                                        <div class="col-lg-5">
+                                            <select name="role3" id="role3" class="form-control" multiple="yes" size="6" required>
+                                                <option value="">Select Role</option>
+                                                {% for v in roles %}
+                                                <option value="{{ v.id }}" {% if v.name in role %} selected="yes" {% endif %}>{{ v.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </form>
                         </div>
                     </div>
                     <!-- end tab-2 -->
