@@ -95,7 +95,7 @@ class AppSettings:
 
                 if res:
                     server_id = res[0]['id']
-                    myapps = str(map(int, params.allowed_apps))
+                    myapps = str(list(map(int, params.allowed_apps)))
                     apps_array = str(myapps).replace(
                         '[', '{').replace(']', '}').replace('\'', '\"')
                     db.query(
