@@ -70,7 +70,7 @@ class AppSettings:
                         'certkey': params.ssl_client_certkey_file, 'use_ssl': use_ssl,
                         'xml_xpath': params.xml_xpath, 'json_xpath': params.json_xpath,
                         'id': params.ed})
-                myapps = str(map(int, params.allowed_apps))
+                myapps = str(list(map(int, params.allowed_apps)))
                 apps_array = str(myapps).replace(
                     '[', '{').replace(']', '}').replace('\'', '\"')
                 db.query(
