@@ -84,7 +84,7 @@
 						<div class="col-lg-7">
 							<select name="auth_method" id="auth_method" class="form-control">
 								<option value="">Select Authentication Method</option>
-								{% for y in ['Basic Auth',] %}
+								{% for y in ['Basic Auth', 'ApiToken'] %}
                         			<option value="{{ y }}" {% if y == auth_method %} selected="yes" {% endif%}>{{ y }}</option>
                     			{% endfor %}
 							</select>
