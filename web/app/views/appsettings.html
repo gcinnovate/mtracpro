@@ -63,6 +63,12 @@
 						</div>
 					</div>
                     <div class="form-group">
+						<label for="cpasswd" class="col-lg-5 control-label">API Token:</label>
+						<div class="col-lg-7">
+                            <input name="apitoken" id="apitoken" type="text" value="{{ apitoken }}" class="form-control"/>
+						</div>
+					</div>
+                    <div class="form-group">
 						<label for="url" class="col-lg-5 control-label">Data Submission Endpoint:</label>
 						<div class="col-lg-7">
                             <input name="url" id="url" type="text" value="{{ url }}" class="form-control"/>
@@ -74,7 +80,7 @@
 							<select name="allowed_apps" id="allowed_apps" class="form-control" multiple>
 								<!--<option value="">Select App/Server</option>-->
 								{% for r in servers_opts %}
-                        			<option value="{{ r.id }}">{{ r.name }}</option>
+                                    <option value="{{ r.id }}" {% if r.id in allowed_sources %} selected="yes" {% endif %}>{{ r.name }}</option>
                     			{% endfor %}
 							</select>
 						</div>

@@ -17,7 +17,7 @@ class AppSettings:
             pass
 
         if params.ed and allow_edit:
-            res = db.query("SELECT * FROM servers WHERE id = $id", {'id': edit_val})
+            res = db.query("SELECT * FROM servers_view WHERE id = $id", {'id': edit_val})
             if res:
                 r = res[0]
                 name = r.name
@@ -31,6 +31,8 @@ class AppSettings:
                 json_xpath = r.json_response_jsonpath
                 use_ssl = r.use_ssl
                 ssl_client_certkey_file = r.ssl_client_certkey_file
+                allowed_sources = r.allowed_sources
+                apitoken = r.apitoken
 
         if params.d_id:
             if session.role == 'Administrator':
@@ -50,7 +52,7 @@ class AppSettings:
         params = web.input(
             page="1", ed="", d_id="", name="", username="", cpasswd="", url="", allowed_apps=[],
             auth_method="", start="", end="", xml_xpath="", json_xpath="", use_ssl="",
-            ssl_client_certkey_file="", ssl_server_certkey_file="")
+            ssl_client_certkey_file="", ssl_server_certkey_file="", apitoken="")
         try:
             page = int(params.page)
         except:
@@ -61,14 +63,14 @@ class AppSettings:
                 db.query(
                     "UPDATE servers SET (name, username, password, url, auth_method, "
                     "start_submission_period, end_submission_period, xml_response_xpath,"
-                    "json_response_jsonpath, use_ssl, ssl_client_certkey_file) = "
+                    "json_response_jsonpath, use_ssl, ssl_client_certkey_file, auth_token) = "
                     "($name, $username, $password, $url, $auth_method, $start, $end, "
-                    "$xml_xpath, $json_xpath, $use_ssl, $certkey) WHERE id=$id", {
+                    "$xml_xpath, $json_xpath, $use_ssl, $certkey, $auth_token) WHERE id=$id", {
                         'name': params.name, 'username': params.username,
                         'password': params.cpasswd, 'url': params.url, 'auth_method': params.auth_method,
                         'start': params.start, 'end': params.end,
                         'certkey': params.ssl_client_certkey_file, 'use_ssl': use_ssl,
-                        'xml_xpath': params.xml_xpath, 'json_xpath': params.json_xpath,
+                        'xml_xpath': params.xml_xpath, 'json_xpath': params.json_xpath,'auth_token': params.apitoken,
                         'id': params.ed})
                 myapps = str(map(int, params.allowed_apps))
                 apps_array = str(myapps).replace(
@@ -83,15 +85,15 @@ class AppSettings:
                 res = db.query(
                     "INSERT INTO servers (name, username, password, url, auth_method, "
                     "start_submission_period, end_submission_period, ssl_client_certkey_file,"
-                    "use_ssl, xml_response_xpath, json_response_jsonpath) VALUES("
+                    "use_ssl, xml_response_xpath, json_response_jsonpath, auth_token) VALUES("
                     "$name, $username, $password, $url, $auth_method, $start, $end, "
-                    "$certkey, $use_ssl, $xml_xpath, $json_xpath) RETURNING id", {
+                    "$certkey, $use_ssl, $xml_xpath, $json_xpath, $auth_token) RETURNING id", {
                         'name': params.name, 'username': params.username,
                         'password': params.cpasswd, 'url': params.url, 'auth_method': params.auth_method,
                         'start': params.start, 'end': params.end,
                         'certkey': params.ssl_client_certkey_file,
                         'use_ssl': 'f' if not params.use_ssl else params.use_ssl,
-                        'xml_xpath': params.xml_xpath, 'json_xpath': params.json_xpath})
+                        'xml_xpath': params.xml_xpath, 'json_xpath': params.json_xpath, 'auth_method': params.apitoken})
 
                 if res:
                     server_id = res[0]['id']
