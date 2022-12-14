@@ -32,7 +32,7 @@ class AppSettings:
                 use_ssl = r.use_ssl
                 ssl_client_certkey_file = r.ssl_client_certkey_file
                 allowed_sources = r.allowed_sources
-                apitoken = r.apitoken
+                apitoken = r.auth_token
 
         if params.d_id:
             if session.role == 'Administrator':
