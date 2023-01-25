@@ -20,7 +20,7 @@ class DataEntry:
             districts_SQL = (
                 "SELECT id, name FROM locations WHERE type_id = "
                 "(SELECT id FROM locationtype WHERE name = 'district') "
-                "AND name = '%s'" % session.username.capitalize())
+                "AND lower(name) = '%s'" % session.username.replace('city', ' city').lower())
         else:
             districts_SQL = (
                 "SELECT id, name FROM locations WHERE type_id = "
