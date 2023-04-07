@@ -9,7 +9,7 @@ from app.controllers.api import (
     Location, LocationChildren, SubcountyLocations,
     DistrictFacilities, LocationFacilities, FacilityReporters,
     Cases, Deaths, OrderMessage, Dhis2Queue, Test, ReportsThisWeek,
-    QueueForDhis2InstanceProcessing, ReporterAPI, StartSurvey
+    QueueForDhis2InstanceProcessing, ReporterAPI, StartSurvey, Bulletin
 )
 from app.controllers.api2 import (
     LocationsEndpoint, ReportersXLEndpoint,
@@ -54,6 +54,8 @@ from app.controllers.indicators_handler import Indicators
 from app.controllers.rejected_handler import Rejected
 from app.controllers.schedules_handler import Schedules
 from app.controllers.interventions_handler import Interventions, Preview
+# from app.controllers.transfers_handler import Transfers
+# from app.controllers.queue_mgt_handler import QueueManagement
 
 URLS = (
     r'^/', Index,
@@ -87,6 +89,7 @@ URLS = (
     r'/rejected', Rejected,
     r'/messagehistory/\+?(\w+)/?', MessageHistory,
     r'/facilityreports/(\w+)/?', FacilityReports,
+    # r'/transfers', Transfers,
     # Dispatcher2 URIs
     r'/requests', Requests,
     r'/completed', Completed,
@@ -95,6 +98,7 @@ URLS = (
     r'/ready', Ready,
     r'/appsettings', AppSettings,
     r'/indicators', Indicators,
+    # r'/management', QueueManagement,
     # API stuff follows
     r'/cases', Cases,  # cases flow
     r'/deaths', Deaths,  # deaths flow
@@ -132,6 +136,7 @@ URLS = (
     r'/api/v1/editreport/(\d+)/?', EditReport,  # for retrospective report edits
     r'/api/v1/reportingweek/?', ReportingWeek,
     r'/api/v1/reporter/(\+?\w+)/?', ReporterAPI,
+    r'/api/v1/bulletin/(\+?\w+)/?', Bulletin,
     r'/api/v1/startsurvey/?', StartSurvey,
     r'/reportersupload', ReportersUploadAPI,
     r'/api/v1/reporterhistory/(\+?\w+)/?', ReporterHistoryApi,

@@ -19,7 +19,7 @@ from settings import (
     HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS,
     USE_OLD_WEBHOOKS, SURVEY_INITIATORS, SURVEY_RAPIDPRO_UUIDS
 )
-from tasks import (
+from .tasks import (
     sendsms_to_uuids_task, queue_in_dispatcher2, invalidate_older_similar_reports,
     post_request_to_rapidpro
 )
@@ -260,6 +260,15 @@ class ReportsThisWeek:
             html_str += "</table></td></tr>"
         html_str += "</table>"
         return html_str
+
+
+class Bulletin:
+    def GET(self, phonenumber):
+        return json.dumps([
+            {"id": "1", "date": "2023-04-07", "content": "Please remember to attend the COVID training"},
+            {"id": "2", "date": "2023-04-06", "content": "All health workers must attend the vaccination campains"},
+            {"id": "3", "date": "2023-04-05", "content": "Remember to send in your weekly surveillance reports"}
+        ])
 
 
 class Cases:
