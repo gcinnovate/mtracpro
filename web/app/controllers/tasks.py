@@ -316,7 +316,7 @@ def restart_failed_requests(start_date, end_date):
         SQL += " AND created >= $start_date "
     if end_date:
         SQL += " AND created <= $start_date "
-    db.query(SQL)
+    db.query(SQL, {'start_date': start_date, 'end_date': end_date})
     try:
         db._ctx.db.close()
     except:
