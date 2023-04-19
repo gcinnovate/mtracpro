@@ -453,7 +453,7 @@ class RetryFailed:
         params = web.input(start_date="", end_date="")
         sdate = params.start_date
         if not sdate:
-            sdate = (n - datetime.timedelta(days=10)).strftime("%Y-%m-%d")
+            sdate = (datetime.datetime.now() - datetime.timedelta(days=10)).strftime("%Y-%m-%d")
         restart_failed_requests.delay(sdate, params.end_date)
         return json.dumps({"message": "success"})
 
