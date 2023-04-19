@@ -15,7 +15,8 @@ from app.controllers.api2 import (
     LocationsEndpoint, ReportersXLEndpoint,
     CreateFacility, ReportForms, IndicatorHtml,
     FacilitySMS, SendSMS, RequestDetails, SendBulkSMS,
-    DeleteRequest, DeleteServer, ServerDetails
+    DeleteRequest, DeleteServer, ServerDetails,
+    RetryFailed
 )
 from app.controllers.api3 import EditReport, ReportingWeek, ReporterHistoryApi
 from app.controllers.api4 import ReportersUploadAPI
@@ -132,6 +133,7 @@ URLS = (
     r'/api/v1/request_details/(\d+)/?', RequestDetails,
     r'/api/v1/server_details/(\d+)/?', ServerDetails,
     r'/api/v1/request_del/(\d+)/?', DeleteRequest,
+    r'/api/v1/requests/retry_failed/?', RetryFailed,
     r'/api/v1/server_del/(\d+)/?', DeleteServer,  # controllers.api2.py
     r'/api/v1/editreport/(\d+)/?', EditReport,  # for retrospective report edits
     r'/api/v1/reportingweek/?', ReportingWeek,

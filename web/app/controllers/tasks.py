@@ -10,7 +10,7 @@ import phonenumbers
 import tempfile
 from string import Template
 from celery import Celery
-from celeryconfig import (
+from .celeryconfig import (
     BROKER_URL, db_conf, poll_flows, apiv2_endpoint, api_token, config,
     SMB_SERVER_IP, SMB_SERVER_NAME, SMB_USER, SMB_PASSWORD, SMB_DOMAIN_NAME,
     SMB_CLIENT_HOSTNAME, SMB_SHARED_FOLDER, SMB_PORT)
@@ -257,6 +257,70 @@ def send_bulksms_task(msg, sms_roles=[], district="", facility="", check_distric
     except:
         pass
 
+
+@app.task(name="create_bulletin")
+def create_bulletin(message, district=None, subcounties=[], roles=[], facilities=[], is_global=False):
+    db = web.database(
+        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], db=db_conf["name"],
+        host=db_conf['host'], port=db_conf['port'])
+    res = db.query(
+        "INSERT INTO bulletin(message, is_global) "
+        " VALUES ($message, $is_global) RETURNING id",
+        {
+            'message': message,
+            'is_global': is_global
+        }
+    )
+    if res:
+        bulletin_id = res[0]['id']
+        SQL = (
+            "UPDATE bulletin SET (district, subcounties, facilities, roles) "
+            " = ($district, $subcounties::INTEGER, $facilities::INTEGER, $roles::INTEGER[])"
+        )
+
+        facilityStr = '{}'
+        if facilities and (type(facilities) == type([])):
+            facilityStr = str(facilities).replace(
+                    '[', '{').replace(']', '}').replace("\'", '\"').replace('u', '')
+
+        subcountyStr = '{}'
+        if subcounties and (type(subcounties) == type([])):
+            subcountyStr = str(subcounties).replace(
+                    '[', '{').replace(']', '}').replace("\'", '\"').replace('u', '')
+
+        rolesStr = '{}'
+        if roles and (type(roles) == type([])):
+            rolesStr = str(roles).replace(
+                    '[', '{').replace(']', '}').replace("\'", '\"').replace('u', '')
+        db.query(SQL, {
+            'district': district,
+            'subcounties': subcountyStr,
+            'facilities': facilityStr,
+            'roles': rolesStr
+        })
+
+        try:
+            db._ctx.db.close()
+        except:
+            pass
+
+
+@app.task(name="restart_failed_requests")
+def restart_failed_requests(start_date, end_date):
+    db = web.database(
+        dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], db=db_conf["name"],
+        host=db_conf['host'], port=db_conf['port'])
+
+    SQL = ("UPDATE requests SET status = 'ready' WHERE status='failed' ")
+    if start_date:
+        SQL += " AND created >= $start_date "
+    if end_date:
+        SQL += " AND created <= $start_date "
+    db.query(SQL)
+    try:
+        db._ctx.db.close()
+    except:
+        pass
 
 @app.task(name="send_facility_sms_task")
 def send_facility_sms_task(facilityid, msg, role=""):

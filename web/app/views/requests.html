@@ -30,8 +30,10 @@
                     <h5>Requests</h5>
                     <div class="ibox-tools">
                         {% if 'can_resend_request' | hasPermission(ses.role, ses.permissions) %}
-                        <button class="btn btn-info retry_btn" name="abtn" value="Retry Selected"><i class="fa fa-repeat"></i> Retry Selected</button>
+                        <button class="btn btn-warning" name="retry_all_failed_btn" id="retry_all_failed_btn"
+                            value="Retry All Failed"><i class="fa fa-repeat"></i> Retry All Failed</button>
                         &nbsp;&nbsp;&nbsp;
+                        <button class="btn btn-info retry_btn" name="abtn" value="Retry Selected"><i class="fa fa-repeat"></i> Retry Selected</button>
                         {% endif %}
                         {% if 'can_cancel_request' | hasPermission(ses.role, ses.permissions) %}
                         <button class="btn btn-danger cancel_btn" name="abtn" value="Cancel Selected"><i class="fa fa-thumbs-o-down"></i> Cancel Selected</button>
@@ -128,6 +130,39 @@
         <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>
         <script>
            $(document).ready(function() {
+            $('#retry_all_failed_btn').click(function () {
+                swal({
+                        title: "Are you sure?",
+                        text: "Your about to requeue all the failed requests in the database",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Yes, requeue all failed!",
+                        cancelButtonText: "No, cancel please!",
+                        closeOnConfirm: false,
+                        closeOnCancel: false },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            $.post(
+                                '/api/v1/requests/retry_failed',
+                                {start_date: '', end_date: ''},
+                                function(data){
+                                    if (data.message == "success"){
+                                        /* remove row from table */
+                                    };
+                                },
+                                'json'
+                            );
+                            swal("Requeuing......!", "All failed requests are requeuing in the background.", "success");
+                            return false;
+                        } else {
+                            swal("Cancelled", "Requests have not been requeued!", "error");
+                            return false;
+                        }
+                    });
+                return false;
+            });
+
             $('.delete_btn').click(function () {
                 del_id = $(this).attr('id');
                 table_row = $(this).closest('tr');
