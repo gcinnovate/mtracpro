@@ -5,8 +5,9 @@ import web
 from app.tools.utils import post_request
 from settings import config
 import settings
+import datetime
 from app.tools.utils import get_basic_auth_credentials, auth_user, get_webhook_msg
-from tasks import send_bulksms_task, send_facility_sms_task
+from .tasks import send_bulksms_task, send_facility_sms_task, restart_failed_requests
 
 logging.basicConfig(
     format='%(asctime)s:%(levelname)s:%(message)s', filename='/tmp/mtrackpro-web.log',
@@ -102,7 +103,7 @@ class CreateFacility:
     def GET(self):
         params = web.input(
             name="", ftype="", district="",
-            code="", is_033b='f', dhis2id="", subcounty="",
+            code="", is_033b='f', dhis2id="", subcounty="", subcounty_uid="",
             username="", password="", is_active="t"
         )
         username = params.username
@@ -152,6 +153,9 @@ class CreateFacility:
                             if res2:
                                 # we have a sub county in mTrac
                                 subcounty_id = res2[0]["id"]
+                                ### Save Dhis2 uid for subcounty
+                                db.query("UPDATE locations SET dhis2id = $uid WHERE id = $id", {
+                                    'uid': params.subcounty_uid, 'id': subcounty_id})
                                 db.query(
                                     "UPDATE healthfacilities SET location = $loc, "
                                     "location_name = $loc_name"
@@ -201,6 +205,9 @@ class CreateFacility:
                         if res2:
                             # we have a sub county in mTrac
                             subcounty_id = res2[0]["id"]
+                            ### Save Dhis2 uid for subcounty
+                            db.query("UPDATE locations SET dhis2id = $uid WHERE id = $id", {
+                                'uid': params.subcounty_uid, 'id': subcounty_id})
                             logging.debug(
                                 "Sub county:%s set for facility with ID:%s" %
                                 (params.subcounty, params.code))
@@ -329,7 +336,7 @@ class FacilitySMS:
 class SendBulkSMS:
     def POST(self):
         web.header("Content-Type", "application/json; charset=utf-8")
-        params = web.input(sms_roles=[], msg="", district="", sms_facility="")
+        params = web.input(sms_roles=[], msg="", district="", sms_facility=[])
         session = get_session()
         if not params.district or params.district == "0":
             return json.dumps({'message': 'Please select District before sending!'})
@@ -438,6 +445,16 @@ class DeleteServer:
             db.query("DELETE FROM servers WHERE id = $id", {'id': server_id})
         except:
             return json.dumps({"message": "failed"})
+        return json.dumps({"message": "success"})
+
+
+class RetryFailed:
+    def POST(self):
+        params = web.input(start_date="", end_date="")
+        sdate = params.start_date
+        if not sdate:
+            sdate = (n - datetime.timedelta(days=10)).strftime("%Y-%m-%d")
+        restart_failed_requests.delay(sdate, params.end_date)
         return json.dumps({"message": "success"})
 
 
