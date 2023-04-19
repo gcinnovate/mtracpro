@@ -10,7 +10,7 @@ import phonenumbers
 import tempfile
 from string import Template
 from celery import Celery
-from .celeryconfig import (
+from celeryconfig import (
     BROKER_URL, db_conf, poll_flows, apiv2_endpoint, api_token, config,
     SMB_SERVER_IP, SMB_SERVER_NAME, SMB_USER, SMB_PASSWORD, SMB_DOMAIN_NAME,
     SMB_CLIENT_HOSTNAME, SMB_SHARED_FOLDER, SMB_PORT)
