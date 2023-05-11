@@ -249,7 +249,7 @@ def send_bulksms_task(msg, sms_roles=[], district="", facility="", check_distric
         'facility': facilityStr,
         'role': '%%(%s)%%' % '|'.join(sms_roles)})
 
-    if res:
+    if res and len(res) > 0:
         recipient_uuids = list(res[0]['uuids'])
         sendsms_to_uuids(recipient_uuids, msg)
     try:
