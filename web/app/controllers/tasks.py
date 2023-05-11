@@ -249,9 +249,10 @@ def send_bulksms_task(msg, sms_roles=[], district="", facility="", check_distric
         'facility': facilityStr,
         'role': '%%(%s)%%' % '|'.join(sms_roles)})
 
-    if res and len(res) > 0:
-        recipient_uuids = list(res[0]['uuids'])
-        sendsms_to_uuids(recipient_uuids, msg)
+    if res:
+        recipient_uuids = list(res[0]['uuids']) if res[0] else []
+        if recipient_uuids:
+            sendsms_to_uuids(recipient_uuids, msg)
     try:
         db._ctx.db.close()
     except:
