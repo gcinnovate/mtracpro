@@ -236,7 +236,7 @@ def send_bulksms_task(msg, sms_roles=[], district="", facility="", check_distric
     if facility and (type(facility) == type('')):
         SQL += " AND facilityid=$facility "
         facilityStr = facility
-    if facility and (type(facility) == type([])):
+    if facility and (type(facility) == type([])) and facility != [""]:
         SQL += " AND facilityid = ANY($facility::INT[]) "
         facilityStr = str(facility).replace(
                 '[', '{').replace(']', '}').replace("\'", '\"').replace('u', '')
