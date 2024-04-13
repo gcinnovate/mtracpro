@@ -19,7 +19,7 @@ opts, args = getopt.getopt(
     [])
 
 now = datetime.datetime.now()
-sdate = now - datetime.timedelta(days=0, minutes=5)
+sdate = now - datetime.timedelta(days=0, minutes=30)
 from_date = sdate.strftime('%Y-%m-%d %H:%M')
 update_date = from_date
 
