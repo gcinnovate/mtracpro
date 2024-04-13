@@ -178,7 +178,7 @@ if res:
                 # post_data = json.dumps(data)
                 data = {
                     "name": r['name'],
-                    "urns": [f"tel:{phone}"],
+                    "urns": ["tel:{0}".format(phone)],
                     "email": r['email'],
                     "groups": list(filter(role_filter,r['role'].split(','))),
                     "fields": fields
@@ -190,7 +190,7 @@ if res:
                     "fields": fields
                 }
                 # Let's try getting the contact
-                get_url = "{0}urn={1}".format(endpoint, f"tel:{alt_phone}")
+                get_url = "{0}urn={1}".format(endpoint, "tel:{0}".format(alt_phone))
                 print(get_url)
                 resp = get_request(get_url)
                 json_resp = resp.json()
