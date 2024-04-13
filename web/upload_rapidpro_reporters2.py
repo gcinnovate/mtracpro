@@ -102,7 +102,6 @@ cur.execute(
 )
 
 res = cur.fetchall()
-print(f"Records Found: {len(res)}")
 # sys.exit(1)
 if res:
     for r in res:
@@ -166,7 +165,7 @@ if res:
                 else:
                     pass
             else:
-                print(f"Invalid Phone: {r['telephone']}")
+                print("Invalid Phone: {0}".format(r['telephone']))
 
                 # print resp.text
 
