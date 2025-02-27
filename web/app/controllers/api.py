@@ -319,6 +319,7 @@ class OrderMessage:
         return json.dumps({"message": message})
 
     def POST(self, form):
+        web.header('Content-Type', 'application/json')
         params = web.input()
         if USE_OLD_WEBHOOKS:
             msg = get_webhook_msg_old(params, 'msg')
