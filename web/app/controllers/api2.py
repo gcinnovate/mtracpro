@@ -1,18 +1,54 @@
 import json
 import logging
+import math
+
 from . import db, Indicators, IndicatorsByFormOrder, IndicatorsCategoryCombos, server_apps, get_session
 import web
 from app.tools.utils import post_request
-from settings import config
+from settings import config, APPLY_SMS_LIMITS
 import settings
 import datetime
 from app.tools.utils import get_basic_auth_credentials, auth_user, get_webhook_msg
-from .tasks import send_bulksms_task, send_facility_sms_task, restart_failed_requests
+from .tasks import (send_bulksms_task,
+    send_facility_sms_task, restart_failed_requests, update_user_bulksms_limits)
 
 logging.basicConfig(
     format='%(asctime)s:%(levelname)s:%(message)s', filename='/tmp/mtrackpro-web.log',
     datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG
 )
+
+
+def check_user_bulksms_limits(db_conn, user):
+    res = db_conn.query(
+        "SELECT sms_queued < $daily_limit::int AS can_send FROM bulksms_limits "
+        "WHERE user_id = $user AND day = CURRENT_DATE",
+        {'user': user, 'daily_limit': getattr(settings, 'DAILY_SMS_LIMIT', 200)})
+    if res:
+        return res[0]['can_send']
+    else:
+        return True
+
+def check_can_send_bulksms(dbConn, user_id, msg, groups, facilities, districts):
+    sms_interval = getattr(settings, 'SMS_INTERVAL', 10)
+    res = dbConn.query(
+        "SELECT 1 FROM bulksms_log WHERE user_id=$user AND msg = $msg "
+        "AND groups = $groups AND facilities = $facilities AND districts = districts "
+        "AND created > NOW() - $interval::interval",
+        {
+            "user": user_id, "msg": msg, "groups": groups,
+            "facilities": facilities,"districts": districts, "interval": "%d minutes" % sms_interval}
+        )
+
+    if res:
+        return True
+    return False
+
+def log_sent_bulksms(dbConn, user_id, msg, groups, facilities, districts):
+    dbConn.query(
+        "INSERT INTO bulksms_log (user_id, msg, groups, facilities, districts, created) "
+        "VALUES ($user, $msg, $groups, $facilities, $districts, NOW())",
+            {"user": user_id, "msg": msg, "groups": groups,
+            "facilities": facilities,"districts": districts})
 
 
 class LocationsEndpoint:
@@ -329,8 +365,14 @@ class FacilitySMS:
 
     def POST(self, facilityid):
         params = web.input(role="", sms="")
-        send_facility_sms_task.delay(facilityid, params.sms, params.role)
-        return "<h4>SMS Queued!</h4>"
+        session = get_session()
+        if check_can_send_bulksms(db, session.sesid, params.sms, params.role, facilityid, ""):
+            send_facility_sms_task.delay(facilityid, params.sms, session.sesid, params.role)
+            log_sent_bulksms(db, session.sesid, params.sms, params.role, facilityid, "")
+            return "<h4>SMS Queued!</h4>"
+        else:
+
+            return "<h4>SMS already queued in the last %s minutes!</h4>" % getattr(settings, 'SMS_INTERVAL', 10)
 
 
 class SendBulkSMS:
@@ -344,6 +386,8 @@ class SendBulkSMS:
             return json.dumps({'message': 'You cannot send an empty message!'})
         if not params.sms_roles:
             return json.dumps({'message': 'Please specify a role or list of roles!'})
+        if APPLY_SMS_LIMITS and not check_user_bulksms_limits(db, session.sesid):
+            return json.dumps({'message': 'You have exceeded your daily SMS limits!'})
 
         districts = ['{0}'.format(params.district)]
         if '{' in params.district:  # for the Send SMS to All we pass districts like so, {1, 2, 3} as a string
@@ -354,9 +398,22 @@ class SendBulkSMS:
             check_districts = False
         else:
             check_districts = True
+        # now check if a message wasn't send a short while ago
+        if check_districts:
+            if check_can_send_bulksms(
+                db, session.sesid, params.msg, params.sms_roles, params.sms_facility, params.district):
+                return json.dumps({'message': 'A little patience please your message will be sent.!'})
+        else:
+            if check_can_send_bulksms(
+                db, session.sesid, params.msg, params.sms_roles, params.sms_facility, ""):
+                return json.dumps({'message': 'A little patience please your message will be sent.!'})
 
         send_bulksms_task.delay(
-            params.msg, params.sms_roles, districts, params.sms_facility, check_districts)
+            params.msg, session.sesid, params.sms_roles, districts, params.sms_facility, check_districts)
+        if check_districts:
+            log_sent_bulksms(db, session.sesid, params.msg, params.sms_roles, params.sms_facility, params.district)
+        else:
+            log_sent_bulksms(db, session.sesid, params.msg, params.sms_roles, params.sms_facility, "")
 
         return json.dumps({'message': 'SMS Queued For Submission'})
 
@@ -364,10 +421,12 @@ class SendBulkSMS:
 class SendSMS:
     def POST(self):
         params = web.input(uuid="", sms="")
+        session = get_session()
         post_data = json.dumps({'contacts': [params.uuid], 'text': params.sms})
         try:
             resp = post_request(post_data, '%sbroadcasts.json' % config['api_url'])
             code = "%s" % resp.status_code
+            update_user_bulksms_limits(db, session.sesid, params.sms, len([params.uuid]))
             print(resp.text)
         except:
             code = "400"

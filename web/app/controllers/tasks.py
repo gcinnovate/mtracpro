@@ -7,6 +7,7 @@ import json
 import pyexcel as pe
 import os
 import phonenumbers
+import math
 import tempfile
 from string import Template
 from celery import Celery
@@ -29,6 +30,25 @@ MAX_CHUNK_SIZE = 90
 # )
 # celery -A tasks worker --loglevel=info
 app = Celery("mtrackpro", broker=BROKER_URL)
+
+
+def update_user_bulksms_limits(db_conn, user, msg, recipient_count):
+    sms_in_msg = math.ceil(len(msg)/ 150)
+    number_of_sms = sms_in_msg * recipient_count
+    res = db_conn.query(
+        "SELECT sms_queued FROM bulksms_limits "
+        "WHERE user_id = $user AND day = CURRENT_DATE",{'user': user})
+    if res:
+        db_conn.query(
+            "UPDATE bulksms_limits SET sms_queued = sms_queued + $number_of_sms "
+            "WHERE user_id = $user AND day = CURRENT_DATE",
+            {'user': user, 'number_of_sms': number_of_sms})
+    else:
+        db_conn.query(
+            "INSERT INTO bulksms_limits (user_id, day, sms_queued) "
+        "VALUES ($user, CURRENT_DATE, $number_of_sms)",
+            {'user': user, 'number_of_sms': number_of_sms})
+
 
 
 def read_remote_samba_file(filename, suffix='.xlsx'):
@@ -68,6 +88,7 @@ def format_msisdn(msisdn=None):
         return None
     return phonenumbers.format_number(
         num, phonenumbers.PhoneNumberFormat.E164)
+
 
 
 @app.task(name="add_poll_recipients_task")
@@ -221,7 +242,7 @@ def sendsms_to_uuids(uuid_list, msg):
 
 
 @app.task(name="send_bulksms_task")
-def send_bulksms_task(msg, sms_roles=[], district="", facility="", check_districts=True):
+def send_bulksms_task(msg, user, sms_roles=[], district="", facility="", check_districts=True):
     db = web.database(
         dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], db=db_conf["name"],
         host=db_conf['host'], port=db_conf['port'])
@@ -252,8 +273,9 @@ def send_bulksms_task(msg, sms_roles=[], district="", facility="", check_distric
     if res:
         uuids = res[0]['uuids']
         if uuids:
-            recipient_uuids = list(uuids)
+            recipient_uuids = list(set(uuids))
             sendsms_to_uuids(recipient_uuids, msg)
+            update_user_bulksms_limits(db, user, msg, len(recipient_uuids))
     try:
         db._ctx.db.close()
     except:
@@ -325,7 +347,7 @@ def restart_failed_requests(start_date, end_date):
         pass
 
 @app.task(name="send_facility_sms_task")
-def send_facility_sms_task(facilityid, msg, role=""):
+def send_facility_sms_task(facilityid, msg, user, role=""):
     db = web.database(
         dbn='postgres', user=db_conf['user'], pw=db_conf['passwd'], db=db_conf["name"],
         host=db_conf['host'], port=db_conf['port'])
@@ -338,8 +360,9 @@ def send_facility_sms_task(facilityid, msg, role=""):
     if res:
         uuids = res[0]['uuids']
         if uuids:
-            recipient_uuids = list(uuids)
+            recipient_uuids = list(set(uuids))
             sendsms_to_uuids(recipient_uuids, msg)
+            update_user_bulksms_limits(db, user, msg, len(recipient_uuids))
     try:
         db._ctx.db.close()
     except:

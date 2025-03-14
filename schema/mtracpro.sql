@@ -2,7 +2,7 @@
 -- remeber to add indexes
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION "uuid-ossp";
-CREATE EXTENSION plpythonu;
+CREATE EXTENSION plpython3u;
 CREATE EXTENSION hstore;
 
 -- webpy sessions
@@ -119,11 +119,11 @@ import random
 from uuid import uuid4
 
 
-def id_generator(size=12, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
+def id_generator(size=10, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits):
+    return random.choice(string.ascii_uppercase) + ''.join(random.choice(chars) for _ in range(size))
 
 return id_generator()
-$delim$ LANGUAGE plpythonu;
+$delim$ LANGUAGE plpython3u;
 
 CREATE TABLE locationtree(
     id SERIAL PRIMARY KEY,
@@ -188,16 +188,29 @@ CREATE TABLE rejected_reports(
     updated timestamptz DEFAULT current_timestamp
 );
 
-CREATE INDEX rejected_reports_idx1 ON requests(submissionid);
-CREATE INDEX rejected_reports_idx2 ON requests(status);
-CREATE INDEX rejected_reports_idx3 ON requests(statuscode);
-CREATE INDEX rejected_reports_idx4 ON requests(week);
-CREATE INDEX rejected_reports_idx5 ON requests(month);
-CREATE INDEX rejected_reports_idx6 ON requests(year);
-CREATE INDEX rejected_reports_idx7 ON requests(ctype);
-CREATE INDEX rejected_reports_idx8 ON requests(msisdn);
-CREATE INDEX rejected_reports_idx9 ON requests(facility);
-CREATE INDEX rejected_reports_idx10 ON requests(district);
+CREATE INDEX rejected_reports_idx1 ON rejected_reports(submissionid);
+CREATE INDEX rejected_reports_idx2 ON rejected_reports(status);
+CREATE INDEX rejected_reports_idx3 ON rejected_reports(statuscode);
+CREATE INDEX rejected_reports_idx4 ON rejected_reports(week);
+CREATE INDEX rejected_reports_idx5 ON rejected_reports(month);
+CREATE INDEX rejected_reports_idx6 ON rejected_reports(year);
+CREATE INDEX rejected_reports_idx7 ON rejected_reports(ctype);
+CREATE INDEX rejected_reports_idx8 ON rejected_reports(msisdn);
+CREATE INDEX rejected_reports_idx9 ON rejected_reports(facility);
+CREATE INDEX rejected_reports_idx10 ON rejected_reports(district);
+
+
+CREATE TABLE bulletin(
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    message TEXT,
+    district INTEGER,
+    subcounties INTEGER [] DEFAULT '{}'::INT[],
+    facilities INTEGER [] DEFAULT '{}'::INT[],
+    roles INTEGER [] DEFAULT '{}'::INT[],
+    is_global BOOLEAN DEFAULT FALSE,
+    created timestamptz DEFAULT current_timestamp,
+    updated timestamptz DEFAULT current_timestamp
+);
 
 --FUNCTIONS
 CREATE OR REPLACE FUNCTION public.get_children(loc_id integer)
@@ -360,6 +373,7 @@ CREATE TABLE healthfacilities(
     location BIGINT REFERENCES locations(id), --subcounty
     location_name TEXT NOT NULL DEFAULT '', -- these are done for performance reasons
     is_033b BOOLEAN DEFAULT 't',
+    is_active BOOLEAN DEFAULT 't',
     last_reporting_date DATE,
     created TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -474,6 +488,33 @@ CREATE TABLE kannel_stats(
     created TIMESTAMP NOT NULL DEFAULT NOW(),
     updated TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+-- used to prevent spamming
+CREATE TABLE bulksms_log (
+    id BIGSERIAL PRIMARY KEY NOT NULL,
+    user_id BIGINT REFERENCES users(id),
+    msg TEXT,
+    groups TEXT,
+    districts TEXT,
+    facilities TEXT,
+    created TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated TIMESTAMP NOT NULL DEFAULT NOW()
+);
+CREATE INDEX bulksms_log_userid ON bulksms_log(user_id);
+CREATE INDEX bulksms_log_msg ON bulksms_log(msg);
+CREATE INDEX bulksms_log_groups ON bulksms_log(groups);
+CREATE INDEX bulksms_log_districts ON bulksms_log(districts);
+CREATE INDEX bulksms_log_created ON bulksms_log(created);
+
+CREATE TABLE bulksms_limits(
+    id BIGSERIAL PRIMARY KEY NOT NULL,
+    user_id BIGINT REFERENCES users(id),
+    day DATE,
+    sms_queued BIGINT NOT NULL DEFAULT 0,
+    created TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated TIMESTAMP NOT NULL DEFAULT NOW()
+);
+CREATE INDEX bulksms_limits_userid ON bulksms_limits(user_id);
 
 CREATE VIEW anonymousreports_view AS
     SELECT
@@ -702,13 +743,13 @@ RETURNS TEXT AS $$
     if not j:
         return ''
     return json.dumps(json.loads(j), sort_keys=sort_keys, indent=indent)
-$$ LANGUAGE plpython2u;
+$$ LANGUAGE plpython3u;
 
 CREATE OR REPLACE FUNCTION urlencode(msg TEXT)
 RETURNS TEXT AS $$
     import requests
     return requests.utils.quote(msg)
-$$ LANGUAGE plpython2u;
+$$ LANGUAGE plpython3u;
 
 
 -- Dispatcher-2.1 comes with thes as well
@@ -891,3 +932,34 @@ CREATE VIEW polls_view AS
         a.district_id = b.id
         AND
         c.id = a.facilityid;
+
+CREATE OR REPLACE FUNCTION update_facility_reporters_location (fid BIGINT) RETURNS BOOLEAN AS
+$delim$
+    DECLARE
+    loc_id bigint;
+    loc_name text;
+    d_id bigint;
+    dname text;
+    fcode text;
+    BEGIN
+        SELECT code, location, location_name, district_id, district INTO fcode, loc_id, loc_name, d_id, dname FROM
+            healthfacilities WHERE id = fid;
+        UPDATE reporters SET (reporting_location, reporting_location_name, district_id, updated)
+            = (loc_id, loc_name, d_id, NOW()) WHERE facilityid = fid;
+        UPDATE requests SET district = dname WHERE facility = fcode;
+        RETURN TRUE;
+    END;
+$delim$ LANGUAGE plpgsql;
+
+
+-- Add tables for transfers
+CREATE TABLE transfers(
+    id bigserial PRIMARY KEY NOT NULL,
+    from_district BIGINT REFERENCES locations(id),
+    to_district BIGINT REFERENCES locations(id),
+    reporting_location BIGINT REFERENCES locations(id),
+    facilityid BIGINT REFERENCES healthfacilities(id),
+    reason TEXT,  
+    created timestamptz DEFAULT current_timestamp,
+    updated timestamptz DEFAULT current_timestamp
+);

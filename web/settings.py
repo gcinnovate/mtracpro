@@ -235,7 +235,10 @@ CARAMAL_RESEARCH_TEAM = {
         'Aduku': '',
     },
 }
-
+APPLY_SMS_LIMITS = False
+DAILY_SMS_LIMIT = 100
+# The interval in minutes within which a similar sms is invalidated
+SMS_INTERVAL = 10
 try:
     from local_settings import *
 except ImportError:
