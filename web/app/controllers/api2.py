@@ -36,7 +36,8 @@ def check_can_send_bulksms(dbConn, user_id, msg, groups, facilities, districts):
         "AND created > NOW() - $interval::interval",
         {
             "user": user_id, "msg": msg, "groups": ','.join(groups),
-            "facilities": facilities,"districts": districts, "interval": "%d minutes" % sms_interval}
+            "facilities": ','.join(facilities),"districts": ','.join(districts),
+            "interval": "%d minutes" % sms_interval}
         )
 
     if res:
@@ -48,7 +49,7 @@ def log_sent_bulksms(dbConn, user_id, msg, groups, facilities, districts):
         "INSERT INTO bulksms_log (user_id, msg, groups, facilities, districts, created) "
         "VALUES ($user, $msg, $groups, $facilities, $districts, NOW())",
             {"user": user_id, "msg": msg, "groups": ','.join(groups),
-            "facilities": facilities,"districts": districts})
+            "facilities": ','.join(facilities),"districts": ','.join(districts)})
 
 
 class LocationsEndpoint:
