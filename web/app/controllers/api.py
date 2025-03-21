@@ -311,8 +311,8 @@ class OrderMessage:
         if USE_OLD_WEBHOOKS:
             msg = get_webhook_msg_old(params, 'msg')
         else:
-            payload = json.loads(web.data())
-            msg = get_webhook_msg(payload, 'msg')
+            # payload = json.loads(web.data())
+            msg = get_webhook_msg(params, 'msg')
 
         message = parse_message(msg, form)
 
