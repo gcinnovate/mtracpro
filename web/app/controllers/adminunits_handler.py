@@ -147,7 +147,7 @@ class SearchTree:
         params = web.input(q=None)
         query = (params.q or '').strip()
         if not query:
-            # missing q param → 400
+            # missing q param  400
             web.ctx.status = '400 Bad Request'
             return json.dumps({'error': 'Missing query'})
 
