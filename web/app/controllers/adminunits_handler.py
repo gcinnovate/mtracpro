@@ -169,7 +169,7 @@ class SearchTree:
         results = []
         for r in rows:
             path_str = r.path or ''
-            # split "/a/b/c/" → ['a','b','c']
+            # split "/a/b/c/" to ['a','b','c']
             codes = [p for p in path_str.strip('/').split('/') if p]
             id_path = []
 
