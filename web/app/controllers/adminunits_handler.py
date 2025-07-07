@@ -93,7 +93,7 @@ class AdminUnits:
 
 
 def json_response(data, status=HTTPStatus.OK):
-    web.ctx.status = f"{status.value} {status.phrase}"
+    #web.ctx.status = f"{status.value} {status.phrase}"
     web.header('Content-Type', 'application/json')
     return json.dumps(data)
 
