@@ -57,6 +57,13 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="form-group"><label for="municipality" class="col-lg-3 control-label">Municipality:</label>
+                                            <div class="col-lg-9">
+                                                <select name="municipality" id="municipality" class="form-control" required>
+                                                    <option value="">Select Municipality</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                         <div class="form-group"><label class="col-lg-3 control-label">Subcounty:</label>
                                             <div class="col-lg-9">
                                                 <select name="subcounty" id="subcounty" class="form-control">
@@ -193,6 +200,17 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="form-group"><label for="municipality1" class="col-lg-3 control-label">Municipality:</label>
+                                            <div class="col-lg-9">
+                                                <select name="municipality1" id="municipality1" class="form-control" required>
+                                                    <option value="0">Select Municipality</option>
+<!--                                                    {% for d in districts_1 %}-->
+<!--                                                    <option value="{{ d.id}}" {% if d.id == district.id %} selected="yes" {% endif %}>{{ d.name}}</option>-->
+<!--                                                    {% endfor %}-->
+                                                </select>
+                                            </div>
+                                        </div>
+
                                         <div class="form-group"><label class="col-lg-3 control-label">Subcounty:</label>
                                             <div class="col-lg-9">
                                                 <select name="subcounty" id="subcounty_1" class="form-control">
@@ -296,8 +314,11 @@
                                             <div class="col-lg-offset-3 col-lg-3">
                                                 <button class="btn btn-sm btn-primary" id="sendsms_3" type="submit">Send SMS</button>
                                             </div>
+                                            <div class="col-lg-3">
+                                                <button class="btn btn-sm btn-primary" id="bulletin" type="submit">Set As Android Bulletin</button>
+                                            </div>
                                         </div>
-
+                                        
                                         </form>
                                 </div>
                             </div>
@@ -611,6 +632,26 @@
 
             $('#sendsms_3').click(function(){
                 $.post('/api/v1/sendbulksms?',
+                    $('#sms_all_form').serializeArray(),
+                    function(data){
+                        $.notify({
+                            title: "Response:",
+                            message: data.message
+
+                        },
+                        {
+                            type: data.status,
+                            animate: {
+                                enter: 'animated flipInY',
+                                exit: 'animated flipOutX'
+                            }
+                        });
+                    }, "json");
+                return false;
+            });
+
+            $('#bulletin').click(function(){
+                $.post('/api/v1/createbulletin?',
                     $('#sms_all_form').serializeArray(),
                     function(data){
                         $.notify({

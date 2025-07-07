@@ -55,6 +55,8 @@ from app.controllers.indicators_handler import Indicators
 from app.controllers.rejected_handler import Rejected
 from app.controllers.schedules_handler import Schedules
 from app.controllers.interventions_handler import Interventions, Preview
+from app.controllers.adminunits_handler import GetTree, SearchTree, GetNodeDetails, EditNode
+
 # from app.controllers.transfers_handler import Transfers
 # from app.controllers.queue_mgt_handler import QueueManagement
 
@@ -143,5 +145,9 @@ URLS = (
     r'/reportersupload', ReportersUploadAPI,
     r'/api/v1/reporterhistory/(\+?\w+)/?', ReporterHistoryApi,
     r'/api/v1/indicators', IndicatorsAPI,
-
+    # Hierarchical tree stuff
+    r'/api/tree', GetTree,
+    r'/api/search', SearchTree,
+    r'/api/details', GetNodeDetails,
+    r'/api/edit', EditNode
 )

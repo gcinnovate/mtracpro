@@ -22,6 +22,10 @@ web.config.debug = DEBUG
 app = web.application(URLS, globals(), autoreload=False)
 store = web.session.DBStore(db, 'sessions')
 session = web.session.Session(app, store, initializer={'loggedin': False})
+
+web.config.session_parameters['timeout'] = 300
+web.config.session_parameters['ignore_expiry'] = False
+
 put_session(session)
 
 app.notfound = notfound

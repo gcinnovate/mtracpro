@@ -37,7 +37,7 @@ def sendsms(params):  # params has the sms params
 
 cur.execute(
     "SELECT id, params::text, sched_type FROM schedules WHERE to_char(next_run_at, 'yyyy-mm-dd HH:MI')"
-    " = to_char(now(), 'yyyy-mm-dd HH:MI') "
+    " <= to_char(now(), 'yyyy-mm-dd HH:MI') "
     " AND status = 'ready' FOR UPDATE NOWAIT")
 res = cur.fetchall()
 sched_len = len(res)

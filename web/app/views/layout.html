@@ -153,6 +153,11 @@
                     <a href="/facilities"><i class="fa fa-university"></i> <span class="nav-label">Facilities</span></a>
                 </li>
                 {% endif %}
+                {% if 'can_transfer_reporter' | hasPermission(ses.role, ses.permissions) %}
+                <li>
+                    <a href="/transfers"><i class="fa fa-exchange"></i> <span class="nav-label">Transfers</span></a>
+                </li>
+                {% endif %}
                 {% if 'can_view_polls' | hasPermission(ses.role, ses.permissions) %}
                 <li>
                     <a href="/polling"><i class="fa fa-pie-chart"></i> <span class="nav-label">Polls</span></a>
@@ -224,6 +229,14 @@
     <!-- Custom and plugin javascript -->
     <script src="/static/js/inspinia.js"></script>
     <script src="/static/js/plugins/pace/pace.min.js"></script>
+
+    {{ caller() }}
+{%- endmacro %}
+
+{% macro myscripts2() %}
+    <!-- Mainly scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+
 
     {{ caller() }}
 {%- endmacro %}
