@@ -173,7 +173,7 @@ class SearchTree:
             codes = [p for p in path_str.strip('/').split('/') if p]
             id_path = []
 
-            # look up each code → its numeric ID
+            # look up each code its numeric ID
             for code in codes:
                 recs = list(db.query(
                     "SELECT id FROM locations WHERE code = $code",
@@ -269,7 +269,6 @@ class GetNodeDetails:
                 'parent_name': r.parent_name,
             }, status=HTTPStatus.OK)
 
-        # No rows → 404
         return json_response({'error': 'node not found'}, status=HTTPStatus.NOT_FOUND)
 
 
@@ -306,7 +305,7 @@ class EditNode:
         except Exception as e:
             return json_response({'error': 'update failed'}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
-        # 4. Success → 200 OK with empty JSON body
+        # 4. Success  200 OK with empty JSON body
         web.ctx.status = f"{HTTPStatus.OK.value} {HTTPStatus.OK.phrase}"
         web.header('Content-Type', 'application/json')
         return ''
@@ -350,7 +349,7 @@ class MoveNode:
         except Exception as e:
             return json_response({'error': 'move failed'}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
-        # 4. Success → 200 OK, empty body
+        # 4. Success  200 OK, empty body
         web.ctx.status = f"{HTTPStatus.OK.value} {HTTPStatus.OK.phrase}"
         web.header('Content-Type', 'application/json')
         return ''
@@ -380,7 +379,7 @@ class DeleteNode:
         except Exception as e:
             return json_response({'error': 'delete failed'}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
-        # 4. Success → 200 OK, empty body
+        # 4. Success  200 OK, empty body
         web.ctx.status = f"{HTTPStatus.OK.value} {HTTPStatus.OK.phrase}"
         web.header('Content-Type', 'application/json')
         return ''
