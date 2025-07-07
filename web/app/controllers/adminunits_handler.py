@@ -2,7 +2,19 @@ import web
 from . import csrf_protected, db, require_login, render, get_session
 from app.tools.utils import audit_log
 import json
-from http import HTTPStatus
+
+class HTTPStatus:
+    OK = type('obj', (object,), {'value': 200, 'phrase': 'OK'})()
+    CREATED = type('obj', (object,), {'value': 201, 'phrase': 'Created'})()
+    NOT_FOUND = type('obj', (object,), {'value': 404, 'phrase': 'Not Found'})()
+    BAD_REQUEST = type('obj', (object,), {'value': 400, 'phrase': 'Bad Request'})()
+    INTERNAL_SERVER_ERROR = type('obj', (object,), {'value': 500, 'phrase': 'Internal Server Error'})()
+    FORBIDDEN = type('obj', (object,), {'value': 403, 'phrase': 'Forbidden'})()
+    UNAUTHORIZED = type('obj', (object,), {'value': 401, 'phrase': 'Unauthorized'})()
+    METHOD_NOT_ALLOWED = type('obj', (object,), {'value': 405, 'phrase': 'Method Not Allowed'})()
+    CONFLICT = type('obj', (object,), {'value': 409, 'phrase': 'Conflict'})()
+    GONE = type('obj', (object,), {'value': 410, 'phrase': 'Gone'})()
+    PRECONDITION_FAILED = type('obj', (object,), {'value': 412, 'phrase': 'Precondition Failed'})()
 
 
 class AdminUnits:
