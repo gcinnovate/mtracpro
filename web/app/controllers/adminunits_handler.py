@@ -93,7 +93,7 @@ class AdminUnits:
 
 
 def json_response(data, status=HTTPStatus.OK):
-    #web.ctx.status = f"{status.value} {status.phrase}"
+    web.ctx.status = "%s %s" % (status.value, status.phrase)
     web.header('Content-Type', 'application/json')
     return json.dumps(data)
 
@@ -223,7 +223,7 @@ class EditNode:
             return json_response({'error': 'update failed'}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
         # Return 200 OK with empty body
-        web.ctx.status = f"{HTTPStatus.OK.value} {HTTPStatus.OK.phrase}"
+        web.ctx.status = "%s %s" % (HTTPStatus.OK.value, HTTPStatus.OK.phrase)
         web.header('Content-Type', 'application/json')
         return ''
 
@@ -306,7 +306,7 @@ class EditNode:
             return json_response({'error': 'update failed'}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
         # 4. Success  200 OK with empty JSON body
-        web.ctx.status = f"{HTTPStatus.OK.value} {HTTPStatus.OK.phrase}"
+        web.ctx.status = "%s %s" % (HTTPStatus.OK.value, HTTPStatus.OK.phrase)
         web.header('Content-Type', 'application/json')
         return ''
 
@@ -318,7 +318,7 @@ class RefreshHierarchy:
         except Exception as e:
             return json_response({'error': 'refresh failed'}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
-        web.ctx.status = f"{HTTPStatus.OK.value} {HTTPStatus.OK.phrase}"
+        web.ctx.status = "%s %s" % (HTTPStatus.OK.value, HTTPStatus.OK.phrase)
         web.header('Content-Type', 'application/json')
         return ''
 
@@ -350,7 +350,7 @@ class MoveNode:
             return json_response({'error': 'move failed'}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
         # 4. Success  200 OK, empty body
-        web.ctx.status = f"{HTTPStatus.OK.value} {HTTPStatus.OK.phrase}"
+        web.ctx.status = "%s %s" % (HTTPStatus.OK.value, HTTPStatus.OK.phrase)
         web.header('Content-Type', 'application/json')
         return ''
 
@@ -380,7 +380,7 @@ class DeleteNode:
             return json_response({'error': 'delete failed'}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
         # 4. Success  200 OK, empty body
-        web.ctx.status = f"{HTTPStatus.OK.value} {HTTPStatus.OK.phrase}"
+        web.ctx.status = "%s %s" % (HTTPStatus.OK.value, HTTPStatus.OK.phrase)
         web.header('Content-Type', 'application/json')
         return ''
 
