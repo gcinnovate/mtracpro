@@ -160,7 +160,7 @@ class SearchTree:
                     OR code ILIKE $search
                  LIMIT 50
             """
-            rows = db.query(sql, vars={'search': f'%%{query}%%'})
+            rows = db.query(sql, vars={'search': '%%%s%%' % query})
         except Exception as e:
             # logging.error('searchTree query failed: %s', e)
             web.ctx.status = '500 Internal Server Error'
