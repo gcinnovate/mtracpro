@@ -69,21 +69,30 @@ def get_facility_details(facilityJson):
     parent = re.sub(
         'Subcounty.*$|Sub\ County.*$', "", facilityJson["parent"]["name"],
         flags=re.IGNORECASE).strip()
-    district_url = "%s/%s.json?fields=id,name,parent[id,name]" % (config["orgunits_url"], facilityJson["parent"]["id"])
+    district_url = "%s/%s.json?fields=id,name,parent[id,name,parent[id,name]]" % (config["orgunits_url"], facilityJson["parent"]["id"])
     print(district_url)
     districtJson = get_url(district_url)
     # district = json.loads(districtJson)["parent"]["name"].replace('District', '').strip()
     print(districtJson)
     district = re.sub(
         'District.*$', "",
-        json.loads(districtJson)["parent"]["name"], flags=re.IGNORECASE).strip()
+        json.loads(districtJson)["parent"]["parent"]["name"], flags=re.IGNORECASE).strip()
 
     orgunitGroups = facilityJson["organisationUnitGroups"]
     orgunitGroupsIds = ["%s" % k["id"] for k in orgunitGroups]
-    for k, v in config["levels"].iteritems():
+    try:
+        # Python 2
+        config_levels_items = config["levels"].iteritems()
+        config_owners_items = config["owners"].iteritems()
+    except AttributeError:
+        # Python 3
+        config_levels_items = config["levels"].items()
+        config_owners_items = config["owners"].items()
+
+    for k, v in config_levels_items:
         if k in orgunitGroupsIds:
             level = v
-    for k, v in config["owners"].iteritems():
+    for k, v in config_owners_items:
         if k in orgunitGroupsIds:
             owner = v
 
@@ -101,7 +110,7 @@ def get_facility_details(facilityJson):
     return has_no_datasets, parent, district, level, is_033b, owner, is_active
 
 if SYNC_ALL:
-    SYNC_URL = ("%s.json?level=5&fields=id,name&paging=false")
+    SYNC_URL = ("%s.json?level=6&fields=id,name&paging=false")
     url_to_call = SYNC_URL % (config["orgunits_url"])
     print(url_to_call)
 
@@ -111,8 +120,10 @@ if SYNC_ALL:
         response = get_url(url_to_call)
         orgunits_dict = json.loads(response)
         orgunits = orgunits_dict['organisationUnits']
-    except:
-        pass
+    except Exception as e:
+        print(str(e))
+        orgunits = []
+
     facility_ids = []
     for orgunit in orgunits:
         #  print "processing for Facility:%s" % orgunit["id"]
@@ -178,9 +189,9 @@ print(URL)
 print(orgunits)
 for orgunit in orgunits:
     try:
-        hasNoDatasets, subcounty, district, level, is_033b, is_active = get_facility_details(orgunit)
-    except:
-        print(">>>>FAILED: ", orgunit)
+        hasNoDatasets, subcounty, district, level, is_033b, owner, is_active = get_facility_details(orgunit)
+    except Exception as e:
+        print(">>>>FAILED: ", " ERROR: ", str(e), " ORGUNIT:", orgunit)
         continue
     if not level:
         continue

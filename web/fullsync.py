@@ -58,21 +58,30 @@ def get_facility_details(facilityJson):
         flags=re.IGNORECASE).strip()
     parent_id = facilityJson["parent"]["id"]
     # parent = facilityJson["parent"]["name"]
-    district_url = "%s/%s.json?fields=id,name,parent[id,name]" % (config["orgunits_url"], facilityJson["parent"]["id"])
+    district_url = "%s/%s.json?fields=id,name,parent[id,name,parent[id,name]]" % (config["orgunits_url"], facilityJson["parent"]["id"])
     print(district_url)
     districtJson = get_url(district_url)
     # print districtJson
     # district = json.loads(districtJson)["parent"]["name"].replace('District', '').strip()
     district = re.sub(
         'District.*$', "",
-        json.loads(districtJson)["parent"]["name"], flags=re.IGNORECASE).strip()
+        json.loads(districtJson)["parent"]["parent"]["name"], flags=re.IGNORECASE).strip()
 
     orgunitGroups = facilityJson["organisationUnitGroups"]
     orgunitGroupsIds = ["%s" % k["id"] for k in orgunitGroups]
-    for k, v in config["levels"].iteritems():
+    try:
+        # Python 2
+        config_levels_items = config["levels"].iteritems()
+        config_owners_items = config["owners"].iteritems()
+    except AttributeError:
+        # Python 3
+        config_levels_items = config["levels"].items()
+        config_owners_items = config["owners"].items()
+
+    for k, v in config_levels_items:
         if k in orgunitGroupsIds:
             level = v
-    for k, v in config["owners"].iteritems():
+    for k, v in config_owners_items:
         if k in orgunitGroupsIds:
             owner = v
 
