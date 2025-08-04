@@ -8,6 +8,7 @@ controllers of the app.
 import web
 import json
 import datetime
+import base64
 import settings
 from web.contrib.template import render_jinja
 from settings import (absolute, config)
@@ -400,3 +401,39 @@ def require_login(f):
         return f(*args, **kwargs)
 
     return decorated
+
+
+def auth_user(db, username, password):
+    sql = (
+        "SELECT a.id, a.firstname, a.lastname, b.name as role, a.districts "
+        "FROM users a, user_roles b "
+        "WHERE username = $username AND password = crypt($passwd, password) "
+        "AND a.user_role = b.id AND is_active = 't'")
+    res = db.query(sql, {'username': username, 'passwd': password})
+    if not res:
+        return False, "Wrong username or password"
+    else:
+        return True, res[0]
+
+
+def check_auth(auth_header):
+    if auth_header is None:
+        return False
+    auth_type, credentials = auth_header.split(' ', 1)
+    if auth_type.lower() != 'basic':
+        return False
+    decoded_credentials = base64.b64decode(credentials).decode('utf-8')
+    username, password = decoded_credentials.split(':', 1)
+    ok, _ = auth_user(db, username, password)
+    return ok
+
+
+def basic_auth_required(func):
+    def wrapper(*args, **kwargs):
+        auth_header = web.ctx.env.get('HTTP_AUTHORIZATION')
+        if not check_auth(auth_header):
+            web.header('WWW-Authenticate', 'Basic realm="Protected"')
+            web.ctx.status = '401 Unauthorized'
+            return 'Unauthorized'
+        return func(*args, **kwargs)
+    return wrapper

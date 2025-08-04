@@ -134,6 +134,7 @@ for dhis2id in dhis2_ids:
             'subcounty': subcounty, 'subcounty_uid': subcounty_uid, 'is_033b': is_033b, 'owner': owner,
             'code': orgunit["id"], 'is_active': 't' if is_active else 'f'
         }
+        # print("Params:",  sync_params)
         try:
             resp = get_url(config["sync_url"], sync_params)
             # print(sync_params)

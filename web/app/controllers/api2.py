@@ -145,8 +145,8 @@ class CreateFacility:
         )
         username = params.username
         password = params.password
-        r = auth_user(db, username, password)
-        if not r[0]:
+        auth_resp = auth_user(db, username, password)
+        if not auth_resp[0]:
             return "Unauthorized access"
 
         with db.transaction():
@@ -156,10 +156,10 @@ class CreateFacility:
                 {'name': params.ftype.lower()})
             if res:
                 type_id = res[0]["id"]
-                r = db.query(
+                facility_resp = db.query(
                     "SELECT id FROM healthfacilities WHERE code = $code",
                     {'code': params.code})
-                if not r:
+                if not facility_resp:
                     logging.debug("Creating facility with ID:%s" % params.code)
                     new = db.query(
                         "INSERT INTO healthfacilities "
@@ -173,26 +173,37 @@ class CreateFacility:
                         })
                     if new:
                         facility_id = new[0]["id"]
-                        d = db.query(
-                            "SELECT id FROM locations WHERE lower(name) = $district "
-                            "AND type_id = 3", {'district': params.district.lower()})
-                        if d:
-                            district_id = d[0]["id"]
+                        district_res = db.query(
+                            "SELECT id, lft, rght FROM locations WHERE lower(name) = $district "
+                            "AND type_id = (SELECT id FROM locationtype WHERE name = 'district')",
+                            {'district': params.district.lower()})
+                        if district_res:
+                            district = district_res[0]
+                            district_id = district["id"]
+                            lft = district["lft"]
+                            rght = district["rght"]
                             db.query(
                                 "UPDATE healthfacilities SET district_id = $district_id "
                                 " WHERE id = $facility",
                                 {'district_id': district_id, 'facility': facility_id})
                             res2 = db.query(
                                 "SELECT id FROM locations "
-                                "WHERE name ilike $name AND type_id = 4"
-                                " AND tree_parent_id = $district",
-                                {'name': '%s' % params.subcounty, 'district': district_id})
+                                "WHERE name ilike $name AND type_id = (SELECT id FROM locationtype WHERE name = 'subcounty')"
+                                " AND tree_parent_id IN (SELECT id FROM locations WHERE "
+                                " (lft > $lft AND rght < $rght) AND type_id = "
+                                "(SELECT id FROM locationtype WHERE name = 'municipality')",
+                                {'name': '%s' % params.subcounty, 'district': district_id, 'lft': lft, 'rght': rght})
+                            # res2 = db.query(
+                            #     "SELECT id FROM locations WHERE name ilike $name AND type_id = "
+                            #     "(SELECT id FROM locationtype WHERE name = 'subcounty') "
+                            #     " AND dhis2id =$uid",
+                            #     {'name': '%s' % params.subcounty, 'uid': params.subcounty_uid})
                             if res2:
                                 # we have a sub county in mTrac
                                 subcounty_id = res2[0]["id"]
-                                ### Save Dhis2 uid for subcounty
-                                db.query("UPDATE locations SET dhis2id = $uid WHERE id = $id", {
-                                    'uid': params.subcounty_uid, 'id': subcounty_id})
+                                # ### Save Dhis2 uid for subcounty
+                                # db.query("UPDATE locations SET dhis2id = $uid WHERE id = $id", {
+                                #     'uid': params.subcounty_uid, 'id': subcounty_id})
                                 db.query(
                                     "UPDATE healthfacilities SET location = $loc, "
                                     "location_name = $loc_name"
@@ -215,7 +226,7 @@ class CreateFacility:
                 else:
                     # facility with passed uuid already exists
                     logging.debug("updating facility with ID:%s" % params.code)
-                    facility_id = r[0]["id"]
+                    facility_id = facility_resp[0]["id"]
                     db.query(
                         "UPDATE healthfacilities SET "
                         "name = $name, code = $dhis2id, type_id = $type, district = $district, "
@@ -226,25 +237,34 @@ class CreateFacility:
                             'district': params.district, 'facility': facility_id, 'is_033b': params.is_033b})
 
                     logging.debug("Set h033b for facility with ID:%s to %s" % (params.code, params.is_033b))
-                    d = db.query(
-                        "SELECT id FROM locations WHERE lower(name) = $name "
-                        "AND type_id = 3", {'name': params.district.lower()})
-                    if d:
-                        district_id = d[0]["id"]
+                    district_res = db.query(
+                        "SELECT id, lft, rght FROM locations WHERE lower(name) = $name "
+                        "AND type_id = (SELECT id FROM locationtype WHERE name = 'district')",
+                        {'name': params.district.lower()})
+                    if district_res:
+                        district = district_res[0]
+                        district_id = district["id"]
                         db.query(
                             "UPDATE healthfacilities SET district_id = $district_id "
                             "WHERE id = $facility ", {
                                 'facility': facility_id, 'district_id': district_id})
                         res2 = db.query(
-                            "SELECT id FROM locations WHERE name ilike $name AND type_id = 4"
-                            " AND tree_parent_id = $district",
-                            {'name': '%s' % params.subcounty.strip(), 'district': district_id})
+                            "SELECT id FROM locations WHERE name ilike $name AND type_id = "
+                            "(SELECT id FROM locationtype WHERE name = 'subcounty') "
+                            " AND tree_parent_id IN (SELECT id FROM locations WHERE "
+                            " (lft > $lft AND rght < $rght) AND type_id = "
+                            " (SELECT id FROM locationtype WHERE name = 'municipality')) ",
+                            {
+                                'name': '%s' % params.subcounty.strip(),
+                                'district': district_id, 'uid': params.subcounty_uid,
+                                'lft': district["lft"], 'rght': district["rght"],
+                            })
                         if res2:
                             # we have a sub county in mTrac
                             subcounty_id = res2[0]["id"]
                             ### Save Dhis2 uid for subcounty
-                            db.query("UPDATE locations SET dhis2id = $uid WHERE id = $id", {
-                                'uid': params.subcounty_uid, 'id': subcounty_id})
+                            # db.query("UPDATE locations SET dhis2id = $uid WHERE id = $id", {
+                            #     'uid': params.subcounty_uid, 'id': subcounty_id})
                             logging.debug(
                                 "Sub county:%s set for facility with ID:%s" %
                                 (params.subcounty, params.code))

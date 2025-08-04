@@ -101,7 +101,9 @@ def get_basic_auth_credentials():
     if not auth:
         return (None, None)
     auth = re.sub('^Basic ', '', auth)
-    username, password = base64.decodestring(auth).split(':')
+    #username, password = base64.decodestring(auth).split(':')
+    decoded = base64.decodebytes(auth.encode('utf-8'))
+    username, password = decoded.decode('utf-8').split(':')
     return username, password
 
 
@@ -355,3 +357,34 @@ def store_file_on_samba_server(file_name):
         return True
     except:
         False
+
+
+def parse_pagination(page_param, page_size_param, default_page=1, default_page_size=50, max_page_size=100):
+    try:
+        page = int(page_param)
+    except ValueError:
+        page = default_page
+    if page < 1:
+        page = 1
+    try:
+        page_size = int(page_size_param)
+    except ValueError:
+        page_size = default_page_size
+    if page_size < 1:
+        page_size = 1
+    if page_size > max_page_size:
+        page_size = max_page_size
+    offset = (page - 1) * page_size
+    return page, page_size, offset
+
+def fields_clause_from_param(fields_param, allowed_fields):
+    if not fields_param:
+        return "*"
+    requested_fields = [f.strip() for f in fields_param.split(',')]
+    selected_fields = [f for f in requested_fields if f in allowed_fields]
+    return ", ".join(selected_fields) if selected_fields else "*"
+
+def where_clause_from_conditions(conditions):
+    return "WHERE " + " AND ".join(conditions) if conditions else ""
+
+

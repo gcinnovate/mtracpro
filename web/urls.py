@@ -56,6 +56,8 @@ from app.controllers.rejected_handler import Rejected
 from app.controllers.schedules_handler import Schedules
 from app.controllers.interventions_handler import Interventions, Preview
 from app.controllers.adminunits_handler import GetTree, SearchTree, GetNodeDetails, EditNode
+from app.controllers.requests_api import RequestsAPI
+from app.controllers.servers_api import ServersAPI, ServerSuspend, ServerResume
 
 # from app.controllers.transfers_handler import Transfers
 # from app.controllers.queue_mgt_handler import QueueManagement
@@ -145,6 +147,10 @@ URLS = (
     r'/reportersupload', ReportersUploadAPI,
     r'/api/v1/reporterhistory/(\+?\w+)/?', ReporterHistoryApi,
     r'/api/v1/indicators', IndicatorsAPI,
+    r'/api/v1/requests', RequestsAPI,
+    r'/api/v1/servers', ServersAPI,
+    r'/api/v1/servers/(\d+)/suspend', ServerSuspend,
+    r'/api/v1/servers/(\d+)/resume', ServerResume,
     # Hierarchical tree stuff
     r'/api/tree', GetTree,
     r'/api/search', SearchTree,

@@ -144,7 +144,7 @@ if SYNC_ALL:
         conn.commit()
     facility_id_list = ','.join(facility_ids)
 
-if FORCE_SYNC:  # this is only used when you want to sync the contents alread id sync db
+if FORCE_SYNC:  # this is only used when you want to sync the contents already id sync db
     logging.debug("START FULL SYNC for DB")
     cur.execute(
         "SELECT id, name, dhis2id, district, subcounty, level, is_033b "
