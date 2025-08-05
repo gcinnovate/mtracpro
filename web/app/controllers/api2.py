@@ -191,7 +191,7 @@ class CreateFacility:
                                 "WHERE name ilike $name AND type_id = (SELECT id FROM locationtype WHERE name = 'subcounty')"
                                 " AND tree_parent_id IN (SELECT id FROM locations WHERE "
                                 " (lft > $lft AND rght < $rght) AND type_id = "
-                                "(SELECT id FROM locationtype WHERE name = 'municipality')",
+                                "(SELECT id FROM locationtype WHERE name = 'municipality'))",
                                 {'name': '%s' % params.subcounty, 'district': district_id, 'lft': lft, 'rght': rght})
                             # res2 = db.query(
                             #     "SELECT id FROM locations WHERE name ilike $name AND type_id = "
