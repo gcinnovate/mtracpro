@@ -83,7 +83,6 @@ class RequestsAPI:
                 except ValueError:
                     pass
 
-
         web.header('Content-Type', 'application/json')
         return json.dumps({
             'page': page,

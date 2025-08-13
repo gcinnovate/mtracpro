@@ -2,15 +2,16 @@ import json
 import logging
 import math
 
-from . import db, Indicators, IndicatorsByFormOrder, IndicatorsCategoryCombos, server_apps, get_session
+from . import db, Indicators, IndicatorsByFormOrder, IndicatorsCategoryCombos, server_apps, get_session, require_login
 import web
-from app.tools.utils import post_request
+from app.tools.utils import post_request, lit
+from app.tools.pagination2 import doquery, countquery
 from settings import config, APPLY_SMS_LIMITS
 import settings
 import datetime
 from app.tools.utils import get_basic_auth_credentials, auth_user, get_webhook_msg
 from .tasks import (send_bulksms_task,
-    send_facility_sms_task, restart_failed_requests, update_user_bulksms_limits)
+                    send_facility_sms_task, restart_failed_requests, update_user_bulksms_limits, sync_facility_task)
 
 logging.basicConfig(
     format='%(asctime)s:%(levelname)s:%(message)s', filename='/tmp/mtrackpro-web.log',
@@ -545,3 +546,45 @@ class DeleteRequest:
         except:
             return json.dumps({"message": "failed"})
         return json.dumps({"message": "success"})
+
+
+class SyncFacilities:
+    @require_login
+    def GET(self):
+        params = web.input(search="", district="", subcounty="")
+        session = get_session()
+        print("params: ", params)
+        if session.role == 'District User':
+            criteria = "is_active = 't' AND district_id = ANY('%s'::INT[]) " % session.districts_array
+            if params.search:
+                criteria += (" AND name ilike '%%%%%s%%%%' " % params.search )
+
+            if params.subcounty:
+                criteria += ( " AND location = %s " % params.subcounty)
+
+        else:
+            criteria = " is_active = 't' "
+
+            if params.search:
+                criteria += (" AND name ilike '%%%%%s%%%%' " % params.search )
+
+            if params.subcounty:
+                criteria += ( " AND location = %s " % params.subcounty)
+
+        dic = lit(
+            relations='healthfacilities', fields="code",
+            criteria=criteria,
+            order="district, name asc")
+        facilities = doquery(db, dic)
+        uids = [f.code for f in facilities]
+        if len(uids) > 0:
+            pg_conn_params = {
+                "host": config.get("db_host", "localhost"),
+                "port": config.get("db_port", "5432"),
+                "dbname": config.get("db_name", "mtrack_latest"),
+                "user": config.get("db_user", "postgres"),
+                "password": config.get("db_passwd", "")
+            }
+            sync_facility_task.delay(uids, pg_conn_params)
+            return json.dumps({"status": "success", "facilities": uids})
+        return json.dumps({"status": "error"})

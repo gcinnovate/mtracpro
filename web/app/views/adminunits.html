@@ -78,6 +78,9 @@
         <button id="exportBtn" class="btn btn-info mb-3">📤 Export Tree</button>
         &nbsp; &nbsp;
         <button id="refreshBtn" class="btn btn-warning mb-3">🔄 Refresh Hierarchy</button>
+
+        &nbsp; &nbsp;
+        <button id="syncDhis2Btn" class="btn btn-success mb-3">🔃 Sync with base DHIS2</button>
     </div>
 </div>
 
@@ -572,6 +575,35 @@
                                 'json'
                             );
                             swal("Refresh!", "Hierarchy has been refreshed.");
+                            return false;
+                        } else {
+                            swal("Cancelled", "Hierarch not refreshed!", "error");
+                            return false;
+                        }
+                    });
+               });
+
+               $('#syncDhis2Btn').on('click', function (e) {
+                    swal({
+                        title: "Are you sure?",
+                        text: "Your will sync OrgUnit hierarchy with DHIS2. From DLG/Municipality level to subcounties",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Yes, sync with DHIS2!",
+                        cancelButtonText: "No, cancel please!",
+                        closeOnConfirm: false,
+                        closeOnCancel: false },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            $.post(
+                                '/api/sync_hierarchy',
+                                function(data){
+                                    /**/
+                                },
+                                'json'
+                            );
+                            swal("Refresh!", "Hierarchy will be synced with DHIS2 in the background.");
                             return false;
                         } else {
                             swal("Cancelled", "Hierarch not refreshed!", "error");

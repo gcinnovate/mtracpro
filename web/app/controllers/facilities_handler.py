@@ -9,6 +9,8 @@ class Facilities:
     @require_login
     def GET(self):
         params = web.input(page=1, ed="", d_id="", search="", subcounty="")
+        search = params.search
+        subcounty = params.subcounty
         edit_val = params.ed
         session = get_session()
         try:

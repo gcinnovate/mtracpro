@@ -40,6 +40,8 @@
                     <div id="tab-1" class="tab-pane active">
                         <div class="panel-body">
                             <form class="form-horizontal" role="form" method="get" data-toggle="validator">
+                                <input type="hidden" name="search_term" id="search_term" value="{{ search}}"/>
+                                <input type="hidden" name="subcounty" id="search_subcounty" value="{{ subcounty}}"/>
 
                             <div class="row">
                                 <div class="col-lg-12">
@@ -222,6 +224,8 @@
                 <div class="ibox-title">
                     <h5>Health Facilities</h5>
                     <div class="ibox-tools">
+                        <button class="btn btn-primary btn-outline dim sync_btn1" name="abtn" value="Sync Facilities"><i class="fa fa-refresh"></i> Sync Facilities</button>
+                        &nbsp;&nbsp;&nbsp;
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
                         </a>
@@ -274,6 +278,8 @@
 												<i title="SMS" class="fa fa-envelope-o"></i>
 										</button>
                                         {% endif %}
+                                       &nbsp; &nbsp;
+                                        <button class="btn btn-white btn-xs sync_btn" id="_{{facility.code}}"><i title="Sync Facility" class="fa fa-refresh"></i></button>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -480,7 +486,143 @@
                             });
                         }, "json");
                     return false;
-                }); 
+                });
+
+                $('.sync_btn').click(function () {
+                    uid = $(this).attr('id');
+
+                    swal({
+                            title: "Are you sure?",
+                            text: "This will sync the facility all over from DHIS2",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Yes, sync it!",
+                            cancelButtonText: "No, cancel please!",
+                            closeOnConfirm: false,
+                            closeOnCancel: false },
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $.post(
+                                    '/api/sync_facility/' + uid.replace("_", ""),
+                                    {uid: uid.replace("_", "")},
+                                    function(data){
+                                        if (data.message == "success"){
+                                            /* remove row from table */
+                                        };
+                                    },
+                                    'json'
+                                );
+                                swal("Sync Facility!", "Sync process running in background.", "success");
+                                return false;
+                            } else {
+                                swal("Cancelled", "Sync aborted!", "error");
+                                return false;
+                            }
+                        }
+                    );
+                });
+                $('.details_btn').click(function(){
+                    id = $(this).attr('id');
+                    $.get('/api/v1/facility_details/'+ id, {},
+                        function (data){
+                        const content = `
+<table style="
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+  ">
+    <tbody>
+      <tr>
+        <th style="text-align:left; padding:8px; border-bottom:1px solid #ddd;">
+          Name
+        </th>
+        <td style="padding:8px; border-bottom:1px solid #ddd;">
+          ${data.name}
+        </td>
+      </tr>
+      <tr>
+        <th style="text-align:left; padding:8px; border-bottom:1px solid #ddd;">
+          Code/DHIS2 UID
+        </th>
+        <td style="padding:8px; border-bottom:1px solid #ddd;">
+          ${data.code}
+        </td>
+      </tr>
+      <tr>
+        <th style="text-align:left; padding:8px; border-bottom:1px solid #ddd;">
+          Last Reported
+        </th>
+        <td style="padding:8px; border-bottom:1px solid #ddd;">
+          ${data.last_reporting_date}
+        </td>
+      </tr>
+      <tr>
+        <th style="text-align:left; padding:8px; border-bottom:1px solid #ddd;">
+          District
+        </th>
+        <td style="padding:8px; border-bottom:1px solid #ddd;">
+          ${data.district}
+        </td>
+      </tr>
+      <tr>
+        <th style="text-align:left; padding:8px;">
+          Subcounty
+        </th>
+        <td style="padding:8px;">
+          ${data.subcounty || '—'}
+        </td>
+      </tr>
+      <tr>
+        <th style="text-align:left; padding:8px;">
+          Is 033B Reporting?
+        </th>
+        <td style="padding:8px;">
+          ${data.is_033b }
+        </td>
+      </tr>
+    </tbody>
+  </table>
+`;
+                        $('#modal_res').html(content);
+                        $('#myModal2').modal('show');
+
+                    }, 'json');
+                });
+
+
+                $('.sync_btn1').click(function () {
+                    search_term = $('#search_term').val();
+                    search_subcounty = $('#search_subcounty').val();
+                    swal({
+                            title: "Are you sure?",
+                            text: "This will sync the facilities all over from DHIS2",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Yes, sync them!",
+                            cancelButtonText: "No, cancel please!",
+                            closeOnConfirm: false,
+                            closeOnCancel: false },
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $.get(
+                                    '/api/sync_facilities',
+                                    {search: search_term, subcounty: search_subcounty},
+                                    function(data){
+                                        console.log(data);
+                                    },
+                                    'json'
+                                );
+                                swal("Sync Facilities!", "Sync process running in background.", "success");
+                                return false;
+                            } else {
+                                swal("Cancelled", "Sync facilities aborted!", "error");
+                                return false;
+                            }
+                        }
+                    );
+                });
 
             });
         </script>

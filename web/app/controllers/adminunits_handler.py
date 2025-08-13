@@ -2,6 +2,10 @@ import web
 from . import csrf_protected, db, require_login, render, get_session
 from app.tools.utils import audit_log
 import json
+from requests.auth import HTTPBasicAuth
+from settings import config
+from .tasks import sync_administrative_units_task, sync_facility_task
+
 
 class HTTPStatus:
     OK = type('obj', (object,), {'value': 200, 'phrase': 'OK'})()
@@ -434,4 +438,61 @@ class CreateNode:
 
         # 4. Return the newly created ID
         return json_response({'id': new_id}, status=HTTPStatus.OK)
+
+
+class SyncHierarchy:
+    @require_login
+    def POST(self):
+        dhis2_url = config.get("orgunits_url", "https://hmis.health.go.ug/api/organisationUnits")
+        dhis2_auth = [config.get("dhis2_user", "admin"), config.get("dhis2_passwd", "district")]
+        pg_conn_params = {
+            "host": config.get("db_host", "localhost"),
+            "port": config.get("db_port", "5432"),
+            "dbname": config.get("db_name", "mtrack_latest"),
+            "user": config.get("db_user", "postgres"),
+            "password": config.get("db_passwd", "")
+        }
+        # log the sync of administrative units by printing to the console
+        print("Syncing administrative units from DHIS2 to mTrack database")
+        sync_administrative_units_task.delay(dhis2_url, dhis2_auth, pg_conn_params)
+
+
+class SyncFacility:
+    @require_login
+    def POST(self, uid):
+        pg_conn_params = {
+            "host": config.get("db_host", "localhost"),
+            "port": config.get("db_port", "5432"),
+            "dbname": config.get("db_name", "mtrack_latest"),
+            "user": config.get("db_user", "postgres"),
+            "password": config.get("db_passwd", "")
+        }
+        print("Syncing facility: {} from DHIS2 to mTrack database".format(uid))
+        sync_facility_task.delay([uid], pg_conn_params)
+
+
+class FacilityDetails:
+    def GET(self, facility_id):
+        rs = db.query(
+            "SELECT id, name, code, district, location_name, is_033b, "
+            "COALESCE(TO_CHAR(last_reporting_date, 'YYYY-MM-DD'), '') AS last_reporting_date,"
+            " is_active FROM healthfacilities WHERE id = $facility_id", {'facility_id': facility_id}
+        )
+        if rs:
+            ret = rs[0]
+            facility = {
+                'id': ret['id'],
+                'name': ret['name'],
+                'code': ret['code'],
+                'district': ret['district'],
+                'subcounty': ret['location_name'],
+                'is_033b': ret['is_033b'],
+                'last_reporting_date': ret['last_reporting_date'],
+                'is_active': ret['is_active'],
+
+            }
+            return json_response(facility, status=HTTPStatus.OK)
+        else:
+            return json_response({"error": "Facility not found"}, status=HTTPStatus.NOT_FOUND)
+
 

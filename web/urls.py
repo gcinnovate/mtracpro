@@ -16,7 +16,7 @@ from app.controllers.api2 import (
     CreateFacility, ReportForms, IndicatorHtml,
     FacilitySMS, SendSMS, RequestDetails, SendBulkSMS,
     DeleteRequest, DeleteServer, ServerDetails,
-    RetryFailed
+    RetryFailed, SyncFacilities
 )
 from app.controllers.api3 import EditReport, ReportingWeek, ReporterHistoryApi
 from app.controllers.api4 import ReportersUploadAPI
@@ -55,7 +55,8 @@ from app.controllers.indicators_handler import Indicators
 from app.controllers.rejected_handler import Rejected
 from app.controllers.schedules_handler import Schedules
 from app.controllers.interventions_handler import Interventions, Preview
-from app.controllers.adminunits_handler import GetTree, SearchTree, GetNodeDetails, EditNode
+from app.controllers.adminunits_handler import (
+    GetTree, SearchTree, GetNodeDetails, EditNode, SyncHierarchy, SyncFacility,FacilityDetails)
 from app.controllers.requests_api import RequestsAPI
 from app.controllers.servers_api import ServersAPI, ServerSuspend, ServerResume
 
@@ -132,6 +133,7 @@ URLS = (
     r'/api/v1/reportforms/(\w+)/?', ReportForms,
     r'/api/v1/indicatorhtml/(\w+)/?', IndicatorHtml,
     r'/api/v1/facilitysms/(\d+)/?', FacilitySMS,
+    r'/api/v1/facility_details/(\d+)/?', FacilityDetails,
     r'/api/v1/sendsms', SendSMS,
     r'/api/v1/sendbulksms', SendBulkSMS,
     r'/api/v1/request_details/(\d+)/?', RequestDetails,
@@ -155,5 +157,8 @@ URLS = (
     r'/api/tree', GetTree,
     r'/api/search', SearchTree,
     r'/api/details', GetNodeDetails,
-    r'/api/edit', EditNode
+    r'/api/edit', EditNode,
+    r'/api/sync_hierarchy', SyncHierarchy,
+    r'/api/sync_facility/([a-zA-Z][a-zA-Z0-9]{10})/?', SyncFacility,
+    r'/api/sync_facilities', SyncFacilities,
 )
