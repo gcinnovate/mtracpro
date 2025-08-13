@@ -3,12 +3,17 @@ import web
 import random
 import base64
 import requests
+from requests.auth import HTTPBasicAuth
 import json
 import pyexcel as pe
 import os
+import re
 import phonenumbers
+import logging
 import math
 import tempfile
+import psycopg2
+import psycopg2.extras
 from string import Template
 from celery import Celery
 from celeryconfig import (
@@ -88,6 +93,62 @@ def format_msisdn(msisdn=None):
         return None
     return phonenumbers.format_number(
         num, phonenumbers.PhoneNumberFormat.E164)
+
+
+def get_url(url, payload={}):
+    res = requests.get(url, params=payload, auth=HTTPBasicAuth(
+        config['dhis2_user'], config['dhis2_passwd']))
+    return res.text
+
+
+def get_facility_details(facilityJson):
+    is_033b = 'f'
+    level = ""
+    owner = ""
+    is_active = True
+    # parent = facilityJson["parent"]["name"].replace('Subcounty', '').strip()
+    parent = re.sub(
+        'Subcounty.*$|Sub\ County.*$', "", facilityJson["parent"]["name"],
+        flags=re.IGNORECASE).strip()
+    district_url = "%s/%s.json?fields=id,name,parent[id,name,parent[id,name]]" % (config["orgunits_url"], facilityJson["parent"]["id"])
+    print(district_url)
+    districtJson = get_url(district_url)
+    # district = json.loads(districtJson)["parent"]["name"].replace('District', '').strip()
+    print(districtJson)
+    district = re.sub(
+        'District.*$', "",
+        json.loads(districtJson)["parent"]["parent"]["name"], flags=re.IGNORECASE).strip()
+
+    orgunitGroups = facilityJson["organisationUnitGroups"]
+    orgunitGroupsIds = ["%s" % k["id"] for k in orgunitGroups]
+    try:
+        # Python 2
+        config_levels_items = config["levels"].iteritems()
+        config_owners_items = config["owners"].iteritems()
+    except AttributeError:
+        # Python 3
+        config_levels_items = config["levels"].items()
+        config_owners_items = config["owners"].items()
+
+    for k, v in config_levels_items:
+        if k in orgunitGroupsIds:
+            level = v
+    for k, v in config_owners_items:
+        if k in orgunitGroupsIds:
+            owner = v
+
+    has_no_datasets = False
+    dataSets = facilityJson["dataSets"]
+    if not dataSets:
+        has_no_datasets = True
+    dataSetsIds = ["%s" % k["id"] for k in dataSets]
+    if getattr(config, "hmis_033b_id", "C4oUitImBPK") in dataSetsIds:
+        is_033b = True
+
+    if (config["non_functional_facility_group_uid"] in orgunitGroupsIds) and not is_033b:
+        is_active = False
+    # we return tuple (Subcounty, District, Level, is033B)
+    return has_no_datasets, parent, district, level, is_033b, owner, is_active
 
 
 
@@ -467,3 +528,163 @@ def send_sms_from_excel(excel_file, msg_template=""):
         print("Remote SAMBA file:{} successfully deleted".format(excel_file))
     pe.free_resources()
     os.unlink(file_name)
+
+
+@app.task(name="task.sync_administrative_units")
+def sync_administrative_units_task(
+        dhis2_url,
+        dhis2_auth,
+        pg_conn_params,
+        start_level=4,
+        end_level=5
+):
+    """
+        Celery task to synchronize organisation units from DHIS2 into a PostgreSQL DB using psycopg2.
+        We will start at level 4 because we want to exclude the top level country, region and district.
+    """
+    conn = psycopg2.connect(**pg_conn_params)
+    conn.autocommit = False
+    try:
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        added_orgunits = 0
+        for level in range(start_level, end_level + 1):
+            print("Fetching org units at level {0}".format(level))
+            resp = requests.get(
+                "{0}/api/organisationUnits".format(dhis2_url),
+                params={
+                    "level": level,
+                    "fields": "id,name,code,parent[id]",
+                    "paging": "false"
+                },
+                auth=HTTPBasicAuth(dhis2_auth[0], dhis2_auth[1]),
+                timeout=30)
+            resp.raise_for_status()
+            orgunits = resp.json().get("organisationUnits", [])
+            for ou in orgunits:
+                orgunit_id = ou["id"]
+                parent_id = ou.get("parent", {}).get("id")
+                cur.execute("SELECT 1 FROM locations WHERE dhis2id=%s", (orgunit_id,))
+                exists = cur.fetchone()
+                if not exists:
+                    cur.execute("SELECT id FROM locations WHERE dhis2id=%s", (parent_id,))
+                    parent_dhis2id = cur.fetchone()
+                    if parent_dhis2id:
+                        print(u"Adding {0} ({1}) to {2} ({3})".format(
+                            ou['name'], orgunit_id, parent_dhis2id["id"], parent_id).encode('utf-8'))
+                        cur.execute(
+                            """
+                            SELECT add_node(%s, %s, %s) AS id
+                            """, (1, ou["name"], parent_dhis2id[0])
+                        )
+                        new_orgunit_id = cur.fetchone()
+                        if new_orgunit_id:
+                            added_orgunits += 1
+                            cur.execute(
+                                "UPDATE locations SET dhis2id=%s WHERE id=%s",
+                                (ou["id"], new_orgunit_id["id"]))
+            conn.commit()
+        if added_orgunits > 0:
+            print("Updating paths for all org units")
+            cur.execute("SELECT refresh_hierarchy();")
+            conn.commit()
+            print("Added {0} new org units".format(added_orgunits))
+        cur.close()
+    finally:
+        conn.close()
+
+
+@app.task(name='task.sync_facility')
+def sync_facility_task(uids, pg_conn_params,):
+    conn = psycopg2.connect(**pg_conn_params)
+    conn.autocommit = False
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    print("Synchronising for facility ids: ", uids[:3], "....")
+
+    query_string = "fields=id,name,parent[id,name],dataSets[id],organisationUnitGroups[id]"
+    # url = "%s/%s.json?%s" % (config["orgunits_url"], uid.strip(), query_string)
+    # print("<><><>", url)
+    url_list = []
+
+    for dhis2id in uids:
+        url_list.append("%s/%s.json?%s" % (config["orgunits_url"], dhis2id.strip(), query_string))
+    orgunits = []
+    for url in url_list:
+        try:
+            response = get_url(url)
+            orgunit_dict = json.loads(response)
+            orgunits.append(orgunit_dict)
+        except Exception as e:
+            logging.error("E01: Sync Service failed for ids: {}".format(str(e)))
+            continue
+
+    for orgunit in orgunits:
+        try:
+            hasNoDatasets, subcounty, district, level, is_033b, owner, is_active = get_facility_details(orgunit)
+        except Exception as e:
+            print(">>>>FAILED: ", " ERROR: ", str(e), " ORGUNIT:", orgunit)
+            continue
+        if not level:
+            continue
+        if hasNoDatasets:
+            continue
+
+        cur.execute(
+            "UPDATE facilities SET name = '' WHERE dhis2id = %s RETURNING "
+            "id, name, dhis2id, district, subcounty, level, is_033b", [orgunit["id"]])
+        # cur.execute(
+        #     "SELECT id, name, dhis2id, district, subcounty, level, is_033b "
+        #     "FROM facilities WHERE dhis2id = %s", [orgunit["id"]])
+        res = cur.fetchone()
+        if not res:  # we don't have an entry already
+            logging.debug("Sync Service: adding facility:%s to fsync" % orgunit["id"])
+            cur.execute(
+                "INSERT INTO facilities(name, dhis2id, district, subcounty, level, is_033b) "
+                "VALUES (%s, %s, %s, %s, %s, %s)",
+                (orgunit["name"], orgunit["id"], district, subcounty, level, is_033b))
+            # call service to create it in mTrac
+            sync_params = {
+                'username': config["sync_user"], 'password': config["sync_passwd"],
+                'name': orgunit["name"], 'code': orgunit["id"],
+                'dhis2id': orgunit["id"], 'ftype': level, 'district': district,
+                'subcounty': subcounty, 'is_033b': is_033b, 'is_active': 't' if is_active else 'f'
+            }
+            try:
+                resp = get_url(config["sync_url"], sync_params)
+                print("Sync Service: %s" % resp)
+            except:
+                print("E003: Sync Service failed for:%s" % orgunit["id"])
+                logging.error("E003: Sync Service failed for:%s" % orgunit["id"])
+        else:  # we have the entry
+            logging.debug("Sync Service: updating facility:%s to fsync" % orgunit["id"])
+            cur.execute(
+                "UPDATE facilities SET name = %s, "
+                "district = %s, subcounty = %s, level = %s, is_033b = %s, "
+                "ldate = NOW()"
+                "WHERE dhis2id = %s",
+                (orgunit["name"], district, subcounty, level, is_033b, orgunit["id"]))
+            if (res["name"] != orgunit["name"]) or (res["level"] != level) or \
+                    (res["is_033b"] != is_033b) or (res["district"] != district) or \
+                    (res["subcounty"] != subcounty):
+                print("Worth Updating..........", res["dhis2id"])
+                sync_params = {
+                    'username': config["sync_user"], 'password': config["sync_passwd"],
+                    'name': orgunit["name"], 'code': orgunit["id"],
+                    'dhis2id': orgunit["id"], 'ftype': level, 'district': district,
+                    'subcounty': subcounty, 'is_033b': is_033b
+                }
+                try:
+                    resp = get_url(config["sync_url"], sync_params)
+                    logging.debug("Sync Service: ")
+                    print("Sync Service: %s" % resp)
+                except:
+                    print(config["sync_url"])
+                    print("E004: Sync Service failed for:%s" % orgunit["id"])
+                    logging.error("E04: Sync Service failed for:%s" % orgunit["id"])
+            else:
+                print("Sync Service: Nothing changed for facility:[UUID: %s]" % orgunit["id"])
+
+        conn.commit()
+    conn.close()
+
+
+
