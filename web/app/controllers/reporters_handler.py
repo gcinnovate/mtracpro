@@ -67,11 +67,18 @@ class Reporters:
                     "WHERE level > 1 ORDER BY level DESC;", {'loc': location})
                 if ancestors:
                     for loc in ancestors:
-                        if loc['level'] == 3:
+                        if loc['level'] == 4:
                             subcounty = loc
+                        elif loc['level'] == 3:
+                            municipality = loc
                         elif loc['level'] == 2:
                             district = loc
-                            subcounties = db.query("SELECT id, name FROM get_children($id)", {'id': loc['id']})
+                            subcounties = db.query(
+                                "SELECT id, name FROM get_descendants($id) WHERE level = "
+                                "(SELECT level FROM locationtype WHERE name ='subcounty')", {'id': loc['id']})
+                            municipalities = db.query(
+                                "SELECT id, name FROM get_descendants($id) WHERE level = "
+                                "(SELECT level FROM locationtype WHERE name ='municipality')", {'id': loc['id']})
                 else:
                     district = location
                 location_for_facilities = subcounty.id if subcounty else district.id

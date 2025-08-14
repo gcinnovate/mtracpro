@@ -61,6 +61,9 @@
                                             <div class="col-lg-9">
                                                 <select name="municipality" id="municipality" class="form-control" required>
                                                     <option value="">Select DLG/Municipality</option>
+                                                    {% for m in municipalities %}
+                                                    <option value="{{ m.id }}" {% if m.id == municipality.id %} selected="yes" {% endif %}>{{ m.name}}</option>
+                                                    {% endfor %}
                                                 </select>
                                             </div>
                                         </div>
