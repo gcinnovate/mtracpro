@@ -20,7 +20,7 @@ opts, args = getopt.getopt(
 query_string = (
     "includeDescendants=true&"
     "fields=id,name,parent[id,name,href],dataSets[id],organisationUnitGroups[id]"
-    "&filter=level:eq:5&paging=false")
+    "&filter=level:eq:6&paging=false")
 
 district_id_list = ""
 for option, parameter in opts:
