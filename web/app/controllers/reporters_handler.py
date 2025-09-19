@@ -61,6 +61,7 @@ class Reporters:
                 facilityid = r.facilityid
                 district = ""
                 village = ""
+                municipality = ""
                 subcounties = []
                 ancestors = db.query(
                     "SELECT id, name, level FROM get_ancestors($loc) "
