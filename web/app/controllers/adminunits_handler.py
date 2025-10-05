@@ -275,6 +275,11 @@ class GetNodeDetails:
         # If we got a row, unpack and respond
         if rows:
             r = rows[0]
+            res2 = db.query("SELECT count(*) FROM reporters WHERE reporting_location = $id", vars={'id': r.id})
+            total_reporters = 0
+            if res2:
+                total_reporters = res2[0].count
+
             return json_response({
                 'id':          r.id,
                 'name':        r.name,
@@ -283,6 +288,7 @@ class GetNodeDetails:
                 'path':        r.path,
                 'level':       r.level,
                 'parent_name': r.parent_name,
+                'total_reporters': total_reporters,
             }, status=HTTPStatus.OK)
 
         return json_response({'error': 'node not found'}, status=HTTPStatus.NOT_FOUND)
@@ -399,6 +405,32 @@ class DeleteNode:
         web.ctx.status = "%s %s" % (HTTPStatus.OK.value, HTTPStatus.OK.phrase)
         web.header('Content-Type', 'application/json')
         return ''
+
+
+class RenameNode:
+    def POST(self):
+        try:
+            payload = json.loads(web.data())
+        except ValueError:
+            return json_response({'error': 'invalid input'}, status=HTTPStatus.BAD_REQUEST)
+
+        if 'id' not in payload:
+            return json_response({'error': 'invalid input'}, status=HTTPStatus.BAD_REQUEST)
+        node_id = int(payload['id'])
+        name = payload['text']
+        try:
+            db.query(
+                "UPDATE locations SET name = $name WHERE id = $id",
+                vars={'id': node_id, 'name': name}
+            )
+            db.query("SELECT refresh_hierarchy();")
+        except Exception as e:
+            return json_response({'error': 'edit node failed'}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+        web.ctx.status = "%s %s" % (HTTPStatus.OK.value, HTTPStatus.OK.phrase)
+        web.header('Content-Type', 'application/json')
+        return ''
+
 
 
 class CreateNode:

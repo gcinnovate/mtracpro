@@ -348,6 +348,14 @@
       </tr>
       <tr>
         <th style="text-align:left; padding:8px; border-bottom:1px solid #ddd;">
+          DHIS2 UID
+        </th>
+        <td style="padding:8px; border-bottom:1px solid #ddd;">
+          ${data.dhis2id}
+        </td>
+      </tr>
+      <tr>
+        <th style="text-align:left; padding:8px; border-bottom:1px solid #ddd;">
           Path
         </th>
         <td style="padding:8px; border-bottom:1px solid #ddd;">
@@ -368,6 +376,14 @@
         </th>
         <td style="padding:8px;">
           ${data.parent_name || '—'}
+        </td>
+      </tr>
+      <tr>
+        <th style="text-align:left; padding:8px; border-bottom:1px solid #ddd;">
+          Total Reporters
+        </th>
+        <td style="padding:8px; border-bottom:1px solid #ddd;">
+          ${data.total_reporters}
         </td>
       </tr>
     </tbody>
@@ -399,12 +415,35 @@
                    }
                })
                    .on("rename_node.jstree", (e, data) => {
-                       $.ajax({
-                           url: '/api/rename',
-                           method: 'POST',
-                           contentType: 'application/json',
-                           data: JSON.stringify({id: parseInt(data.node.id), text: data.text})
-                       });
+                       swal({
+                               title: "Are you sure?",
+                               text: "Your node will be renamed to " + data.text + ".",
+                               type: "warning",
+                               showCancelButton: true,
+                               confirmButtonColor: "#DD6B55",
+                               confirmButtonText: "Yes, rename it!",
+                               cancelButtonText: "No, cancel please!",
+                               closeOnConfirm: false,
+                               closeOnCancel: false
+                           },
+                           function (isConfirm) {
+                               if (isConfirm) {
+
+                                   $.ajax({
+                                       url: '/api/rename',
+                                       method: 'POST',
+                                       contentType: 'application/json',
+                                       data: JSON.stringify({id: parseInt(data.node.id), text: data.text})
+                                   });
+                                   swal("Rename!", "Node has been renamed to " + data.text + ".");
+                                   return false;
+                               } else {
+                                   swal("Cancelled", "Name: '" + data.old + "' retained!", "error");
+                                   data.instance.set_text(data.node, data.old);
+                                   return false;
+                               }
+                           });
+
                    })
                    .on("move_node.jstree", (e, data) => {
                        const parent = data.parent === "#" ? null : parseInt(data.parent);
@@ -420,13 +459,7 @@
                         closeOnCancel: false },
                     function (isConfirm) {
                         if (isConfirm) {
-                            // $.post(
-                            //     '/api/refresh',
-                            //     function(data){
-                            //          $('#tree').jstree(true).refresh();
-                            //     },
-                            //     'json'
-                            // );
+
                             $.ajax({
                                 url: '/api/move',
                                 method: 'POST',
