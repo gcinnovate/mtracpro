@@ -303,7 +303,7 @@
                                                if (isConfirm) {
                                                    tree.delete_node($node);
                                                    $.ajax({
-                                                       url: '/api/delete',
+                                                       url: '/api/node/delete',
                                                        method: 'POST',
                                                        contentType: 'application/json',
                                                        data: JSON.stringify({id: parseInt($node.id)})

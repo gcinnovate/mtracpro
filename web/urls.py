@@ -56,7 +56,8 @@ from app.controllers.rejected_handler import Rejected
 from app.controllers.schedules_handler import Schedules
 from app.controllers.interventions_handler import Interventions, Preview
 from app.controllers.adminunits_handler import (
-    GetTree, SearchTree, GetNodeDetails, EditNode, MoveNode, RenameNode, SyncHierarchy, SyncFacility,FacilityDetails)
+    GetTree, SearchTree, GetNodeDetails, EditNode, MoveNode, RenameNode, DeleteNode, SyncHierarchy,
+    SyncFacility, FacilityDetails)
 from app.controllers.requests_api import RequestsAPI
 from app.controllers.servers_api import ServersAPI, ServerSuspend, ServerResume
 
@@ -160,6 +161,7 @@ URLS = (
     r'/api/edit', EditNode,
     r'/api/move', MoveNode,
     r'/api/rename', RenameNode,
+    r'/api/node/delete', DeleteNode,
     r'/api/sync_hierarchy', SyncHierarchy,
     r'/api/sync_facility/([a-zA-Z][a-zA-Z0-9]{10})/?', SyncFacility,
     r'/api/sync_facilities', SyncFacilities,
