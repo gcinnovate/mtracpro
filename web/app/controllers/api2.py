@@ -10,7 +10,7 @@ from settings import config, APPLY_SMS_LIMITS
 import settings
 import datetime
 from app.tools.utils import get_basic_auth_credentials, auth_user, get_webhook_msg
-from tasks import (send_bulksms_task,
+from .tasks import (send_bulksms_task,
                     send_facility_sms_task, restart_failed_requests, update_user_bulksms_limits, sync_facility_task)
 
 logging.basicConfig(

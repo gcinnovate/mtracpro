@@ -5,7 +5,7 @@ import requests
 from . import db, get_current_week, notifyingParties, allDistrictsByName
 from app.tools.utils import get_basic_auth_credentials, auth_user
 from settings import config, KEYWORD_SERVER_MAPPINGS, SEND_ALERTS
-from tasks import sendsms_to_uuids_task
+from .tasks import sendsms_to_uuids_task
 
 
 def send_general_alert(msg, district):

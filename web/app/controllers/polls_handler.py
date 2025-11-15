@@ -4,7 +4,7 @@ from . import db, require_login, render, get_session
 from app.tools.pagination2 import doquery, countquery, getPaginationString
 from app.tools.utils import default, lit
 from settings import PAGE_LIMIT
-from tasks import add_poll_recipients_task, record_poll_response_task, start_poll_task
+from .tasks import add_poll_recipients_task, record_poll_response_task, start_poll_task
 
 
 class Polls:

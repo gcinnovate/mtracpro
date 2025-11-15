@@ -4,7 +4,7 @@ from . import db, anonymous_report_responses
 from settings import USE_OLD_WEBHOOKS
 from app.tools.utils import get_webhook_msg_old, get_webhook_msg
 from app.tools.utils import queue_anonymous_report
-from tasks import sendsms_to_uuids_task
+from .tasks import sendsms_to_uuids_task
 
 
 class AnonymousReports:

@@ -9,7 +9,7 @@ from app.tools.utils import (
     get_reporting_week, get_request, queue_rejected_reports)
 from settings import DEFAULT_DATA_VALUES, XML_TEMPLATE, PREFERED_DHIS2_CONTENT_TYPE
 from settings import HMIS_033B_DATASET, HMIS_033B_DATASET_ATTR_OPT_COMBO, TEXT_INDICATORS
-from tasks import sendsms_to_uuids_task
+from .tasks import sendsms_to_uuids_task
 
 
 def send_threshold_alert(msg, district):

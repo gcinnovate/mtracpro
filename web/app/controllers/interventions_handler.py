@@ -4,7 +4,7 @@ import json
 import os
 from string import Template
 from . import db, require_login, render
-from tasks import send_sms_from_excel
+from .tasks import send_sms_from_excel
 from app.tools.utils import store_file_on_samba_server
 
 
