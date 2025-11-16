@@ -95,7 +95,7 @@ def absolute(path):
     return os.path.normpath(os.path.join(PROJECT_DIR, path))
 
 config = {
-    'db_name': 'mtrackpro',
+    'db_name': 'mtrackpro_latest',
     'db_host': 'localhost',
     'db_user': '',
     'db_passwd': '',
@@ -147,8 +147,36 @@ config = {
     'smsurl': 'http://localhost:13013/cgi-bin/sendsms?username=foo&password=bar',
     'default_api_uri': 'http://localhost:8000/api/v1/contacts.json',
     'api_token': 'c8cde9dbbdda6f544018e9321d017e909b28ec51',
-    'api_url': 'http://localhost:8000/api/v1/',
+    'api_url': 'http://localhost:8000/api/v1/'
 }
+
+DEFAULT_REPORTER_GROUPS = [
+    'Accountant',
+    'As. DHO - Maternal',
+    'As. DHO - Maternal',
+    'Biostatistician',
+    'Cold Chain Technician',
+    'DHO',
+    'DHT',
+    'E-health',
+    'FHD',
+    'HC',
+    'HIV',
+    'Health Educator',
+    'Health Inspector',
+    'Incharge',
+    'MAP Trained',
+    'Nurse',
+    'Nutrition',
+    'Other CVS Reporters',
+    'PVHT',
+    'Pharmacist',
+    'Records Assistant',
+    'Secretary',
+    'Surveillance',
+    'VHT'
+]
+
 
 KEYWORD_SERVER_MAPPINGS = {
     'pmtct': 'dhis2_pmtct',
