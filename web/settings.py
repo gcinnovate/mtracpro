@@ -177,6 +177,27 @@ DEFAULT_REPORTER_GROUPS = [
     'VHT'
 ]
 
+REPORTER_SYNC_LOG_FILE = "/var/log/mtrackpro/rapidpro_sync.log"
+LOG_LEVEL = "INFO"
+
+# ======================================
+#  Worker / Throttling Configuration
+# ======================================
+
+# Python threads for reporter processing
+MAX_WORKERS = 5
+
+# Starting RapidPro concurrency
+RAPIDPRO_MAX_API = 2
+
+# Allowed range of concurrency limits
+RAPIDPRO_MAX_API_LIMIT = 4
+RAPIDPRO_MIN_API_LIMIT = 1
+
+# Latency thresholds (in seconds)
+THROTTLE_UP_THRESHOLD = 0.30       # RapidPro is fast → increase concurrency
+THROTTLE_DOWN_THRESHOLD = 1.00     # RapidPro is slow → reduce concurrency
+SLOW_MODE_THRESHOLD = 3.00         # RapidPro overloaded → go slow
 
 KEYWORD_SERVER_MAPPINGS = {
     'pmtct': 'dhis2_pmtct',

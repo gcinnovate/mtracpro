@@ -6,26 +6,97 @@ import requests
 import json
 import psycopg2
 import psycopg2.extras
-from settings import config, DEFAULT_REPORTER_GROUPS
 import phonenumbers
 import getopt
 import sys
 import datetime
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from threading import Lock
+from threading import Lock, Semaphore
 from requests.adapters import HTTPAdapter
+import fcntl  # for PID lock
 
-# ================================================================
-# CONFIG
-# ================================================================
 
-MAX_WORKERS = 20
+# ============================
+#  IMPORT SETTINGS
+# ============================
+from settings import (
+    config,
+    MAX_WORKERS,
+    RAPIDPRO_MAX_API,
+    RAPIDPRO_MAX_API_LIMIT,
+    RAPIDPRO_MIN_API_LIMIT,
+    THROTTLE_UP_THRESHOLD,
+    THROTTLE_DOWN_THRESHOLD,
+    SLOW_MODE_THRESHOLD,
+    DEFAULT_REPORTER_GROUPS,
+    REPORTER_SYNC_LOG_FILE,
+    LOG_LEVEL
+)
+import logging
+from logging.handlers import RotatingFileHandler
+
+# ============================
+#  LOGGING SETUP
+# ============================
+
+LOG_LEVEL_MAP = {
+    "DEBUG": logging.DEBUG,
+    "INFO": logging.INFO,
+    "WARNING": logging.WARNING,
+    "ERROR": logging.ERROR,
+    "CRITICAL": logging.CRITICAL,
+}
+
+logger = logging.getLogger("rapidpro_sync")
+logger.setLevel(LOG_LEVEL_MAP.get(LOG_LEVEL, logging.INFO))
+
+# Console Handler
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(logging.Formatter(
+    "%(asctime)s [%(levelname)s] %(message)s", "%Y-%m-%d %H:%M:%S"
+))
+
+# File Handler — rotating
+file_handler = RotatingFileHandler(
+    REPORTER_SYNC_LOG_FILE,
+    maxBytes=10 * 1024 * 1024,   # 10MB
+    backupCount=5                # keep 5 old logs
+)
+file_handler.setFormatter(logging.Formatter(
+    "%(asctime)s [%(levelname)s] %(message)s", "%Y-%m-%d %H:%M:%S"
+))
+
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+
+logger.info("🔵 RapidPro Sync initialization starting…")
+
+
+# ============================
+#  PID LOCK - Prevent overlap
+# ============================
+LOCKFILE = "/tmp/rapidpro_sync.lock"
+lock = open(LOCKFILE, "w")
+try:
+    fcntl.lockf(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+except IOError:
+    logger.warning("⚠ Another sync is already running. Exiting.")
+    sys.exit(0)
+
+# ============================
+#  GLOBALS / SEMAPHORES
+# ============================
+
+CURRENT_API_LIMIT = RAPIDPRO_MAX_API  # dynamic limit
+RAPIDPRO_SEMAPHORE = Semaphore(CURRENT_API_LIMIT)
+THROTTLE_LOCK = Lock()
+
 RETRIES = 5
 BACKOFF = 1.5
 DRY_RUN = False
 
-
+# HTTP session
 session = requests.Session()
 session.headers.update({
     "Content-type": "application/json",
@@ -36,9 +107,9 @@ adapter = HTTPAdapter(pool_connections=MAX_WORKERS * 2, pool_maxsize=MAX_WORKERS
 session.mount("http://", adapter)
 session.mount("https://", adapter)
 
-# ================================================================
+# ============================
 # CLI ARGUMENTS
-# ================================================================
+# ============================
 
 cmd = sys.argv[1:]
 opts, args = getopt.getopt(cmd, "fd:u:n", ["init-groups"])
@@ -62,60 +133,103 @@ for option, parameter in opts:
     if option == "--init-groups":
         INIT_GROUPS = True
 
-# ================================================================
-# HTTP REQUEST WITH RETRY
-# ================================================================
+# ============================
+# Throttling Adjuster
+# ============================
+
+def adjust_api_limit(latency):
+    """Adjust RapidPro concurrency dynamically based on latency."""
+    global CURRENT_API_LIMIT, RAPIDPRO_SEMAPHORE
+
+    with THROTTLE_LOCK:
+
+        # SLOW MODE
+        if latency > SLOW_MODE_THRESHOLD:
+            if CURRENT_API_LIMIT != RAPIDPRO_MIN_API_LIMIT:
+                logger.info(f"🐢 Entering SLOW MODE ({latency:.2f}s), limit → {RAPIDPRO_MIN_API_LIMIT}")
+                CURRENT_API_LIMIT = RAPIDPRO_MIN_API_LIMIT
+                RAPIDPRO_SEMAPHORE = Semaphore(CURRENT_API_LIMIT)
+            return
+
+        # Throttle down
+        if latency > THROTTLE_DOWN_THRESHOLD:
+            if CURRENT_API_LIMIT > RAPIDPRO_MIN_API_LIMIT:
+                CURRENT_API_LIMIT -= 1
+                logger.info(f"🔽 Reducing API concurrency → {CURRENT_API_LIMIT} (lat={latency:.2f}s)")
+                RAPIDPRO_SEMAPHORE = Semaphore(CURRENT_API_LIMIT)
+            return
+
+        # Throttle up
+        if latency < THROTTLE_UP_THRESHOLD:
+            if CURRENT_API_LIMIT < RAPIDPRO_MAX_API_LIMIT:
+                CURRENT_API_LIMIT += 1
+                logger.info(f"🔼 Increasing API concurrency → {CURRENT_API_LIMIT} (lat={latency:.2f}s)")
+                RAPIDPRO_SEMAPHORE = Semaphore(CURRENT_API_LIMIT)
+            return
+
+# ============================
+# HTTP request with retry + throttling
+# ============================
 
 def request_retry(method, url, data=None):
-    if DRY_RUN:
-        print(f"[DRY-RUN] {method} {url} data={data}")
-        class DummyResp(object):
-            ok = True
-            status_code = 200
-            text = "{}"
-            def json(self): return {}
-        return DummyResp()
+    """Executes RapidPro requests with dynamic throttling."""
+    global RAPIDPRO_SEMAPHORE
 
-    last_err = None
-    for attempt in range(1, RETRIES + 1):
-        try:
-            if method == "POST":
-                resp = session.post(url, data=data, timeout=20)
-            else:
-                resp = session.get(url, timeout=20)
+    with RAPIDPRO_SEMAPHORE:
+        if DRY_RUN:
+            logger.info(f"[DRY-RUN] {method} {url} data={data}")
+            class DummyResp(object):
+                ok = True
+                status_code = 200
+                text = "{}"
+                def json(self): return {}
+            return DummyResp()
 
-            if not resp.ok:
-                last_err = Exception(f"{resp.status_code}: {resp.text}")
+        last_err = None
+        for attempt in range(1, RETRIES + 1):
+            try:
+                start = time.time()
+
+                if method == "POST":
+                    resp = session.post(url, data=data, timeout=20)
+                else:
+                    resp = session.get(url, timeout=20)
+
+                latency = time.time() - start
+                adjust_api_limit(latency)
+
+                if not resp.ok:
+                    last_err = Exception(f"{resp.status_code}: {resp.text}")
+                    time.sleep(attempt * BACKOFF)
+                    continue
+
+                return resp
+
+            except Exception as e:
+                last_err = e
                 time.sleep(attempt * BACKOFF)
-                continue
 
-            return resp
+        logger.error(f"❌ HTTP error after {RETRIES} attempts → {url}: {last_err}")
+        return None
 
-        except Exception as e:
-            last_err = e
-            time.sleep(attempt * BACKOFF)
-
-    print(f"❌ HTTP failed after {RETRIES} attempts → {url}: {last_err}")
-    return None
-
-# ================================================================
-# PHONE FORMATTER
-# ================================================================
+# ============================
+# Utility Functions
+# ============================
 
 def format_msisdn(msisdn):
     if not msisdn:
         return None
     try:
-        num = phonenumbers.parse(msisdn, getattr(config, "country", "UG"))
+        num = phonenumbers.parse(msisdn, config.get("country", "UG"))
         if not phonenumbers.is_valid_number(num):
             return None
         return phonenumbers.format_number(num, phonenumbers.PhoneNumberFormat.E164)
     except:
         return None
 
-# ================================================================
-# GROUP CACHE
-# ================================================================
+# ============================
+# Group Management (cached)
+# ============================
 
 _GROUP_CACHE = {}
 _GROUP_CACHE_LOCK = Lock()
@@ -125,124 +239,65 @@ def get_group_from_cache(name):
         return _GROUP_CACHE.get(name)
 
 def set_group_cache(name, uuid):
-    if not uuid:
-        return
     with _GROUP_CACHE_LOCK:
         _GROUP_CACHE[name] = uuid
 
-# ================================================================
-# RAPIDPRO GROUP MANAGEMENT
-# ================================================================
-
-def ensure_group_exists(group_name):
-    group_name = group_name.strip()
-    if not group_name:
+def ensure_group_exists(name):
+    name = name.strip()
+    if not name:
         return None
 
-    # Check cache
-    cached = get_group_from_cache(group_name)
+    cached = get_group_from_cache(name)
     if cached:
         return cached
 
-    # 1. Check API
-    resp = request_retry("GET", f"{config['api_url']}groups.json?name={group_name}")
+    resp = request_retry("GET", f"{config['api_url']}groups.json?name={name}")
     if resp:
         try:
-            rd = resp.json()
-            if rd.get("results"):
-                uuid = rd["results"][0]["uuid"]
-                set_group_cache(group_name, uuid)
+            results = resp.json().get("results", [])
+            if results:
+                uuid = results[0]["uuid"]
+                set_group_cache(name, uuid)
                 return uuid
         except:
             pass
 
-    # 2. Create group
-    payload = json.dumps({"name": group_name})
+    payload = json.dumps({"name": name})
     resp = request_retry("POST", f"{config['api_url']}groups.json", payload)
     if resp:
         try:
-            rd = resp.json()
-            if "uuid" in rd:
-                uuid = rd["uuid"]
-                print(f"✔ Created group '{group_name}' → {uuid}")
-                set_group_cache(group_name, uuid)
+            uuid = resp.json().get("uuid")
+            if uuid:
+                logger.info(f"✔ Created group '{name}' → {uuid}")
+                set_group_cache(name, uuid)
                 return uuid
         except:
             pass
 
-    print(f"❌ Failed group '{group_name}'")
+    logger.error(f"❌ Could not create/find group '{name}'")
     return None
 
-def ensure_groups_exist(group_list):
-    uuids = []
-    for g in group_list:
-        uuid = ensure_group_exists(g)
-        if uuid:
-            uuids.append(uuid)
-    return uuids
+def ensure_groups_exist(names):
+    return [ensure_group_exists(n) for n in names if n.strip()]
 
 def sync_reporter_groups(role_string):
     if not role_string:
         return []
-    groups = [g.strip() for g in role_string.split(",") if g.strip()]
-    return ensure_groups_exist(groups)
+    names = [g.strip() for g in role_string.split(",") if g.strip()]
+    return ensure_groups_exist(names)
 
 def preload_group_cache():
-    print("🔄 Preloading RapidPro groups...")
     resp = request_retry("GET", f"{config['api_url']}groups.json")
     if resp:
         try:
             for g in resp.json().get("results", []):
                 set_group_cache(g["name"], g["uuid"])
-            print(f"✔ Preloaded {len(_GROUP_CACHE)} existing groups")
         except:
             pass
 
-def initialize_default_groups():
-    print("🔧 Initializing default groups...")
-    ensure_groups_exist(DEFAULT_REPORTER_GROUPS)
-    print("✔ Done initializing!")
-
-# ================================================================
-# ADD REPORTER FIELDS (optional old code)
-# ================================================================
-
-def add_reporter_fields():
-    our_fields = [
-        {"label": "facility", "value_type": "text"},
-        {"label": "facilitycode", "value_type": "text"},
-        {"label": "district", "value_type": "text"},
-        {"label": "Subcounty", "value_type": "text"},
-        {"label": "village", "value_type": "text"},
-        {"label": "Type", "value_type": "text"},
-        {"label": "reporting location", "value_type": "text"},
-    ]
-
-    resp = request_retry("GET", f"{config['api_url']}fields.json")
-    if not resp:
-        return
-
-    try:
-        existing = [k["key"] for k in resp.json().get("results", [])]
-    except:
-        existing = []
-
-    for f in our_fields:
-        if f["label"] not in existing:
-            resp2 = request_retry("POST", f"{config['api_url']}fields.json", json.dumps(f))
-            print(resp2.text if resp2 else "ERROR")
-
-if ADD_FIELDS:
-    add_reporter_fields()
-    sys.exit(0)
-
-if INIT_GROUPS:
-    initialize_default_groups()
-    sys.exit(0)
-
-# ================================================================
-# CONTACT UPSERT LOGIC
-# ================================================================
+# ============================
+# RapidPro Contact Upsert
+# ============================
 
 def build_endpoint():
     endpoint = config["default_api_uri"]
@@ -250,82 +305,62 @@ def build_endpoint():
         endpoint += "?"
     return endpoint
 
-def upsert_contact_by_uuid_or_create(endpoint, base_data, existing_uuid, msisdn):
-    data_json = json.dumps(base_data)
+def upsert_contact_by_uuid_or_create(endpoint, base, existing_uuid, msisdn):
+    payload = json.dumps(base)
 
-    # 1. Try update by UUID
+    # Update using UUID
     if existing_uuid:
-        url = f"{endpoint}uuid={existing_uuid}"
-        resp = request_retry("POST", url, data_json)
+        resp = request_retry("POST", f"{endpoint}uuid={existing_uuid}", payload)
         if resp:
             try:
-                rd = resp.json()
-                if "uuid" in rd:
-                    return rd["uuid"], resp.text
-                # UUID not found → fall through
+                uuid = resp.json().get("uuid")
+                if uuid:
+                    return uuid
             except:
                 pass
 
-    # 2. Create new contact
-    resp = request_retry("POST", endpoint, data_json)
+    # Create new
+    resp = request_retry("POST", endpoint, payload)
     if resp:
         try:
-            rd = resp.json()
-            if "uuid" in rd:
-                return rd["uuid"], resp.text
+            uuid = resp.json().get("uuid")
+            if uuid:
+                return uuid
         except:
             pass
 
-    # 3. URN fallback
-    try:
-        rd = resp.json()
-    except:
-        rd = {}
+    # URN fallback
+    if msisdn:
+        resp2 = request_retry("POST", f"{endpoint}urn=tel:{msisdn}", payload)
+        if resp2:
+            try:
+                uuid = resp2.json().get("uuid")
+                return uuid
+            except:
+                pass
 
-    if msisdn and isinstance(rd, dict) and "urns" in rd and rd["urns"]:
-        first = rd["urns"][0]
-        if isinstance(first, dict) and "belongs" in first:
-            fallback_url = f"{endpoint}urn=tel:{msisdn}"
-            data2 = dict(base_data)
-            data2.pop("urns", None)
-            resp2 = request_retry("POST", fallback_url, json.dumps(data2))
-            if resp2:
-                try:
-                    rd2 = resp2.json()
-                    if "uuid" in rd2:
-                        return rd2["uuid"], resp2.text
-                except:
-                    pass
+    return None
 
-    return None, None
-
-def attach_alt_phone(endpoint, contact_uuid, base_data, msisdn, alt_msisdn):
-    if not alt_msisdn:
+def attach_alt_phone(endpoint, uuid, base, msisdn, alt_phone):
+    if not alt_phone:
         return
-    data = dict(base_data)
+
+    data = dict(base)
     urns = []
     if msisdn:
         urns.append(f"tel:{msisdn}")
-    urns.append(f"tel:{alt_msisdn}")
+    urns.append(f"tel:{alt_phone}")
     data["urns"] = urns
-    data_json = json.dumps(data)
 
-    if contact_uuid:
-        url = f"{endpoint}uuid={contact_uuid}"
-    else:
-        url = endpoint
+    request_retry("POST", f"{endpoint}uuid={uuid}", json.dumps(data))
 
-    request_retry("POST", url, data_json)
-
-# ================================================================
-# WORKER THREAD
-# ================================================================
+# ============================
+# Worker Thread
+# ============================
 
 def process_reporter_http(r):
     reporter_id = r["id"]
-    district = r["district"]
     existing_uuid = r["uuid"]
-
     endpoint = build_endpoint()
 
     fields = {
@@ -333,8 +368,8 @@ def process_reporter_http(r):
         "facilitycode": r["facilitycode"],
         "facility": r["facility"],
     }
-    if district:
-        fields["district"] = district
+    if r["district"]:
+        fields["district"] = r["district"]
 
     msisdn = format_msisdn(r["telephone"])
     alt_phone = format_msisdn(r["alternate_tel"])
@@ -349,22 +384,22 @@ def process_reporter_http(r):
     if msisdn:
         base_data["urns"] = [f"tel:{msisdn}"]
 
-    contact_uuid, raw = upsert_contact_by_uuid_or_create(endpoint, base_data, existing_uuid, msisdn)
+    uuid = upsert_contact_by_uuid_or_create(endpoint, base_data, existing_uuid, msisdn)
 
-    if contact_uuid:
-        print(f"✔ Reporter {reporter_id}: synced → {contact_uuid}")
+    if uuid:
+        logger.info(f"✔ Reporter {reporter_id} synced → {uuid}")
 
     if alt_phone:
-        attach_alt_phone(endpoint, contact_uuid or existing_uuid, base_data, msisdn, alt_phone)
+        attach_alt_phone(endpoint, uuid or existing_uuid, base_data, msisdn, alt_phone)
 
-    return reporter_id, contact_uuid
+    return reporter_id, uuid
 
-# ================================================================
+# ============================
 # MAIN EXECUTION
-# ================================================================
+# ============================
 
 def main():
-    preload_group_cache()  # ← improves speed dramatically
+    preload_group_cache()
 
     conn = psycopg2.connect(
         f"dbname={config['db_name']} host={config['db_host']} port={config['db_port']} "
@@ -392,39 +427,39 @@ def main():
         """,
         [from_date, update_date],
     )
-    rows = cur.fetchall()
 
+    rows = cur.fetchall()
     if not rows:
-        print("No reporters to sync.")
+        logger.info("No reporters to sync.")
         conn.close()
         return
 
-    print(f"🚀 Starting RapidPro sync for {len(rows)} reporters with {MAX_WORKERS} workers…")
     updates = []
+    logger.info(f"🚀 Syncing {len(rows)} reporters with {MAX_WORKERS} workers…")
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = {executor.submit(process_reporter_http, r): r["id"] for r in rows}
         for future in as_completed(futures):
             rid = futures[future]
             try:
-                reporter_id, contact_uuid = future.result()
-                if contact_uuid:
-                    updates.append((contact_uuid, reporter_id))
+                reporter_id, uuid = future.result()
+                if uuid:
+                    updates.append((uuid, reporter_id))
             except Exception as e:
-                print(f"❌ Worker error on {rid}: {e}")
+                logger.error(f"❌ Error processing {rid}: {e}")
 
-    if not DRY_RUN and updates:
+    if updates and not DRY_RUN:
         psycopg2.extras.execute_batch(
             cur,
             "UPDATE reporters SET uuid = %s WHERE id = %s",
             updates,
-            page_size=100,
+            page_size=50,
         )
         conn.commit()
-        print(f"✔ Updated DB UUIDs for {len(updates)} reporters")
+        logger.info(f"✔ Updated UUIDs for {len(updates)} reporters")
 
     conn.close()
-    print("🎉 Completed RapidPro sync!")
+    logger.info("🎉 RapidPro sync complete!")
 
 if __name__ == "__main__":
     main()
