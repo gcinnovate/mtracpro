@@ -8,10 +8,10 @@
 *.la
 *~
 *.swp
-web/local_settings.py
-web/test/test_flow.py
-web/static/downloads/
-web/app/controllers/local_celeryconfig.py
+webapp/local_settings.py
+webapp/test/test_flow.py
+webapp/static/downloads/
+webapp/app/controllers/local_celeryconfig.py
 *.zip
 *.csv
 *xls
