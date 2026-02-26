@@ -1,7 +1,7 @@
 def getPaginationString(_page, totalitems, limit, adjacents, targetpage, pagestring):
-    def ceil(x,y):
-        m = x%y
-        return x/y + 1 if m > 0 else x/y
+    def ceil(x, y):
+        m = x % y
+        return x // y + 1 if m > 0 else x // y
 
     if not adjacents: adjacents = 1
     if not limit: limit = 5
@@ -47,39 +47,39 @@ def getPaginationString(_page, totalitems, limit, adjacents, targetpage, pagestr
                 counter = 1
                 while (counter < (4 + (adjacents * 2))):
                     if counter == _page:
-						pagination += "<span class=\"current\">%s</span>"%counter
+                        pagination += "<span class=\"current\">%s</span>"%counter
                     else:
-						pagination += "<a href=\""+ "%s%s%s"%(targetpage, pagestring, counter) + "\">%s</a>"%counter
+                        pagination += "<a href=\""+ "%s%s%s"%(targetpage, pagestring, counter) + "\">%s</a>"%counter
                     counter += 1
             elif (lastpage -(adjacents *2) > _page and _page > (adjacents *2)):
                 counter = _page - adjacents
                 while (counter < _page + adjacents):
                     if counter == _page:
-						pagination += "<span class=\"current\">%s</span>"%counter
+                        pagination += "<span class=\"current\">%s</span>"%counter
                     else:
-						pagination += "<a href=\""+ "%s%s%s"%(targetpage, pagestring, counter) + "\">%s</a>"%counter
+                        pagination += "<a href=\""+ "%s%s%s"%(targetpage, pagestring, counter) + "\">%s</a>"%counter
                     counter += 1
             # close to end;  only hide early pages
             else:
                 counter = lastpage - (1 + (adjacents *3))
                 while (counter < lastpage):
                     if counter == _page:
-						pagination += "<span class=\"current\">%s</span>"%counter
+                        pagination += "<span class=\"current\">%s</span>"%counter
                     else:
-						pagination += "<a href=\""+ "%s%s%s"%(targetpage, pagestring, counter) + "\">%s</a>"%counter
+                        pagination += "<a href=\""+ "%s%s%s"%(targetpage, pagestring, counter) + "\">%s</a>"%counter
                     counter += 1
 
         #next button
         if (_page < counter - 1):
-			pagination += "<a href=\""+ targetpage + pagestring + "%s"%_next + "\">next&raquo;</a>"
+            pagination += "<a href=\""+ targetpage + pagestring + "%s"%_next + "\">next&raquo;</a>"
         else:
-			pagination += "<span class=\"disabled\">next&raquo;</span>"
+            pagination += "<span class=\"disabled\">next&raquo;</span>"
         pagination += "<a href=\"" + "%s%s%s"%(targetpage, pagestring, lastpage) + "\">"+ "Last" + "</a>"
         pagination += " "+"%s"%_page +" of "+"%s"%lastpage+" Pages  </div>\n"
     return pagination
 
 def lit(**keywords):
-	return keywords
+    return keywords
 
 def countquery(dbcon, dic):
     if not dic:

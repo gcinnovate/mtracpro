@@ -46,7 +46,7 @@ for option, parameter in opts:
     if option == '-t':
         reporter_type = parameter
     if option == '-h':
-        print usage()
+        print(usage())
         sys.exit(1)
 
 headings = [
@@ -96,7 +96,7 @@ if district:
 
 SQL += " ORDER by id DESC"
 
-print SQL
+print(SQL)
 
 cur.execute(SQL)
 
