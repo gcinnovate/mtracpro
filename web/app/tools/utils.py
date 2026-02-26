@@ -336,7 +336,7 @@ def generate_raw_message(db, form, data, add_commads=False):
     for r in res:
         indicator_order_dict[r['slug']] = r['form_order']
         commands_dict[r['slug']] = r['cmd']
-    for k, v in data.iteritems():
+    for k, v in data.items():
         values[indicator_order_dict[k]] = v
         if add_commads:
             ret.append("%s.%s" % (commands_dict[k], v))
@@ -386,5 +386,4 @@ def fields_clause_from_param(fields_param, allowed_fields):
 
 def where_clause_from_conditions(conditions):
     return "WHERE " + " AND ".join(conditions) if conditions else ""
-
 

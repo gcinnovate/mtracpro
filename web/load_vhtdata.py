@@ -38,11 +38,11 @@ for option, parameter in opts:
     if option == '-u':
         user = parameter.strip()
     if option == '-h':
-        print usage()
+        print(usage())
         sys.exit(1)
 
 if not upload_file:
-    print "An excel file is expected!"
+    print("An excel file is expected!")
     sys.exit(1)
 
 order = {
@@ -51,7 +51,7 @@ order = {
     'parish': 11, 'village': 12
 }
 
-print upload_file
+print(upload_file)
 
 conn = psycopg2.connect(
     "dbname=" + config["db_name"] + " host= " + config["db_host"] + " port=" + config["db_port"] +
@@ -106,16 +106,16 @@ pprint.pprint(subcountyParishesByName)
 pprint.pprint(subcountyVillagesByName)
 
 wb = load_workbook(upload_file, read_only=True)
-print wb.get_sheet_names()
+print(wb.get_sheet_names())
 # get all the data in the different sheets
 data = []
 for sheet in wb:
-    print sheet.title
+    print(sheet.title)
     j = 0
     for row in sheet.rows:
         if j > 0:
             # val = ['%s' % i.value for i in row]
-            val = [u'' if i.value is None else unicode(i.value) for i in row]
+            val = ['' if i.value is None else str(i.value) for i in row]
             # print val
             data.append(val)
         j += 1
@@ -123,7 +123,7 @@ for sheet in wb:
 # start processing data in the sheets
 for d in data:
     if not (d[order['firstname']] and d[order['telephone']] and d[order['facility']]):
-        print "One of the mandatory fields (firstname, telephone or facility) missing"
+        print("One of the mandatory fields (firstname, telephone or facility) missing")
         continue
     _firstname = d[order['firstname']].strip()
     _lastname = d[order['lastname']].strip()
@@ -133,10 +133,10 @@ for d in data:
     _telephone = d[order['telephone']].strip().replace(' ', '')
     try:
         if not format_msisdn(_telephone):
-            print "Phone Number not valid", _telephone
+            print("Phone Number not valid", _telephone)
             continue
     except:
-        print "FAILED TO FORMATE TEL:", _telephone
+        print("FAILED TO FORMATE TEL:", _telephone)
         continue
     _alt_tel = d[order['alternate_tel']].strip()
     if not format_msisdn(_alt_tel):
@@ -149,7 +149,7 @@ for d in data:
             _dob = datetime.strptime(_dob, "%Y-%m-%d %H:%M:%S").strftime('%Y-%m-%d')
         except:
             _dob = ''
-    print "=====================>", _telephone
+    print("=====================>", _telephone)
     _district = d[order['district']].strip()
     districtid = allDistrictsByName[district.capitalize()]
     _subcounty = d[order['subcounty']].strip()
@@ -178,7 +178,7 @@ for d in data:
                 facilityid = subcountyFacilitiesByName[subcountyid][_fac]
             except:
                 # print "Sub-county ID:", subcountyid, subcountyFacilitiesByName
-                print "Facility ID for [%s]could not be got" % _fac, "subcountyid:", subcountyid
+                print("Facility ID for [%s]could not be got" % _fac, "subcountyid:", subcountyid)
                 # sys.exit(1)
                 continue
             # print "WE CAN ADD THIS ONE YEY!"
@@ -195,6 +195,6 @@ for d in data:
                     'reporters_upload_endpoint',
                     'http://localhost:8080/reportersupload'), data=params)
             except:
-                print "Reporter Upload Endpoint returned an error"
+                print("Reporter Upload Endpoint returned an error")
 
 conn.close()

@@ -61,7 +61,7 @@ class DataEntry:
         else:
             dataValues = ""
         msg = "%s." % report
-        for key, val in params.iteritems():
+        for key, val in params.items():
             if key in ('week', 'facility', 'district', 'report', 'report_type', 'reporter', 'csrf_token'):
                 continue
             if val.__str__().isdigit() or key in TEXT_INDICATORS:

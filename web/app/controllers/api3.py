@@ -28,7 +28,7 @@ class EditReport:
         else:
             dataValues = ""
         msg = "%s." % report
-        for key, val in params.iteritems():
+        for key, val in params.items():
             if key in ('xweek', 'facility', 'district', 'report', 'report_type', 'reporter', 'request_id'):
                 continue
             if val.__str__().isdigit() or key in TEXT_INDICATORS:

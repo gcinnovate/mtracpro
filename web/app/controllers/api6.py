@@ -54,7 +54,7 @@ class QueueRejectedReports:
                 values = json.loads(web.data())
                 results = values.get('results', {})
                 thresholds_list = []
-                for key, v in results.iteritems():
+                for key, v in results.items():
                     val = v.get('value')
                     try:
                         val = int(float(val))

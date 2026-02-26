@@ -40,7 +40,7 @@ stats = {MONTH: {}}
 total_in = 0
 total_out = 0
 
-for k, v in NETWORK_REGEX.iteritems():
+for k, v in NETWORK_REGEX.items():
     if k != 'others':
         in_cmd = """zgrep "^%s" %s | grep "Receive SMS" | egrep -c "from:%s" """ % (MONTH, SEARCH_FILES, v)
         out_cmd = """zgrep "^%s" %s | grep "Sent SMS" | egrep -c "to:%s" """ % (MONTH, SEARCH_FILES, v)
@@ -62,7 +62,7 @@ for k, v in NETWORK_REGEX.iteritems():
 stats[MONTH]["total_in"] = total_in
 stats[MONTH]["total_out"] = total_out
 
-for k, v in stats.iteritems():
+for k, v in stats.items():
     cur.execute("SELECT id FROM kannel_stats WHERE month = %s", [k])
     res = cur.fetchone()
     if res:

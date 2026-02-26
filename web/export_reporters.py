@@ -41,10 +41,10 @@ for i, v in enumerate(headings):
     sheet1.write(0, i, v)
     sheet1.col(i).width = 4050
 s = 0
-for i in xrange(row_len):
+for i in range(row_len):
     s += 1
     row = sheet1.row(s)
-    for k in xrange(len(headings)):
+    for k in range(len(headings)):
         row.write(k, data[i][k])
 sheet1.flush_row_data()
 book.save("%s/downloads/%s.xls" % (

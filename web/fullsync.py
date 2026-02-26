@@ -69,14 +69,8 @@ def get_facility_details(facilityJson):
 
     orgunitGroups = facilityJson["organisationUnitGroups"]
     orgunitGroupsIds = ["%s" % k["id"] for k in orgunitGroups]
-    try:
-        # Python 2
-        config_levels_items = config["levels"].iteritems()
-        config_owners_items = config["owners"].iteritems()
-    except AttributeError:
-        # Python 3
-        config_levels_items = config["levels"].items()
-        config_owners_items = config["owners"].items()
+    config_levels_items = config["levels"].items()
+    config_owners_items = config["owners"].items()
 
     for k, v in config_levels_items:
         if k in orgunitGroupsIds:
