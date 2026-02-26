@@ -1,0 +1,22 @@
+INSERT INTO users(firstname,lastname,username,telephone,password,email,user_role,is_system_user)
+VALUES
+('bugweri', 'District','bugweri', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('bunyangabu', 'District','bunyangabu', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('butebo', 'District','butebo', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('kalaki', 'District','kalaki', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('kapelebyong', 'District','kapelebyong', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('karenga', 'District','karenga', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('kassanda', 'District','kassanda', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('kazo', 'District','kazo', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('kikuube', 'District','kikuube', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('kitagwenda', 'District','kitagwenda', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('kwania', 'District','kwania', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('kyotera', 'District','kyotera', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('madi-okollo', 'District','madi-okollo', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('nabilatuk', 'District','nabilatuk', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('namisindwa', 'District','namisindwa', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('obongi', 'District','obongi', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('pakwach', 'District','pakwach', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('rukiga', 'District','rukiga', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('rwampara', 'District','rwampara', '', crypt('123456',gen_salt('bf')), '', 2, 'f'),
+('sembabule', 'District','sembabule', '', crypt('123456',gen_salt('bf')), '', 2, 'f');

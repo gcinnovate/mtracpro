@@ -1,0 +1,1 @@
+COPY(SELECT name, split_part(default_connection, ',', 1), district, facility, groups, active,  get_contact_facility_code(id) AS facility_code FROM reporters WHERE groups SIMILAR TO '%(DHO|DHT)%') TO '/tmp/reporters2.csv' WITH DILIMITER '#' CSV HEADER;

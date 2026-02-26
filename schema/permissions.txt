@@ -1,0 +1,31 @@
+Can approve report,can_approve_report,Approve
+Can cancel report,can_cancel_report,Approve
+Can change report,can_change_report,Approve
+Can download reports,can_download_report,Approve
+Can view CARAMAL reports,can_view_caramal_reports,Caramal
+Can change anonymous report,can_change_anonymous_report,Hotline
+Can view anonymous report,can_view_anonymous_report,Hotline
+Can send SMS,can_send_sms,All
+Can send bulk SMS, can_send_bulk_sms,All
+Can view reporters,can_view_reporters,Reporters
+Can add reporter,can_add_reporter,Reporters
+Can change reporter,can_change_reporter,Reporters
+Can delete reporter,can_delete_reporter,Reporters
+Can creats poll,can_create_poll,Polls
+Can change poll,can_change_poll,Polls
+Can delete poll,can_delete_poll,Polls
+Can download poll reponses,can_download_poll_responses,Polls
+Can start poll,can_start_poll,Polls
+Can stop poll,can_stop_poll,Polls,
+Can view polls,can_view_polls,Polls
+Can add report,can_add_report,Data Entry
+Can manage dhis 2 integration,can_manage_dhis2_integration,Integration
+Can resend request,can_resend_request,Integration
+Can cancel request,can_cancel_request,Integration
+Can delete request,can_delete_request,Integration
+Can add dispatcher2 server,can_add_dispatcher2_server,Integration
+Can change dispatcher2 server,can_change_dispatcher2_server,Integration
+Can delete dispatcher2 server,can_delete_dispatcher2_server,Integration
+Can add indicator,can_add_indicator,Integration
+Can change indicator,can_change_indicator,Integration
+Can delete indicator,can_delete_indicator,Integration

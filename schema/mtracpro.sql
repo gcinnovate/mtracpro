@@ -279,14 +279,17 @@ $delim$
     END;
 $delim$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION add_node(treeid INT, node_name TEXT, p_id INT) RETURNS BOOLEAN AS --p_id = id of node where to add
-$delim$
+CREATE OR REPLACE FUNCTION public.add_node(treeid integer, node_name text, p_id integer)
+ RETURNS BIGINT
+ LANGUAGE plpgsql
+AS $function$
     DECLARE
     new_lft INTEGER;
     lvl INTEGER;
     dummy TEXT;
     node_type INTEGER;
     child_type INTEGER;
+    new_id BIGINT;
     BEGIN
         IF node_name = '' THEN
             RAISE NOTICE 'Node name cannot be empty string';
@@ -315,11 +318,63 @@ $delim$
 
         UPDATE locations SET lft = lft + 2 WHERE lft > new_lft AND tree_id = treeid;
         UPDATE locations SET rght = rght + 2 WHERE rght >= new_lft AND tree_id = treeid;
-        INSERT INTO locations (name, lft, rght, tree_id,type_id, tree_parent_id)
-        VALUES (node_name, new_lft, new_lft+1, treeid, child_type, p_id);
-        RETURN TRUE;
+        INSERT INTO locations (name, code, lft, rght, tree_id,type_id, tree_parent_id)
+        VALUES (node_name, generate_uid(), new_lft, new_lft+1, treeid, child_type, p_id)
+        RETURNING id INTO new_id;
+        RETURN new_id;
     END;
-$delim$ LANGUAGE plpgsql;
+$function$;
+
+
+CREATE OR REPLACE FUNCTION add_node(node_name text, p_id integer)
+ RETURNS bigint
+ LANGUAGE plpgsql
+AS $function$
+    DECLARE
+        new_lft INTEGER;
+        lvl INTEGER;
+        dummy TEXT;
+        node_type INTEGER;
+        child_type INTEGER;
+        new_id BIGINT;
+    BEGIN
+        IF node_name = '' THEN
+            RAISE NOTICE 'Node name cannot be empty string';
+            RETURN NULL;
+        END IF;
+
+        SELECT level INTO lvl FROM locationtype WHERE id = (SELECT type_id FROM locations WHERE id = p_id);
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Cannot add node: failed to find level';
+        END IF;
+
+        SELECT rght INTO new_lft FROM locations WHERE id =  p_id;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'No such node id= % ', p_id;
+        END IF;
+
+        SELECT id INTO child_type FROM locationtype WHERE level = lvl + 1;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'You cannot add to root node';
+        END IF;
+
+        SELECT name INTO dummy FROM locations WHERE name = node_name
+            AND type_id = child_type AND parent_id = p_id;
+        IF FOUND THEN
+            RAISE NOTICE 'Node already exists : %', node_name;
+            RETURN NULL;
+        END IF;
+
+        UPDATE locations SET lft = lft + 2 WHERE lft > new_lft;
+        UPDATE locations SET rght = rght + 2 WHERE rght >= new_lft;
+
+        INSERT INTO locations (name, code, lft, rght, type_id, level, parent_id)
+        VALUES (node_name, generate_uid(), new_lft, new_lft+1, child_type, lvl + 1, p_id)
+        RETURNING id INTO new_id;
+
+        RETURN new_id;
+    END;
+$function$;
 
 CREATE OR REPLACE FUNCTION delete_node(treeid INT, node_id BIGINT)
     RETURNS boolean AS $delim$
@@ -739,10 +794,8 @@ $function$;
 
 CREATE OR REPLACE FUNCTION pp_json(j TEXT, sort_keys BOOLEAN = TRUE, indent TEXT = '    ')
 RETURNS TEXT AS $$
-    import simplejson as json
-    if not j:
-        return ''
-    return json.dumps(json.loads(j), sort_keys=sort_keys, indent=indent)
+    import json
+    return json.dumps(json.loads(j), indent=2, sort_keys=True)
 $$ LANGUAGE plpython3u;
 
 CREATE OR REPLACE FUNCTION urlencode(msg TEXT)

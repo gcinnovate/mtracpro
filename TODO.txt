@@ -1,0 +1,9 @@
+1. reorder the feedback to indicate the indicator before the number.
+2. Be more specific on the error reporting (error feedback)
+3. Group SMS on the dashboard
+4. Fixing validation in the android App
+5. Fix IPT and MAT messaging on the android App.
+     - IPT not showing feedback for the last two indicators
+     - MAT returns only two indicators because it has only two data elements
+       which share categories
+

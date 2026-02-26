@@ -1,0 +1,732 @@
+{
+   "apt_opd_total" : {
+      "descr" : "OPT Total Attendence",
+      "dataElement" : "xb4g6Zf7fAT",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "death_mb" : {
+      "descr" : "Macerated Still Births",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "nG5hrCX3vyP"
+   },
+   "cases_tf" : {
+      "descr" : "Cases of Typhoid Fever",
+      "dataElement" : "IkI01xB7RIi",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "epc_oc" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "Vk9c9fpwdW2",
+      "descr" : "Cases of Onchocerciasis"
+   },
+   "death_ab" : {
+      "dataElement" : "UKYPpKnSBK4",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Deaths from Animal Bites"
+   },
+   "gp_errors" : {
+      "descr" : "No. of errors/Invalid results",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "FdM6TXb0Vvq"
+   },
+   "epd_dd" : {
+      "descr" : "Cases of Diarrhea with dehydration <5",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "QXdsntCMbaN"
+   },
+   "epc_tr" : {
+      "dataElement" : "Kb0OKeXttJk",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Trachoma"
+   },
+   "arv_hiv_screening_test_kits" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "kteQimFQJom",
+      "descr" : "HIV Screening Test Kits"
+   },
+   "gp_rifr" : {
+      "descr" : "Total No. Rif R",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "uueyksI2Qcy"
+   },
+   "epc_lp" : {
+      "descr" : "Cases of Leprosy",
+      "dataElement" : "NYKa2yD2siO",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "tra_measles_vaccine" : {
+      "descr" : "Measles Vaccine",
+      "dataElement" : "DgeykDdSLzI",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "tb_presumptive" : {
+      "descr" : "Presumptive TB cases identified",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "GZQKLslbXEg"
+   },
+   "tra_iv_artesunate" : {
+      "descr" : "IV artesunate",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "O2OrXuZo4hB"
+   },
+   "epd_dc" : {
+      "descr" : "Cases of Dracunculiasis",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "iKmTMVTm4Or"
+   },
+   "epc_ar" : {
+      "dataElement" : "EPwViVsO6v9",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Adverse Drug Reactions (ADR)"
+   },
+   "epc_ss" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "JXK7vIi435D",
+      "descr" : "Cases of Severe Acute Respiratory Syndrome (SARS)"
+   },
+   "tra_act_tablets" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "Ju0Cann41Ul",
+      "descr" : "ACT (Tablets)"
+   },
+   "epc_dd" : {
+      "dataElement" : "fDzj1rZ7l3r",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Diarrhea with dehydration <5"
+   },
+   "arv_inh300" : {
+      "descr" : "INH 300mg Blisters of 28 Tablets",
+      "dataElement" : "BXFtrdaofVw",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "mat_microscopy_neg_treated" : {
+      "categoryOptionCombo" : "TTwU8Bv4fKm",
+      "dataElement" : "ZgPtploqq0L",
+      "descr" : "Microscopy Negative Cases Treated"
+   },
+   "cases_ae" : {
+      "dataElement" : "fTwT8uX9Uto",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Adverse Events Following Immunization"
+   },
+   "epc_dg" : {
+      "descr" : "Cases of Dengue",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "fMmFJvnkeby"
+   },
+   "ipt_children_and_adolo" : {
+      "descr" : "Number of IPT eligible children/adolescent ART clients",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "JhqUwEvEFK4"
+   },
+   "arv_nevirapine" : {
+      "descr" : "Nevirapine Suspension Bottle",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "JPVp2yLEimL"
+   },
+   "tb_new_relapse_on_treatment" : {
+      "descr" : "New and relapse TB cases started on treatment",
+      "dataElement" : "EtSajv2ds4K",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "death_md" : {
+      "dataElement" : "ck3jFjr8fOT",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Maternal Deaths"
+   },
+   "cases_ch" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "FPsN2bDpRru",
+      "descr" : "Cases of Cholera"
+   },
+   "cases_sa" : {
+      "descr" : "Cases of Severe Acute Respiratory Infection",
+      "dataElement" : "MHtpmIQEnyc",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "death_nt" : {
+      "dataElement" : "tIh9TQxGOJU",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Deaths from Neonatal Tetanus"
+   },
+   "death_ae" : {
+      "dataElement" : "k2dUb4N7D0D",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Deaths from Adverse Events Following Immunization"
+   },
+   "epc_il" : {
+      "dataElement" : "ASPMHrL6xEY",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Influenza-like illness"
+   },
+   "apt_opd_new" : {
+      "descr" : "OPD New Attendees",
+      "dataElement" : "xqSBj2KUlas",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "ras_patient_sex" : {
+      "dataElement" : "IM4qZpgowPm",
+      "categoryOptionCombo" : "bjDvmb4bfuf",
+      "descr" : "Patient Sex"
+   },
+   "mat_microscopy_pos_treated" : {
+      "descr" : "Microscopy Positive Cases Treated",
+      "categoryOptionCombo" : "vp37EZVg3xG",
+      "dataElement" : "ZgPtploqq0L"
+   },
+   "death_ch" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "QP9yftzrkne",
+      "descr" : "Deaths from Cholera"
+   },
+   "mat_microscopy_tested" : {
+      "descr" : "Microscopy Tested Cases",
+      "dataElement" : "KPmTI3TGwZw",
+      "categoryOptionCombo" : "t8Jv78lnSbU"
+   },
+   "cases_ma" : {
+      "descr" : "Cases of Malaria",
+      "dataElement" : "fclvwNhzu7d",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "death_me" : {
+      "descr" : "Deaths from Measles",
+      "dataElement" : "tjTnFJ1QdVz",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "car_patients_seen" : {
+      "categoryOptionCombo" : "bjDvmb4bfuf",
+      "dataElement" : "iIO5V7PJJwe",
+      "descr" : "Number of patients seen"
+   },
+   "arv_tenofovir" : {
+      "descr" : "Tenofovir/Lamivudine/Dolutegravir",
+      "dataElement" : "yS1iwMIxFb8",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "epc_tx" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "Ci67YupdV3v",
+      "descr" : "Cases of Human African Trypanosomiasis"
+   },
+   "tra_depo_provera" : {
+      "dataElement" : "v6ACxYNPIvm",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Depo - Provera"
+   },
+   "ipt_adults_initiated" : {
+      "dataElement" : "j1j68019j6Q",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Number of Adult ART clients initiated IPT"
+   },
+   "epc_hn" : {
+      "dataElement" : "fn7xQ42iVqR",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Human influenza due to a new subtype"
+   },
+   "epd_oc" : {
+      "descr" : "Cases of Onchocerciasis",
+      "dataElement" : "e7XmTFVqpYs",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "death_tf" : {
+      "descr" : "Deaths from Typhoid Fever",
+      "dataElement" : "OMxmmYvvLai",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "mat_rdt_neg_treated" : {
+      "categoryOptionCombo" : "NfJyyb1eBaw",
+      "dataElement" : "ZgPtploqq0L",
+      "descr" : "RDT Negative Cases Treated"
+   },
+   "ras_patient_id" : {
+      "dataElement" : "n9ZzKfqxIAk",
+      "categoryOptionCombo" : "bjDvmb4bfuf",
+      "descr" : "Patient ID"
+   },
+   "cases_nt" : {
+      "descr" : "Cases of Neonatal Tetanus",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "euf2TqlswFp"
+   },
+   "epd_cg" : {
+      "descr" : "Cases of Chikungunya",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "U0Ncse4uBaa"
+   },
+   "death_hb" : {
+      "descr" : "Hepatitis B",
+      "dataElement" : "IutSK3p5cX4",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "mat_rdt_pos_treated" : {
+      "dataElement" : "ZgPtploqq0L",
+      "categoryOptionCombo" : "QOWAmZ7jBno",
+      "descr" : "RDT Positive Cases treated"
+   },
+   "car_patients_receiving_ras" : {
+      "dataElement" : "NFSEQwngr5o",
+      "categoryOptionCombo" : "bjDvmb4bfuf",
+      "descr" : "Number of patients receiving RAS"
+   },
+   "tb_new_relapse_registered" : {
+      "descr" : "New and relapse diagnosed and registered",
+      "dataElement" : "xB0M9QdnHbX",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "cases_me" : {
+      "descr" : "Cases of Measles",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "v8HuPNb03yq"
+   },
+   "gp_cartridges" : {
+      "descr" : "No. of cartridges remaining",
+      "dataElement" : "Eg7J5u9QJNs",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "epd_lf" : {
+      "dataElement" : "hTttonju8ji",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Lymphatic Filariasis"
+   },
+   "mat_microscopy_positive" : {
+      "dataElement" : "KPmTI3TGwZw",
+      "categoryOptionCombo" : "3rYpFjLrrYa",
+      "descr" : "Microscopy Positive Cases"
+   },
+   "car_rdt_positive" : {
+      "descr" : "Number of RDT +ve patients",
+      "categoryOptionCombo" : "bjDvmb4bfuf",
+      "dataElement" : "y3khdxvLfpG"
+   },
+   "gp_mtb_detected" : {
+      "descr" : "Total MTB detected",
+      "dataElement" : "ptkKk4OQTwC",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "tb_bacter_registered" : {
+      "descr" : "Bacteriologically treated TB cases registered",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "VsWusRkHTcG"
+   },
+   "epc_sc" : {
+      "descr" : "Cases of Schistosomiasis",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "KGwVwqvDGUa"
+   },
+   "car_patients_with_fever" : {
+      "categoryOptionCombo" : "bjDvmb4bfuf",
+      "dataElement" : "phxagKD2YUi",
+      "descr" : "Number of patients with fever"
+   },
+   "death_mg" : {
+      "dataElement" : "r3xIBQaeLsT",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Deaths from Bacterial Meningitis"
+   },
+   "epd_lp" : {
+      "descr" : "Cases of Leprosy",
+      "dataElement" : "RPu97qySnXp",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "death_nd" : {
+      "descr" : "Early Neonatal Deaths 0-7 days ",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "Dy90lwS6c6x"
+   },
+   "ras_patient_age" : {
+      "dataElement" : "admpnpCyyyS",
+      "categoryOptionCombo" : "bjDvmb4bfuf",
+      "descr" : "Patient Age"
+   },
+   "gp_rejected" : {
+      "descr" : "Number of samples rejected",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "xnIJiShbblt"
+   },
+   "death_af" : {
+      "dataElement" : "XzYd9m4XaKS",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Deaths from Acute Flacid Paralysis"
+   },
+   "epd_bu" : {
+      "descr" : "Cases of Buruli Ulcer",
+      "dataElement" : "DEacDxmRv7c",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "gp_samples" : {
+      "dataElement" : "V5APvVzRWD2",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Number of samples tested"
+   },
+   "gp_modules" : {
+      "dataElement" : "HhNUfBrOsd2",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "No. of GeneXpert modules working"
+   },
+   "death_yf" : {
+      "descr" : "Deaths from Yellow Fever",
+      "dataElement" : "w3mO7SZdbb8",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "epd_sp" : {
+      "descr" : "Cases of Smallpox",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "trkW0zOTZcY"
+   },
+   "epd_dg" : {
+      "descr" : "Cases of Dengue",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "YiXJbhkNMju"
+   },
+   "epd_pn" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "AOkqTXJHZXi",
+      "descr" : "Cases of Severe pneumonia <5"
+   },
+   "cases_af" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "U7cokRIptxu",
+      "descr" : "Cases of Acute Flacid Paralysis"
+   },
+   "epd_bc" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "yymN0AVB2i8",
+      "descr" : "Cases of Brucellosis"
+   },
+   "epd_sc" : {
+      "dataElement" : "rPkhy2yh1eR",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Schistosomiasis"
+   },
+   "cases_mg" : {
+      "dataElement" : "JxUexqKeXtZ",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Bacterial Meningitis"
+   },
+   "ipt_child_adolo_init" : {
+      "descr" : "Number of Children & Adolescents on ART who started IPT",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "jfbKgHsl6Mb"
+   },
+   "mat_not_tested_treated" : {
+      "descr" : "Not Tested Cases Treated",
+      "categoryOptionCombo" : "w16OBdsg4b7",
+      "dataElement" : "ZgPtploqq0L"
+   },
+   "epd_ka" : {
+      "dataElement" : "RUsqQYH9oLK",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Kala Azar"
+   },
+   "apt_emtct_expected" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "xVpHSWaIBEX",
+      "descr" : "Expected eMTCT Mothers on Appointment"
+   },
+   "death_dy" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "JTc25LIvtQb",
+      "descr" : "Deaths from Dysentery"
+   },
+   "epc_sp" : {
+      "descr" : "Cases of Smallpox",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "eIYafG47I3R"
+   },
+   "car_patients_with_danger_signs" : {
+      "descr" : "Number of patients with danger signs",
+      "dataElement" : "mY5azRcJKpw",
+      "categoryOptionCombo" : "bjDvmb4bfuf"
+   },
+   "epc_ax" : {
+      "descr" : "Cases of Anthrax (Human)",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "vilkwc3HJEn"
+   },
+   "tb_contacts_traced" : {
+      "descr" : "Number of TB contacts traced and screened",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "wYQZ7sXUMFu"
+   },
+   "mat_suspected_malaria" : {
+      "dataElement" : "KPmTI3TGwZw",
+      "categoryOptionCombo" : "3W3d2AqT4Aq",
+      "descr" : "Suspected Malaria (fever)"
+   },
+   "epd_hp" : {
+      "dataElement" : "Rlm0M8zj7T3",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Acute Viral Hepatitis"
+   },
+   "epc_dc" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "XE6hNsO5S9D",
+      "descr" : "Cases of Dracunculiasis"
+   },
+   "mat_rdt_tested" : {
+      "categoryOptionCombo" : "kcXY5cWAOsB",
+      "dataElement" : "KPmTI3TGwZw",
+      "descr" : "RDT Tested cases"
+   },
+   "epd_ns" : {
+      "descr" : "Cases of Nodding Syndrome",
+      "dataElement" : "jyHJFDYWaYr",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "epc_ka" : {
+      "descr" : "Cases of Kala Azar",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "JvsSuE7siWP"
+   },
+   "cases_gw" : {
+      "descr" : "Cases of Guinea Worm",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "hzGgkiOjfRs"
+   },
+   "epd_wc" : {
+      "descr" : "Cases of Pertussis (Whooping cough)",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "NCrCnDgWpCz"
+   },
+   "epd_ax" : {
+      "descr" : "Cases of Anthrax (Human)",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "nYr7E2I6J1J"
+   },
+   "tb_screened" : {
+      "descr" : "Clients screened",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "KFe6QNoowJm"
+   },
+   "death_pl" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "hBcX7S7xBcu",
+      "descr" : "Deaths from Plague"
+   },
+   "tra_rdt_malaria" : {
+      "descr" : "Malaria RDTs",
+      "dataElement" : "CzsKMvQDwMV",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "arv_lopinavir" : {
+      "descr" : "Lopinavir/Ritonavir Pellets",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "YeD1pLYktCN"
+   },
+   "epd_tr" : {
+      "descr" : "Cases of Trachoma",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "REayXKVdA4p"
+   },
+   "epc_bc" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "oJr4iDBC8wE",
+      "descr" : "Cases of Brucellosis"
+   },
+   "epd_ss" : {
+      "descr" : "Cases of Severe Acute Respiratory Syndrome (SARS)",
+      "dataElement" : "Rlm0M8zj7T3",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "ipt_eligible_adults" : {
+      "descr" : "Number of IPT eligible adult ART clients",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "Ik9lDN3RifY"
+   },
+   "epd_ar" : {
+      "descr" : "Cases of Adverse Drug Reactions (ADR)",
+      "dataElement" : "ujda2OqcHre",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "cases_dr" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "yzdPKhvgeXq",
+      "descr" : "Presumptive Multi Drug Resistance (MDR) TB"
+   },
+   "tra_amoxcilline" : {
+      "descr" : "Amoxcilline",
+      "dataElement" : "tFrWdigZ4oo",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "tb_genexpert_confirmed" : {
+      "descr" : "Bacteriologically confirmedTB cases tested with GeneXpert",
+      "dataElement" : "n5ulUTJ6dPI",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "epc_hp" : {
+      "dataElement" : "rDBAKXrX8EU",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Acute Viral Hepatitis"
+   },
+   "death_dr" : {
+      "descr" : "Refampicin Resistant TB Cases",
+      "dataElement" : "eEruojUV6Jh",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "arv_inh100" : {
+      "descr" : "INH 100mg Blisters of 28 Tablets",
+      "dataElement" : "MIuGhf1xDw1",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "epc_pn" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "J46QEfogtz3",
+      "descr" : "Cases of Severe pneumonia <5"
+   },
+   "epc_wc" : {
+      "descr" : "Cases of Pertussis (Whooping cough)",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "JYl8Yur0Bjh"
+   },
+   "death_vf" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "BX2PYPKm8F9",
+      "descr" : "Deaths from Other Viral Hemorrhagic Fevers"
+   },
+   "death_sa" : {
+      "descr" : "Deaths from Severe Acute Respiratory Infection",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "qdZbdsCpIr7"
+   },
+   "epd_hn" : {
+      "descr" : "Cases of Human influenza due to a new subtype",
+      "dataElement" : "nI9A7rF9WWd",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "death_gw" : {
+      "descr" : "Deaths from Guinea Worm",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "yvbPC5zDb3c"
+   },
+   "arv_rhz" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "uQKCuH9Z209",
+      "descr" : "R(75) H(50) Z(150) Blisters of 28 Tablets"
+   },
+   "death_ma" : {
+      "descr" : "Deaths from Malaria",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "YXIu5CW9LPR"
+   },
+   "cases_dy" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "NoJfAIcxjSY",
+      "descr" : "Cases of Dysentery"
+   },
+   "tra_fansidar" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "fX6A6NO18pY",
+      "descr" : "Fansidar"
+   },
+   "epc_no" : {
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "Y9IAoFbp6EH",
+      "descr" : "Cases of Noma"
+   },
+   "cases_yf" : {
+      "descr" : "Cases of Yellow Fever",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "OE8baEzA2Cq"
+   },
+   "epd_il" : {
+      "descr" : "Cases of Influenza-like illness",
+      "dataElement" : "t7nBnjBBKfu",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "epd_tx" : {
+      "descr" : "Cases of Human African Trypanosomiasis",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "WmNYFVB5r9V"
+   },
+   "tra_ors" : {
+      "dataElement" : "zmimiDOJwaf",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "ORS (Scakets)"
+   },
+   "epc_cg" : {
+      "descr" : "Cases of Chikungunya",
+      "dataElement" : "UA0RAdbrnnq",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "epd_dp" : {
+      "dataElement" : "h4CszRVMU6B",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Diphtheria"
+   },
+   "epd_no" : {
+      "dataElement" : "ZN1uVqRdO7W",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Noma"
+   },
+   "cases_ab" : {
+      "descr" : "Cases of Animal Bites",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "mdIPCPfqXaJ"
+   },
+   "arv_emtct" : {
+      "descr" : "ARVs (Fixed - DC eMTCT)",
+      "dataElement" : "xgSJLvdm2cQ",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "epc_bu" : {
+      "descr" : "Cases of Buruli Ulcer",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "zK1GJYiU6uD"
+   },
+   "epc_lf" : {
+      "dataElement" : "hQSYkiekLLK",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Lymphatic Filariasis"
+   },
+   "cases_hb" : {
+      "descr" : "Hepatitis B",
+      "dataElement" : "SCMXiy6UHUr",
+      "categoryOptionCombo" : "gGhClrV5odI"
+   },
+   "apt_emtct_missed" : {
+      "descr" : "eMTCT Missed Appointments",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "LYT11E96lC5"
+   },
+   "arv_rhze" : {
+      "dataElement" : "TyhIGP166Pb",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "RHZE Blister of 28 Tablets"
+   },
+   "mat_rdt_positive" : {
+      "descr" : "RDT Positive Cases",
+      "dataElement" : "KPmTI3TGwZw",
+      "categoryOptionCombo" : "PfdPCxOoiBj"
+   },
+   "epc_dp" : {
+      "descr" : "Cases of Diphtheria",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "IVF5F0YtHhc"
+   },
+   "epc_ns" : {
+      "dataElement" : "VNHvT6dqkSg",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Cases of Nodding Syndrome"
+   },
+   "cases_pl" : {
+      "descr" : "Cases of Plague",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "peyFcHisgZB"
+   },
+   "cases_vf" : {
+      "descr" : "Cases of Other Viral Hemorrhagic Fevers",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "dataElement" : "BMJMdxh1Loy"
+   },
+   "death_fb" : {
+      "dataElement" : "qHSErXOlcf3",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "Fresh Still Birth"
+   },
+   "arv_rh" : {
+      "dataElement" : "pUMVgrYOwOe",
+      "categoryOptionCombo" : "gGhClrV5odI",
+      "descr" : "RH Blister of 28 Tablets"
+   }
+}
