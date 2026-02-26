@@ -80,7 +80,7 @@ LOCKFILE = "/tmp/rapidpro_sync.lock"
 lock = open(LOCKFILE, "w")
 try:
     fcntl.lockf(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-except IOError:
+except OSError:
     logger.warning("⚠ Another sync is already running. Exiting.")
     sys.exit(0)
 
@@ -178,7 +178,7 @@ def request_retry(method, url, data=None):
     with RAPIDPRO_SEMAPHORE:
         if DRY_RUN:
             logger.info(f"[DRY-RUN] {method} {url} data={data}")
-            class DummyResp(object):
+            class DummyResp:
                 ok = True
                 status_code = 200
                 text = "{}"

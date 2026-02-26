@@ -53,7 +53,7 @@ def sync_facilities(
                     if parent_dhis2id:
                         # insert not using add_node postgresql function
                         # log what we're adding, show ou name and id, parent name and id
-                        print(u"Adding {0} ({1}) to {2} ({3})".format(
+                        print("Adding {0} ({1}) to {2} ({3})".format(
                             ou['name'], orgunit_id, parent_dhis2id["id"], parent_id).encode('utf-8'))
 
                         cur.execute(

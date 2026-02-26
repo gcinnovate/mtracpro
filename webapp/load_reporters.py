@@ -31,7 +31,7 @@ def format_msisdn(msisdn=""):
     return phonenumbers.format_number(
         num, phonenumbers.PhoneNumberFormat.E164)
 
-with open(filename, 'r') as f:
+with open(filename) as f:
     for l in f:
         reporter = l.strip().split("#")
         name, phone, district, facility, roles, is_active, facility_code = tuple(reporter)

@@ -1,0 +1,24 @@
+target-version = "py39"
+line-length = 100
+
+[lint]
+select = [
+  "E9",
+  "F63",
+  "F7",
+  "F82",
+  "UP003",
+  "UP004",
+  "UP015",
+  "UP024",
+  "UP025",
+  "TID251",
+]
+
+[lint.flake8-tidy-imports.banned-api]
+settings.msg = "Use package-absolute imports from webapp.settings instead of top-level settings."
+app.msg = "Use package-absolute imports from webapp.app instead of top-level app."
+urls.msg = "Use package-absolute imports from webapp.urls instead of top-level urls."
+
+[lint.per-file-ignores]
+"webapp/app/controllers/queue_mgt_handler.py" = ["F821"]

@@ -308,7 +308,7 @@ def send_bulksms_task(msg, user, sms_roles=[], district="", facility="", check_d
             SQL += " AND district_id = ANY($district::INT[]) "
 
     facilityStr = ''
-    if facility and (type(facility) == type('')):
+    if facility and (type(facility) == str):
         SQL += " AND facilityid=$facility "
         facilityStr = facility
     if facility and (type(facility) == type([])) and facility != [""]:
@@ -562,7 +562,7 @@ def sync_administrative_units_task(
                     cur.execute("SELECT id FROM locations WHERE dhis2id=%s", (parent_id,))
                     parent_dhis2id = cur.fetchone()
                     if parent_dhis2id:
-                        print(u"Adding {0} ({1}) to {2} ({3})".format(
+                        print("Adding {0} ({1}) to {2} ({3})".format(
                             ou['name'], orgunit_id, parent_dhis2id["id"], parent_id).encode('utf-8'))
                         cur.execute(
                             """
