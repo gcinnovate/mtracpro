@@ -10,7 +10,7 @@ import psycopg2.extras
 import os
 from webapp.settings import config
 from webapp.settings import (
-    DELIMITER, CASES_POSITIONS, KEYWORDS_DATA_LENGTH,
+    DELIMITER, CASES_POSITIONS, DEATH_POSITIONS, KEYWORDS_DATA_LENGTH,
     SMB_SERVER_IP, SMB_SERVER_NAME, SMB_USER, SMB_PASSWORD, SMB_DOMAIN_NAME,
     SMB_CLIENT_HOSTNAME, SMB_SHARED_FOLDER, SMB_PORT)
 
@@ -201,7 +201,7 @@ def parse_message(msg, kw=""):
     segments = stripped_segments
     # do more cleaning here for stuff like ma2 instead of ma.2
     # get stuff like ma2, split it accordingly and put it back in right position
-    outliers = filter(lambda x: not x.isalpha() and not x.isdigit(), segments)
+    outliers = [x for x in segments if not x.isalpha() and not x.isdigit()]
     for i in outliers:
         idx = segments.index(i)
         match_num = re.search('[0-9]', i)
@@ -214,21 +214,22 @@ def parse_message(msg, kw=""):
     if not len(segments) % 2 == 0:
         return "not all commands have a value"
     command_value_pairs = []
+    positions = DEATH_POSITIONS if kw == 'death' else CASES_POSITIONS
     dummy_resp = ['0' for i in range(KEYWORDS_DATA_LENGTH[kw])]
 
     for idx, segment in enumerate(segments):
-        if segment in CASES_POSITIONS:
+        if segment in positions:
             cmd = segment
             if (idx + 1) <= (len(segments) - 1):
                 val = segments[idx + 1]
-                dummy_resp[CASES_POSITIONS[segment]] = val
+                dummy_resp[positions[segment]] = val
             else:
                 # return an error
                 val = 0
             command_value_pairs.append((cmd, val))
         else:
             continue
-    # print segments
+
     return '.'.join(dummy_resp)
 
 

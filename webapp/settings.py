@@ -34,22 +34,32 @@ USE_OLD_WEBHOOKS = False
 # position of indicator in its message form.
 CASES_POSITIONS = {
     'ma': 0, 'dy': 1, 'sa': 2, 'af': 3, 'ae': 4, 'ab': 5, 'mg': 6, 'ch': 7, 'gw': 8,
-    'me': 9, 'nt': 10, 'pl': 11, 'tf': 12, 'hb': 13, 'tb': 14, 'yf': 15, 'vf': 16, 'md': 17,
-    'mb': 18, 'fb': 19, 'nd': 20,
+    'me': 9, 'nt': 10, 'pl': 11, 'tf': 12, 'hb': 13, 'dr': 14, 'yf': 15, 'vf': 16, 'lp': 17,
+    'ax': 18, 'cv': 19,
     # other condition follow - luckily codes are unique
-    'cg': 0, 'dg': 1, 'il': 2, 'ax': 3, 'hp': 4, 'dc': 5, 'lp': 6, 'oc': 7, 'bu': 8,
-    'gw': 9, 'no': 10, 'hn': 11, 'ss': 12, 'sp': 13, 'dd': 14, 'pn': 15, 'tx': 16, 'tr': 17,
-    'sc': 18, 'dp': 19, 'wc': 20, 'bc': 21, 'ka': 22, 'ns': 24, 'ar': 15
+    'cg': 0, 'dg': 1, 'il': 2,  'hp': 3, 'dc': 4, 'oc': 5, 'bu': 6,
+    'lf': 7, 'no': 8, 'hn': 9, 'ss': 10, 'sp': 11, 'dd': 12, 'pn': 13, 'tx': 14, 'tr': 15,
+    'sc': 16, 'dp': 17, 'wc': 18, 'bc': 19, 'ka': 20, 'ns': 21, 'ar': 22
+}
+
+DEATH_POSITIONS = {
+    'ma': 0, 'dy': 1, 'sa': 2, 'af': 3, 'ae': 4, 'ab': 5, 'mg': 6, 'ch': 7, 'gw': 8,
+    'me': 9, 'nt': 10, 'pl': 11, 'tf': 12, 'hb': 13, 'dr': 14, 'yf': 15, 'vf': 16, 'lp': 17,
+    'ax': 18, 'md': 19, 'mb': 20, 'fb': 21, 'nd': 22, 'cv': 23, 'mp': 24,
+    # other condition follow - luckily codes are unique
+    'cg': 0, 'dg': 1, 'il': 2,  'hp': 3, 'dc': 4, 'oc': 5, 'bu': 6,
+    'lf': 7, 'no': 8, 'hn': 9, 'ss': 10, 'sp': 11, 'dd': 12, 'pn': 13, 'tx': 14, 'tr': 15,
+    'sc': 16, 'dp': 17, 'wc': 18, 'bc': 19, 'ka': 20, 'ns': 21, 'ar': 22
 }
 # Preferred delimiter for the message forms
 DELIMITER = '.'
 
 # Dictionary with length of each message form
 KEYWORDS_DATA_LENGTH = {
-    'cases': 16,
-    'death': 18,
-    'epc': 26,
-    'epd': 26
+    'cases': 20,
+    'death': 24,
+    'epc': 23,
+    'epd': 23
 }
 
 # Allowed Reporter Roles
