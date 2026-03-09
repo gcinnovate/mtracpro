@@ -346,10 +346,8 @@ class Dhis2Queue:
     #     return json.dumps({"status": "success"})
     #
     def POST(self):
-        params = web.input(
-            facilitycode="", form="", district="", msisdn="",
-            raw_msg="", report_type="", facility="", reporter_type="", reporter_name="")
-        extras = {'reporter_type': params.reporter_type}
+        params = web.input(facilitycode="", form="")
+        extras = {}
 
         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
             dataValues = []
@@ -360,6 +358,12 @@ class Dhis2Queue:
             if not USE_OLD_WEBHOOKS:
                 values = json.loads(web.data())
                 results = values.get('results', {})
+                contact = values.get('contact', {})
+                raw_msg = results['report']['value'] if results.get('report') is not None else ''
+                facility = contact['facility'] if 'facility' in contact else ''
+                district = contact['district'] if 'district' in contact else ''
+                msisdn = contact['urn'] if 'urn' in contact else params.msisdn
+                reporter_name = contact['name'] if 'name' in contact else ''
                 thresholds_list = []
                 for key, v in results.items():
                     val = v.get('value')
@@ -367,13 +371,14 @@ class Dhis2Queue:
                         val = int(float(val))
                     except:
                         pass
-                    label = v.get('name')
+                    label = key
+
                     slug = "%s_%s" % (params.form, label)
                     # print(slug)
                     if val.__str__().isdigit() or slug in TEXT_INDICATORS:
                         if not(val) and params.form in getattr(
                                 settings, 'REPORTS_WITH_COMMANDS', ['cases', 'death', 'epc', 'epd']):  # XXX irregular forms
-                            if label not in params.raw_msg.lower():
+                            if label not in raw_msg.lower():
                                 continue  # skip zero values for cases and death
                         if slug not in IndicatorMapping:
                             # print("Indicator Not Supported.::.", slug)
@@ -404,15 +409,22 @@ class Dhis2Queue:
                 # print("Thresholds List.::.", thresholds_list)
                 if thresholds_list:
                     alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
-                        params.reporter_name, params.msisdn, params.facility, params.district)
+                        reporter_name, msisdn, facility, district)
                     alert_message += '\n'.join(thresholds_list)
-                    alert_message += '\n' + params.raw_msg
+                    alert_message += '\n' + raw_msg
                     if len(params.facility) > 11:
-                        send_threshold_alert(alert_message, params.district)
+                        send_threshold_alert(alert_message, district)
                         # print(alert_message)
 
             else:
                 values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
+                results = values.get('results', {})
+                contact = values.get('contact', {})
+                raw_msg = results['report']['value'] if results.get('report') is not None else ''
+                facility = contact['facility'] if 'facility' in contact else ''
+                district = contact['district'] if 'district' in contact else ''
+                msisdn = contact['urn'] if 'urn' in contact else params.msisdn
+                reporter_name = contact['name'] if 'name' in contact else ''
                 thresholds_list = []
                 for v in values:
                     val = v.get('value')
@@ -425,7 +437,7 @@ class Dhis2Queue:
                     if val.__str__().isdigit() or slug in TEXT_INDICATORS:
                         if not(val) and params.form in getattr(
                                 settings, 'REPORTS_WITH_COMMANDS', ['cases', 'death', 'epc', 'epd']):
-                            if label not in params.raw_msg.lower():
+                            if label not in raw_msg.lower():
                                 continue  # skip zero values for cases and death
                         if slug not in IndicatorMapping:
                             print("Indicator Not Supported.::.", slug)
@@ -457,10 +469,10 @@ class Dhis2Queue:
                 print("Thresholds List.::.", thresholds_list)
                 if thresholds_list:
                     alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
-                        params.reporter_name, params.msisdn, params.facility, params.district)
+                        reporter_name, msisdn, facility, district)
                     alert_message += '\n'.join(thresholds_list)
-                    alert_message += '\n' + params.raw_msg
-                    if len(params.facility) > 11:
+                    alert_message += '\n' + raw_msg
+                    if len(facility) > 11:
                         send_threshold_alert(alert_message, params.district)
                         print(alert_message)
 
@@ -488,9 +500,9 @@ class Dhis2Queue:
                 destination_name = KEYWORD_SERVER_MAPPINGS.get(
                     params.form, config['dispatcher2_destination'])
                 extra_params = {
-                    'week': week, 'year': year, 'msisdn': params.msisdn,
-                    'facility': params.facilitycode, 'raw_msg': params.raw_msg,
-                    'district': params.district, 'report_type': params.report_type,
+                    'week': week, 'year': year, 'msisdn': msisdn,
+                    'facility': params.facilitycode, 'raw_msg': raw_msg,
+                    'district': district, 'report_type': params.form,
                     # 'source': config['dispatcher2_source'],
                     # 'destination': config['dispatcher2_destination'],
                     'source': serversByName[config['dispatcher2_source']],
@@ -515,7 +527,7 @@ class Dhis2Queue:
                 # Invalidate the older similar reports
                 yr, wk = get_current_week()
                 invalidate_older_similar_reports.delay(
-                    params.msisdn, params.report_type, yr, wk, report_id)
+                    msisdn, params.form, yr, wk, report_id)
 
         return json.dumps({"status": "success"})
 
@@ -551,6 +563,60 @@ class QueueForDhis2InstanceProcessing:
             'week': week, 'year': year, 'msisdn': params.msisdn,
             'facility': '', 'raw_msg': params.raw_msg,
             'distrcit': '', 'report_type': params.report_type,
+            'source': source, 'destination': destination,
+            'is_qparams': is_qparams}
+        print(extra_params)
+
+        # resp = post_request_to_dispatcher2(payload, ctype="text", params=extra_params)
+        # print("Resp:", resp)
+        if is_qparams == "f":
+            queue_in_dispatcher2.delay(json.dumps(payload), ctype="json", params=extra_params)
+        else:
+            queue_in_dispatcher2.delay(payload, ctype="text", params=extra_params)
+
+        return json.dumps({"status": "success"})
+
+
+    def POST(self):
+        """Please specify source and destination call in your call to this API"""
+        params = web.input(source="", destination="", is_qparams="t")
+        values = json.loads(web.data())
+        results = values.get('results', {})
+        contact = values.get('contact', {})
+        raw_msg = results['msg']['value'] if results.get('msg') is not None else ''
+        facility = contact['facility'] if 'facility' in contact else ''
+        district = contact['district'] if 'district' in contact else ''
+        msisdn = contact['urn'] if 'urn' in contact else params.msisdn
+        reporter_name = contact['name'] if 'name' in contact else ''
+        report_type = results['keyword']['value'] if 'keyword' in results else ''
+        year, week = get_current_week()
+        if getattr(settings, "USE_INTERNATIONAL_NUMBER_FORMAT", True):
+            msisdn = msisdn
+        else:
+            msisdn = msisdn.replace('+', '')
+        if getattr(settings, "PASS_ROUTED_SMS_AS_QUERY_PARAMS", False):
+            is_qparams = "t"
+            payload = "message=%s&originator=%s" % (requests.utils.quote(raw_msg), msisdn)
+        else:
+            is_qparams = "f"
+            payload = {
+                'text': raw_msg,
+                'originator': msisdn
+            }
+        source = params.source
+        if not source:
+            source = config['dispatcher2_source']
+        destination = params.destination
+        if not destination:
+            destination = KEYWORD_SERVER_MAPPINGS.get(
+                report_type.strip().lower())
+        if not destination:
+            return json.dumps({"status": f"no destination configured for keyword: {report_type}"})
+
+        extra_params = {
+            'week': week, 'year': year, 'msisdn': msisdn,
+            'facility': '', 'raw_msg': raw_msg,
+            'distrcit': '', 'report_type': report_type,
             'source': source, 'destination': destination,
             'is_qparams': is_qparams}
         print(extra_params)
