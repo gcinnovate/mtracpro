@@ -281,7 +281,8 @@ def sendsms_to_uuids(uuid_list, msg):
         chunk = uuid_list[j:i]
         params = {
             'contacts': chunk,
-            'text': msg
+            'text': {"eng": msg},
+            'base_language': "eng"
         }
         post_data = json.dumps(params)
         try:
