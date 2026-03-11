@@ -446,11 +446,12 @@ class SendSMS:
         session = get_session()
         post_data = json.dumps({'contacts': [params.uuid], 'text': {"eng": params.sms}})
         try:
-            resp = post_request(post_data, '%broadcasts.json' % config['api_url'])
+            resp = post_request(post_data, '%sbroadcasts.json' % config['api_url'])
             code = "%s" % resp.status_code
             update_user_bulksms_limits(db, session.sesid, params.sms, len([params.uuid]))
             print(resp.text)
-        except:
+        except Exception as e:
+            print(e.str())
             code = "400"
         if code.startswith("4"):
             return "Failed"
