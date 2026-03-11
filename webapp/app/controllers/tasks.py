@@ -430,8 +430,9 @@ def sendsms_to_uuids_task(uuid_list, msg):
 
 @app.task(name="queue_in_dispatcher2")
 def queue_in_dispatcher2(data, url=config['dispatcher2_queue_url'], ctype="json", params={}):
-    coded = base64.b64encode(
-        "%s:%s" % (config['dispatcher2_username'], config['dispatcher2_password']))
+    credentials = "%s:%s" % (
+        config['dispatcher2_username'], config['dispatcher2_password'])
+    coded = base64.b64encode(credentials.encode("utf-8")).decode("ascii")
     if 'xml' in ctype:
         ct = 'text/xml'
     elif 'json' in ctype:
@@ -678,4 +679,3 @@ def sync_facility_task(uids, pg_conn_params,):
 
         conn.commit()
     conn.close()
-

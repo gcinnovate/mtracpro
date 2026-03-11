@@ -234,8 +234,9 @@ def parse_message(msg, kw=""):
 
 
 def post_request_to_dispatcher2(data, url=config['dispatcher2_queue_url'], ctype="xml", params={}):
-    coded = base64.b64encode(
-        "%s:%s" % (config['dispatcher2_username'], config['dispatcher2_password']))
+    credentials = "%s:%s" % (
+        config['dispatcher2_username'], config['dispatcher2_password'])
+    coded = base64.b64encode(credentials.encode("utf-8")).decode("ascii")
     if ctype == 'xml':
         ct = 'text/xml'
     elif ctype == 'json':
@@ -387,4 +388,3 @@ def fields_clause_from_param(fields_param, allowed_fields):
 
 def where_clause_from_conditions(conditions):
     return "WHERE " + " AND ".join(conditions) if conditions else ""
-
