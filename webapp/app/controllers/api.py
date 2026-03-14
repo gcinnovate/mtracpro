@@ -346,7 +346,7 @@ class Dhis2Queue:
     #     return json.dumps({"status": "success"})
     #
     def POST(self):
-        params = web.input(facilitycode="", form="")
+        params = web.input(facilitycode="", form="", msisdn="")
         extras = {}
 
         if PREFERED_DHIS2_CONTENT_TYPE == 'json':
@@ -354,182 +354,194 @@ class Dhis2Queue:
         else:
             dataValues = ""
         # print("FACILITYCODE:", params.facilitycode, "==>", params.facility)
-        if params.facilitycode:
-            if not USE_OLD_WEBHOOKS:
-                values = json.loads(web.data())
-                results = values.get('results', {})
-                contact = values.get('contact', {})
-                raw_msg = results['report']['value'] if results.get('report') is not None else ''
-                facility = contact['facility'] if 'facility' in contact else ''
-                district = contact['district'] if 'district' in contact else ''
-                msisdn = contact['urn'] if 'urn' in contact else params.msisdn
-                reporter_name = contact['name'] if 'name' in contact else ''
-                thresholds_list = []
-                for key, v in results.items():
-                    val = v.get('value')
-                    try:
-                        val = int(float(val))
-                    except:
-                        pass
-                    label = key
+        if not USE_OLD_WEBHOOKS:
+            values = json.loads(web.data())
+            results = values.get('results', {})
+            contact = values.get('contact', {})
+            facilitycode = contact['facilitycode'] if 'facilitycode' in contact else ''
+            if not facilitycode:
+                return json.dumps({'status': 'error', 'message': 'facilitycode is empty'})
+            raw_msg = results['report']['value'] if results.get('report') is not None else ''
+            facility = contact['facility'] if 'facility' in contact else ''
+            district = contact['district'] if 'district' in contact else ''
+            msisdn = contact['urn'] if 'urn' in contact else params.msisdn
+            reporter_name = contact['name'] if 'name' in contact else ''
+            flow = values.get('flow', {})
+            report_type = flow['report_type'] if 'report_type' in flow else ''
+            if not report_type:
+                return json.dumps({'status': 'error', 'message': 'report_type is empty'})
+            thresholds_list = []
+            for key, v in results.items():
+                val = v.get('value')
+                try:
+                    val = int(float(val))
+                except:
+                    pass
+                label = key
 
-                    slug = "%s_%s" % (params.form, label)
-                    # print(slug)
-                    if val.__str__().isdigit() or slug in TEXT_INDICATORS:
-                        if not(val) and params.form in getattr(
-                                settings, 'REPORTS_WITH_COMMANDS', ['cases', 'death', 'epc', 'epd']):  # XXX irregular forms
-                            if label not in raw_msg.lower():
-                                continue  # skip zero values for cases and death
-                        if slug not in IndicatorMapping:
-                            # print("Indicator Not Supported.::.", slug)
-                            continue
-                        # XXX check thresholds here
-                        if IndicatorMapping[slug]['threshold']:
-                            try:
-                                threshold = int(float(IndicatorMapping[slug]['threshold']))
-                                if val >= threshold:
-                                    thresholds_list.append('{0} {1}'.format(val, IndicatorMapping[slug]['descr']))
-                            except:
-                                # print("Threshold.::.Failed to Add threshold Message")
-                                pass
-                        # print("%s=>%s" % (slug, val), IndicatorMapping[slug])
-                        if PREFERED_DHIS2_CONTENT_TYPE == 'json':
-                            dataValues.append(
-                                {
-                                    'dataElement': IndicatorMapping[slug]['dhis2_id'],
-                                    'categoryOptionCombo': IndicatorMapping[slug]['dhis2_combo_id'],
-                                    'value': val})
-                        else:
-                            dataValues += (
-                                "<dataValue dataElement='%s' categoryOptionCombo="
-                                "'%s' value='%s' />\n" %
-                                (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
+                slug = "%s_%s" % (report_type, label)
+                # print(slug)
+                if val.__str__().isdigit() or slug in TEXT_INDICATORS:
+                    if not(val) and report_type in getattr(
+                            settings, 'REPORTS_WITH_COMMANDS', ['cases', 'death', 'epc', 'epd']):  # XXX irregular forms
+                        if label not in raw_msg.lower():
+                            continue  # skip zero values for cases and death
+                    if slug not in IndicatorMapping:
+                        # print("Indicator Not Supported.::.", slug)
+                        continue
+                    # XXX check thresholds here
+                    if IndicatorMapping[slug]['threshold']:
+                        try:
+                            threshold = int(float(IndicatorMapping[slug]['threshold']))
+                            if val >= threshold:
+                                thresholds_list.append('{0} {1}'.format(val, IndicatorMapping[slug]['descr']))
+                        except:
+                            # print("Threshold.::.Failed to Add threshold Message")
+                            pass
+                    # print("%s=>%s" % (slug, val), IndicatorMapping[slug])
+                    if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+                        dataValues.append(
+                            {
+                                'dataElement': IndicatorMapping[slug]['dhis2_id'],
+                                'categoryOptionCombo': IndicatorMapping[slug]['dhis2_combo_id'],
+                                'value': val})
+                    else:
+                        dataValues += (
+                            "<dataValue dataElement='%s' categoryOptionCombo="
+                            "'%s' value='%s' />\n" %
+                            (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
 
-                # Build alert message and send it
-                # print("Thresholds List.::.", thresholds_list)
-                if thresholds_list:
-                    alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
-                        reporter_name, msisdn, facility, district)
-                    alert_message += '\n'.join(thresholds_list)
-                    alert_message += '\n' + raw_msg
-                    if len(params.facility) > 11:
-                        send_threshold_alert(alert_message, district)
-                        # print(alert_message)
+            # Build alert message and send it
+            # print("Thresholds List.::.", thresholds_list)
+            if thresholds_list:
+                alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
+                    reporter_name, msisdn, facility, district)
+                alert_message += '\n'.join(thresholds_list)
+                alert_message += '\n' + raw_msg
+                if len(facilitycode) > 11:
+                    send_threshold_alert(alert_message, district)
 
+        else:
+            values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
+            results = values.get('results', {})
+            contact = values.get('contact', {})
+            raw_msg = results['report']['value'] if results.get('report') is not None else ''
+            facility = contact['facility'] if 'facility' in contact else ''
+            district = contact['district'] if 'district' in contact else ''
+            msisdn = contact['urn'] if 'urn' in contact else params.msisdn
+            facilitycode = contact['facilitycode'] if 'facilitycode' in contact else ''
+            if not facilitycode:
+                return json.dumps({'status': 'error', 'message': 'facilitycode is empty'})
+            flow = values.get('flow', {})
+            report_type = flow['report_type'] if 'report_type' in flow else ''
+            if not report_type:
+                return json.dumps({'status': 'error', 'message': 'report_type is empty'})
+            reporter_name = contact['name'] if 'name' in contact else ''
+            thresholds_list = []
+            for v in values:
+                val = v.get('value')
+                try:
+                    val = int(float(val))
+                except:
+                    pass
+                label = v.get('label')
+                slug = "%s_%s" % (report_type, label)
+                if val.__str__().isdigit() or slug in TEXT_INDICATORS:
+                    if not(val) and report_type in getattr(
+                            settings, 'REPORTS_WITH_COMMANDS', ['cases', 'death', 'epc', 'epd']):
+                        if label not in raw_msg.lower():
+                            continue  # skip zero values for cases and death
+                    if slug not in IndicatorMapping:
+                        print("Indicator Not Supported.::.", slug)
+                        continue
+                    # XXX check thresholds here
+                    if IndicatorMapping[slug]['threshold']:
+                        try:
+                            threshold = int(float(IndicatorMapping[slug]['threshold']))
+                            print("++++++++++ val:", val, "+++++ threshold", threshold)
+                            if val > threshold:
+                                thresholds_list.append('{0} {1}'.format(val, IndicatorMapping[slug]['descr']))
+                        except Exception as e:
+                            print("Threshold.::.Failed to Add threshold Message=>", str(e))
+                            pass
+                    print("%s=>%s" % (slug, val), IndicatorMapping[slug])
+                    if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+                        dataValues.append(
+                            {
+                                'dataElement': IndicatorMapping[slug]['dhis2_id'],
+                                'categoryOptionCombo': IndicatorMapping[slug]['dhis2_combo_id'],
+                                'value': val})
+                    else:
+                        dataValues += (
+                            "<dataValue dataElement='%s' categoryOptionCombo="
+                            "'%s' value='%s' />\n" %
+                            (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
+
+            # Build alert message and send it
+            print("Thresholds List.::.", thresholds_list)
+            if thresholds_list:
+                alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
+                    reporter_name, msisdn, facility, district)
+                alert_message += '\n'.join(thresholds_list)
+                alert_message += '\n' + raw_msg
+                if len(facility) > 11:
+                    send_threshold_alert(alert_message, district)
+                    print(alert_message)
+
+        if not dataValues and report_type in ('cases', 'death'):
+            if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+                dataValues = []
             else:
-                values = json.loads(params['values'])  # only way we can get out Rapidpro values in webpy
-                results = values.get('results', {})
-                contact = values.get('contact', {})
-                raw_msg = results['report']['value'] if results.get('report') is not None else ''
-                facility = contact['facility'] if 'facility' in contact else ''
-                district = contact['district'] if 'district' in contact else ''
-                msisdn = contact['urn'] if 'urn' in contact else params.msisdn
-                reporter_name = contact['name'] if 'name' in contact else ''
-                thresholds_list = []
-                for v in values:
-                    val = v.get('value')
-                    try:
-                        val = int(float(val))
-                    except:
-                        pass
-                    label = v.get('label')
-                    slug = "%s_%s" % (params.form, label)
-                    if val.__str__().isdigit() or slug in TEXT_INDICATORS:
-                        if not(val) and params.form in getattr(
-                                settings, 'REPORTS_WITH_COMMANDS', ['cases', 'death', 'epc', 'epd']):
-                            if label not in raw_msg.lower():
-                                continue  # skip zero values for cases and death
-                        if slug not in IndicatorMapping:
-                            print("Indicator Not Supported.::.", slug)
-                            continue
-                        # XXX check thresholds here
-                        if IndicatorMapping[slug]['threshold']:
-                            try:
-                                threshold = int(float(IndicatorMapping[slug]['threshold']))
-                                print("++++++++++ val:", val, "+++++ threshold", threshold)
-                                if val > threshold:
-                                    thresholds_list.append('{0} {1}'.format(val, IndicatorMapping[slug]['descr']))
-                            except Exception as e:
-                                print("Threshold.::.Failed to Add threshold Message=>", str(e))
-                                pass
-                        print("%s=>%s" % (slug, val), IndicatorMapping[slug])
-                        if PREFERED_DHIS2_CONTENT_TYPE == 'json':
-                            dataValues.append(
-                                {
-                                    'dataElement': IndicatorMapping[slug]['dhis2_id'],
-                                    'categoryOptionCombo': IndicatorMapping[slug]['dhis2_combo_id'],
-                                    'value': val})
-                        else:
-                            dataValues += (
-                                "<dataValue dataElement='%s' categoryOptionCombo="
-                                "'%s' value='%s' />\n" %
-                                (IndicatorMapping[slug]['dhis2_id'], IndicatorMapping[slug]['dhis2_combo_id'], val))
+                dataValues = DEFAULT_DATA_VALUES[report_type]
 
-                # Build alert message and send it
-                print("Thresholds List.::.", thresholds_list)
-                if thresholds_list:
-                    alert_message = "Thresholds alert: {0} ({1}) of {2} - {3} district reported:\n".format(
-                        reporter_name, msisdn, facility, district)
-                    alert_message += '\n'.join(thresholds_list)
-                    alert_message += '\n' + raw_msg
-                    if len(facility) > 11:
-                        send_threshold_alert(alert_message, params.district)
-                        print(alert_message)
+        if dataValues:
+            args_dict = {
+                'completeDate': datetime.datetime.now().strftime("%Y-%m-%d"),
+                'period': get_reporting_week(datetime.datetime.now()),
+                'orgUnit': facilitycode,
+                'dataValues': dataValues
+            }
+            if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+                args_dict['dataSet'] = IndicatorsDataSet.get(report_type, HMIS_033B_DATASET)
+                args_dict['attributeOptionCombo'] = HMIS_033B_DATASET_ATTR_OPT_COMBO
+                payload = json.dumps(args_dict)
+            else:
+                payload = XML_TEMPLATE % args_dict
+            year, week = tuple(args_dict['period'].split('W'))
+            print(payload)
+            destination_name = KEYWORD_SERVER_MAPPINGS.get(
+                report_type, config['dispatcher2_destination'])
+            extra_params = {
+                'week': week, 'year': year, 'msisdn': msisdn,
+                'facility': facilitycode, 'raw_msg': raw_msg,
+                'district': district, 'report_type': report_type,
+                # 'source': config['dispatcher2_source'],
+                # 'destination': config['dispatcher2_destination'],
+                'source': serversByName[config['dispatcher2_source']],
+                'destination': serversByName[destination_name],
+                'extras': json.dumps(extras),
+                'status': config.get('default-queue-status', 'pending')}
+            # now ready to queue to DB for pushing to DHIS2
+            # resp = queue_submission(serverid, post_xml, year, week)
+            print(extra_params)
+            if PREFERED_DHIS2_CONTENT_TYPE == 'json':
+                extra_params['ctype'] = 'json'
+                # resp = post_request_to_dispatcher2(
+                #    payload, params=extra_params, ctype='json')
+                extra_params['body'] = payload
+                report_id = queue_request(db, extra_params)
+            else:
+                extra_params['ctype'] = 'xml'
+                # resp = post_request_to_dispatcher2(payload, params=extra_params)
+                extra_params['body'] = payload
+                report_id = queue_request(db, extra_params)
+            # print "Resp:", resp
+            # Invalidate the older similar reports
+            yr, wk = get_current_week()
+            invalidate_older_similar_reports.delay(
+                msisdn, report_type, yr, wk, report_id)
 
-            if not dataValues and params.form in ('cases', 'death'):
-                if PREFERED_DHIS2_CONTENT_TYPE == 'json':
-                    dataValues = []
-                else:
-                    dataValues = DEFAULT_DATA_VALUES[params.form]
-
-            if dataValues:
-                args_dict = {
-                    'completeDate': datetime.datetime.now().strftime("%Y-%m-%d"),
-                    'period': get_reporting_week(datetime.datetime.now()),
-                    'orgUnit': params.facilitycode,
-                    'dataValues': dataValues
-                }
-                if PREFERED_DHIS2_CONTENT_TYPE == 'json':
-                    args_dict['dataSet'] = IndicatorsDataSet.get(params.form, HMIS_033B_DATASET)
-                    args_dict['attributeOptionCombo'] = HMIS_033B_DATASET_ATTR_OPT_COMBO
-                    payload = json.dumps(args_dict)
-                else:
-                    payload = XML_TEMPLATE % args_dict
-                year, week = tuple(args_dict['period'].split('W'))
-                print(payload)
-                destination_name = KEYWORD_SERVER_MAPPINGS.get(
-                    params.form, config['dispatcher2_destination'])
-                extra_params = {
-                    'week': week, 'year': year, 'msisdn': msisdn,
-                    'facility': params.facilitycode, 'raw_msg': raw_msg,
-                    'district': district, 'report_type': params.form,
-                    # 'source': config['dispatcher2_source'],
-                    # 'destination': config['dispatcher2_destination'],
-                    'source': serversByName[config['dispatcher2_source']],
-                    'destination': serversByName[destination_name],
-                    'extras': json.dumps(extras),
-                    'status': config.get('default-queue-status', 'pending')}
-                # now ready to queue to DB for pushing to DHIS2
-                # resp = queue_submission(serverid, post_xml, year, week)
-                print(extra_params)
-                if PREFERED_DHIS2_CONTENT_TYPE == 'json':
-                    extra_params['ctype'] = 'json'
-                    # resp = post_request_to_dispatcher2(
-                    #    payload, params=extra_params, ctype='json')
-                    extra_params['body'] = payload
-                    report_id = queue_request(db, extra_params)
-                else:
-                    extra_params['ctype'] = 'xml'
-                    # resp = post_request_to_dispatcher2(payload, params=extra_params)
-                    extra_params['body'] = payload
-                    report_id = queue_request(db, extra_params)
-                # print "Resp:", resp
-                # Invalidate the older similar reports
-                yr, wk = get_current_week()
-                invalidate_older_similar_reports.delay(
-                    msisdn, params.form, yr, wk, report_id)
-
-        return json.dumps({"status": "success"})
+        return json.dumps({"status": "success", "message": "report saved"})
 
 
 class QueueForDhis2InstanceProcessing:

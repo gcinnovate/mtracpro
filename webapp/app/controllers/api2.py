@@ -449,7 +449,6 @@ class SendSMS:
             resp = post_request(post_data, '%sbroadcasts.json' % config['api_url'])
             code = "%s" % resp.status_code
             update_user_bulksms_limits(db, session.sesid, params.sms, len([params.uuid]))
-            print(resp.text)
         except Exception as e:
             print(e.str())
             code = "400"
