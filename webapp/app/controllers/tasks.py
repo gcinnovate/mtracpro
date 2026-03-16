@@ -431,9 +431,9 @@ def sendsms_to_uuids_task(uuid_list, msg):
 
 @app.task(name="queue_in_dispatcher2")
 def queue_in_dispatcher2(data, url=config['dispatcher2_queue_url'], ctype="json", params={}):
-    credentials = "%s:%s" % (
-        config['dispatcher2_username'], config['dispatcher2_password'])
-    coded = base64.b64encode(credentials.encode("utf-8")).decode("ascii")
+
+    if params is None:
+        params = {}
     if 'xml' in ctype:
         ct = 'text/xml'
     elif 'json' in ctype:
@@ -441,11 +441,17 @@ def queue_in_dispatcher2(data, url=config['dispatcher2_queue_url'], ctype="json"
     else:
         ct = 'text/plain'
     response = requests.post(
-        url, data=data, headers={
-            'Content-Type': ct,
-            'Authorization': 'Basic ' + coded},
-        verify=False, params=params  # , cert=config['dispatcher2_certkey_file']
+        url,
+        data=data,
+        params=params,
+        headers={"Content-Type": ct},
+        auth=HTTPBasicAuth(
+            config['dispatcher2_username'],
+            config['dispatcher2_password']
+        ),
+        verify=False
     )
+    
     return response
 
 
