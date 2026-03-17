@@ -605,6 +605,9 @@ class QueueForDhis2InstanceProcessing:
         if getattr(settings, "USE_INTERNATIONAL_NUMBER_FORMAT", True):
             msisdn = msisdn
         else:
+            msisdn = msisdn.replace('tel:', '')
+            msisdn = msisdn.replace('whatsapp:', '')
+            msisdn = msisdn.replace('telegram:', '')
             msisdn = msisdn.replace('+', '')
         if getattr(settings, "PASS_ROUTED_SMS_AS_QUERY_PARAMS", False):
             is_qparams = "t"
