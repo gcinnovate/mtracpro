@@ -602,12 +602,12 @@ class QueueForDhis2InstanceProcessing:
         reporter_name = contact['name'] if 'name' in contact else ''
         report_type = results['keyword']['value'] if 'keyword' in results else ''
         year, week = get_current_week()
+        msisdn = msisdn.replace('tel:', '')
+        msisdn = msisdn.replace('whatsapp:', '')
+        msisdn = msisdn.replace('telegram:', '')
         if getattr(settings, "USE_INTERNATIONAL_NUMBER_FORMAT", True):
             msisdn = msisdn
         else:
-            msisdn = msisdn.replace('tel:', '')
-            msisdn = msisdn.replace('whatsapp:', '')
-            msisdn = msisdn.replace('telegram:', '')
             msisdn = msisdn.replace('+', '')
         if getattr(settings, "PASS_ROUTED_SMS_AS_QUERY_PARAMS", False):
             is_qparams = "t"

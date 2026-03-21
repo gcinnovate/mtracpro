@@ -284,14 +284,14 @@ def sendsms_to_uuids(uuid_list, msg):
             'text': {"eng": msg},
             'base_language': "eng"
         }
-        post_data = json.dumps(params)
+        # post_data = json.dumps(params)
         try:
-            requests.post(broadcasts_endpoint, post_data, headers={
+            requests.post(broadcasts_endpoint, data=post_data, headers={
                 'Content-type': 'application/json',
                 'Authorization': 'Token %s' % api_token})
             # print("Broadcast Response: ", resp.text)
-        except:
-            print("ERROR Sending Broadcast")
+        except Exception as e:
+            print(f"ERROR Sending Broadcast: {e.str()}")
         j = i
     print("Finished Broadcast of {0} Contacts".format(contacts_len))
 
