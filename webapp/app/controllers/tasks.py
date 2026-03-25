@@ -291,7 +291,7 @@ def sendsms_to_uuids(uuid_list, msg):
                 'Authorization': 'Token %s' % api_token})
             # print("Broadcast Response: ", resp.text)
         except Exception as e:
-            print(f"ERROR Sending Broadcast: {e.str()}")
+            print(f"ERROR Sending Broadcast: {str(e)}")
         j = i
     print("Finished Broadcast of {0} Contacts".format(contacts_len))
 
