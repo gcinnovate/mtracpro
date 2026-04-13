@@ -365,7 +365,7 @@ class Dhis2Queue:
             facility = contact['facility'] if 'facility' in contact else ''
             district = contact['district'] if 'district' in contact else ''
             msisdn = contact['urn'] if 'urn' in contact else params.msisdn
-            msisdn = msisdn.replace('tel:+', '')
+            msisdn = msisdn.replace('tel:', '')
             reporter_name = contact['name'] if 'name' in contact else ''
             flow = values.get('flow', {})
             report_type = flow['report_type'] if 'report_type' in flow else ''
@@ -430,7 +430,7 @@ class Dhis2Queue:
             facility = contact['facility'] if 'facility' in contact else ''
             district = contact['district'] if 'district' in contact else ''
             msisdn = contact['urn'] if 'urn' in contact else params.msisdn
-            msisdn = msisdn.replace('tel:+', '')
+            msisdn = msisdn.replace('tel:', '')
             reporter_name = contact['name'] if 'name' in contact else ''
             facilitycode = contact['facilitycode'] if 'facilitycode' in contact else ''
             if not facilitycode:
