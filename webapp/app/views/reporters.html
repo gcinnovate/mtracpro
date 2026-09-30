@@ -388,6 +388,10 @@
 												<i title="SMS" class="fa fa-envelope-o"></i>
 										</button>
                                                             &nbsp;&nbsp;&nbsp;
+                                        <button type="button" class="btn  btn-white btn-xs sync_btn" style="color:#00f" id="{{reporter.id}}">
+												<i title="Sync" class="fa fa-refresh"></i>
+										</button>
+                                                            &nbsp;&nbsp;&nbsp;
                                         {% endif %}
                                         {% if 'can_delete_reporter' | hasPermission(ses.role, ses.permissions) %}
                                         <button class="btn btn-danger btn-xs delete_btn" id={{ reporter.id}}><i class="fa fa-trash-o"></i></button>
@@ -522,6 +526,40 @@
                             return false;
                         } else {
                             swal("Cancelled", "Reporter details are safe!", "error");
+                            return false;
+                        }
+                    });
+            });
+
+            $('.sync_btn').click(function () {
+                sync_id = $(this).attr('id');
+                table_row = $(this).closest('tr');
+                swal({
+                        title: "Are you sure?",
+                        text: "This will sync the reporter to avoid failure to receive SMS",
+                        type: "info",
+                        showCancelButton: true,
+                        confirmButtonColor: "#6BDD55",
+                        confirmButtonText: "Yes, Sync it!",
+                        cancelButtonText: "No, cancel sync!",
+                        closeOnConfirm: false,
+                        closeOnCancel: false },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            $.get(
+                                '/sync_reporter',
+                                {sync_id: sync_id, caller: 'api'},
+                                function(data){
+                                    if (data.message == "success"){
+                                        /* remove row from table */
+                                    };
+                                },
+                                'json'
+                            );
+                            swal("Synchronised!", "Reporter has been synchronised." + sync_id, "success");
+                            return false;
+                        } else {
+                            swal("Cancelled", "Reporter synchronisation!", "error");
                             return false;
                         }
                     });

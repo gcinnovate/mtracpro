@@ -588,3 +588,10 @@ class SyncFacilities:
             sync_facility_task.delay(uids, pg_conn_params)
             return json.dumps({"status": "success", "facilities": uids})
         return json.dumps({"status": "error"})
+
+
+class ReporterSync:
+    @require_login
+    def GET(self):
+        params = web.input(sync_id="")
+        return json.dumps({'status': 'sync process backgrounded!'})

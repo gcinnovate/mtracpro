@@ -225,6 +225,10 @@ KEYWORD_SERVER_MAPPINGS = {
     'reg': 'dhis2_alert',
 }
 
+# Optional Dispatcher2 message bodies by keyword. Values may be strings or
+# nested Python objects containing string.Template placeholders.
+KEYWORD_MESSAGE_TEMPLATE = {}
+
 # Mapping of indicators to DHIS2 dataElements. as in dhis2_mtrack_indicators_mapping table
 # XXX removed
 
