@@ -1,4 +1,5 @@
 import copy
+import datetime
 import json
 from collections.abc import Mapping
 from string import Template
@@ -90,7 +91,11 @@ def _dispatch_body(form, raw_msg, msisdn):
 
     body = _render_message_template(
         copy.deepcopy(template),
-        {"raw_msg": raw_msg, "msisdn": msisdn},
+        {
+            "raw_msg": raw_msg,
+            "msisdn": msisdn,
+            "date": datetime.datetime.now().strftime("%Y-%m-%d"),
+        },
     )
     if isinstance(body, str):
         return body, "text/plain"

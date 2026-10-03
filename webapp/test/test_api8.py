@@ -1,5 +1,6 @@
 import json
 import unittest
+from unittest import mock
 
 from webapp.app.controllers import api8
 
@@ -42,6 +43,24 @@ class DispatchBodyTest(unittest.TestCase):
         self.assertEqual(
             json.loads(body),
             {"text": "hello", "recipients": ["+256700"]},
+        )
+        self.assertEqual(content_type, "application/json")
+
+    @mock.patch("webapp.app.controllers.api8.datetime.datetime")
+    def test_date_placeholder_uses_request_time(self, datetime_class):
+        datetime_class.now.return_value.strftime.return_value = "2026-10-03"
+        api8.KEYWORD_MESSAGE_TEMPLATE = {
+            "alert": {
+                "date": "$date",
+                "message": "$raw_msg",
+            }
+        }
+
+        body, content_type = api8._dispatch_body("alert", "hello", "+256700")
+
+        self.assertEqual(
+            json.loads(body),
+            {"date": "2026-10-03", "message": "hello"},
         )
         self.assertEqual(content_type, "application/json")
 
