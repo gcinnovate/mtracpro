@@ -1,5 +1,6 @@
 import json
 import unittest
+import uuid
 from unittest import mock
 
 from webapp.app.controllers import api8
@@ -63,6 +64,26 @@ class DispatchBodyTest(unittest.TestCase):
             {"date": "2026-10-03", "message": "hello"},
         )
         self.assertEqual(content_type, "application/json")
+
+    def test_uuid_placeholder_is_generated_per_request(self):
+        api8.KEYWORD_MESSAGE_TEMPLATE = {
+            "alert": {
+                "message_id": "$uuid",
+                "metadata": {"message_id": "$uuid"},
+            }
+        }
+
+        first_body, _ = api8._dispatch_body("alert", "hello", "+256700")
+        second_body, _ = api8._dispatch_body("alert", "hello", "+256700")
+        first = json.loads(first_body)
+        second = json.loads(second_body)
+
+        first_uuid = uuid.UUID(first["message_id"])
+        second_uuid = uuid.UUID(second["message_id"])
+
+        self.assertEqual(first["message_id"], first["metadata"]["message_id"])
+        self.assertEqual(second["message_id"], second["metadata"]["message_id"])
+        self.assertNotEqual(first_uuid, second_uuid)
 
     def test_template_is_not_mutated_between_requests(self):
         api8.KEYWORD_MESSAGE_TEMPLATE = {

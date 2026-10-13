@@ -1,6 +1,7 @@
 import copy
 import datetime
 import json
+import uuid
 from collections.abc import Mapping
 from string import Template
 import web
@@ -95,6 +96,7 @@ def _dispatch_body(form, raw_msg, msisdn):
             "raw_msg": raw_msg,
             "msisdn": msisdn,
             "date": datetime.datetime.now().strftime("%Y-%m-%d"),
+            "uuid": str(uuid.uuid4()),
         },
     )
     if isinstance(body, str):

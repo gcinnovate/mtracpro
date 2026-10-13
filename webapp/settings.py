@@ -226,7 +226,8 @@ KEYWORD_SERVER_MAPPINGS = {
 }
 
 # Optional Dispatcher2 message bodies by keyword. Values may be strings or
-# nested Python objects containing string.Template placeholders.
+# nested Python objects containing string.Template placeholders such as
+# $raw_msg, $msisdn, $date, and $uuid.
 KEYWORD_MESSAGE_TEMPLATE = {}
 
 # Mapping of indicators to DHIS2 dataElements. as in dhis2_mtrack_indicators_mapping table
