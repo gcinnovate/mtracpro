@@ -6,8 +6,9 @@ import requests
 from . import (
     db, get_current_week, serversByName,
     IndicatorMapping, IndicatorsDataSet, notifyingParties, allDistrictsByName)
-from webapp.settings import config, KEYWORD_SERVER_MAPPINGS
+from webapp.settings import config, KEYWORD_MESSAGE_TEMPLATE, KEYWORD_SERVER_MAPPINGS
 import webapp.settings as settings
+from webapp.app.controllers.api8 import _dispatch_body
 from webapp.app.tools.utils import (
     get_basic_auth_credentials, auth_user, get_webhook_msg_old,
     queue_request, parse_message, get_reporting_week,
@@ -23,6 +24,27 @@ from .tasks import (
     sendsms_to_uuids_task, queue_in_dispatcher2, invalidate_older_similar_reports,
     post_request_to_rapidpro
 )
+
+
+def _instance_queue_payload(keyword, raw_msg, msisdn):
+    """Build the payload and queue mode for routed keyword messages."""
+    lookup_keyword = keyword.lower() if isinstance(keyword, str) else keyword
+    if KEYWORD_MESSAGE_TEMPLATE.get(lookup_keyword) is not None:
+        payload, content_type = _dispatch_body(keyword, raw_msg, msisdn)
+        queue_content_type = (
+            "json" if content_type == "application/json" else "text"
+        )
+        return payload, queue_content_type, "f"
+
+    if getattr(settings, "PASS_ROUTED_SMS_AS_QUERY_PARAMS", False):
+        payload = "message=%s&originator=%s" % (
+            requests.utils.quote(raw_msg), msisdn)
+        return payload, "text", "t"
+
+    return {
+        "text": raw_msg,
+        "originator": msisdn,
+    }, "json", "f"
 
 
 def send_threshold_alert(msg, district):
@@ -557,15 +579,8 @@ class QueueForDhis2InstanceProcessing:
             msisdn = params.msisdn
         else:
             msisdn = params.msisdn.replace('+', '')
-        if getattr(settings, "PASS_ROUTED_SMS_AS_QUERY_PARAMS", False):
-            is_qparams = "t"
-            payload = "message=%s&originator=%s" % (requests.utils.quote(params.raw_msg), msisdn)
-        else:
-            is_qparams = "f"
-            payload = {
-                'text': params.raw_msg,
-                'originator': msisdn
-            }
+        payload, queue_content_type, is_qparams = _instance_queue_payload(
+            params.report_type, params.raw_msg, msisdn)
         source = params.source
         if not source:
             source = config['dispatcher2_source']
@@ -585,9 +600,11 @@ class QueueForDhis2InstanceProcessing:
         # resp = post_request_to_dispatcher2(payload, ctype="text", params=extra_params)
         # print("Resp:", resp)
         if is_qparams == "f":
-            queue_in_dispatcher2.delay(json.dumps(payload), ctype="json", params=extra_params)
+            if queue_content_type == "json" and not isinstance(payload, str):
+                payload = json.dumps(payload)
+            queue_in_dispatcher2.delay(payload, ctype=queue_content_type, params=extra_params)
         else:
-            queue_in_dispatcher2.delay(payload, ctype="text", params=extra_params)
+            queue_in_dispatcher2.delay(payload, ctype=queue_content_type, params=extra_params)
 
         return json.dumps({"status": "success"})
 
@@ -612,15 +629,8 @@ class QueueForDhis2InstanceProcessing:
             msisdn = msisdn
         else:
             msisdn = msisdn.replace('+', '')
-        if getattr(settings, "PASS_ROUTED_SMS_AS_QUERY_PARAMS", False):
-            is_qparams = "t"
-            payload = "message=%s&originator=%s" % (requests.utils.quote(raw_msg), msisdn)
-        else:
-            is_qparams = "f"
-            payload = {
-                'text': raw_msg,
-                'originator': msisdn
-            }
+        payload, queue_content_type, is_qparams = _instance_queue_payload(
+            report_type, raw_msg, msisdn)
         source = params.source
         if not source:
             source = config['dispatcher2_source']
@@ -642,9 +652,11 @@ class QueueForDhis2InstanceProcessing:
         # resp = post_request_to_dispatcher2(payload, ctype="text", params=extra_params)
         # print("Resp:", resp)
         if is_qparams == "f":
-            queue_in_dispatcher2.delay(json.dumps(payload), ctype="json", params=extra_params)
+            if queue_content_type == "json" and not isinstance(payload, str):
+                payload = json.dumps(payload)
+            queue_in_dispatcher2.delay(payload, ctype=queue_content_type, params=extra_params)
         else:
-            queue_in_dispatcher2.delay(payload, ctype="text", params=extra_params)
+            queue_in_dispatcher2.delay(payload, ctype=queue_content_type, params=extra_params)
 
         return json.dumps({"status": "success"})
 

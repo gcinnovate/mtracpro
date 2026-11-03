@@ -4,14 +4,18 @@ import uuid
 from unittest import mock
 
 from webapp.app.controllers import api8
+from webapp.app.controllers import api as dispatch_api
+from webapp.app.controllers.api import _instance_queue_payload
 
 
 class DispatchBodyTest(unittest.TestCase):
     def setUp(self):
         self.templates = api8.KEYWORD_MESSAGE_TEMPLATE
+        self.dispatch_templates = dispatch_api.KEYWORD_MESSAGE_TEMPLATE
 
     def tearDown(self):
         api8.KEYWORD_MESSAGE_TEMPLATE = self.templates
+        dispatch_api.KEYWORD_MESSAGE_TEMPLATE = self.dispatch_templates
 
     def test_missing_template_preserves_legacy_payload(self):
         api8.KEYWORD_MESSAGE_TEMPLATE = {}
@@ -62,6 +66,23 @@ class DispatchBodyTest(unittest.TestCase):
             {"data": "hello", "from": "+256700"},
         )
         self.assertEqual(content_type, "application/json")
+
+    def test_instance_queue_uses_template_payload(self):
+        templates = {
+            "info": {
+                "data": "$raw_msg",
+                "from": "$msisdn",
+            }
+        }
+        api8.KEYWORD_MESSAGE_TEMPLATE = templates
+        dispatch_api.KEYWORD_MESSAGE_TEMPLATE = templates
+
+        body, queue_content_type, is_qparams = _instance_queue_payload(
+            "INFO", "hello", "2567")
+
+        self.assertEqual(json.loads(body), {"data": "hello", "from": "2567"})
+        self.assertEqual(queue_content_type, "json")
+        self.assertEqual(is_qparams, "f")
 
     @mock.patch("webapp.app.controllers.api8.datetime.datetime")
     def test_date_placeholder_uses_request_time(self, datetime_class):
