@@ -83,7 +83,8 @@ def _render_message_template(value, substitutions):
 
 def _dispatch_body(form, raw_msg, msisdn):
     """Build a Dispatcher2 body and its content type for a keyword."""
-    template = KEYWORD_MESSAGE_TEMPLATE.get(form)
+    lookup_form = form.lower() if isinstance(form, str) else form
+    template = KEYWORD_MESSAGE_TEMPLATE.get(lookup_form)
     if template is None:
         return (
             "message={0}&originator={1}".format(raw_msg, msisdn),

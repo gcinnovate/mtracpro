@@ -47,6 +47,22 @@ class DispatchBodyTest(unittest.TestCase):
         )
         self.assertEqual(content_type, "application/json")
 
+    def test_template_lookup_is_case_insensitive(self):
+        api8.KEYWORD_MESSAGE_TEMPLATE = {
+            "info": {
+                "data": "$raw_msg",
+                "from": "$msisdn",
+            }
+        }
+
+        body, content_type = api8._dispatch_body("INFO", "hello", "+256700")
+
+        self.assertEqual(
+            json.loads(body),
+            {"data": "hello", "from": "+256700"},
+        )
+        self.assertEqual(content_type, "application/json")
+
     @mock.patch("webapp.app.controllers.api8.datetime.datetime")
     def test_date_placeholder_uses_request_time(self, datetime_class):
         datetime_class.now.return_value.strftime.return_value = "2026-10-03"

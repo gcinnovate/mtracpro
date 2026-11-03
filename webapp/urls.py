@@ -16,7 +16,7 @@ from webapp.app.controllers.api2 import (
     CreateFacility, ReportForms, IndicatorHtml,
     FacilitySMS, SendSMS, RequestDetails, SendBulkSMS,
     DeleteRequest, DeleteServer, ServerDetails,
-    RetryFailed, SyncFacilities
+    RetryFailed, SyncFacilities,ReporterSync
 )
 from webapp.app.controllers.api3 import EditReport, ReportingWeek, ReporterHistoryApi
 from webapp.app.controllers.api4 import ReportersUploadAPI
@@ -79,6 +79,7 @@ URLS = (
     r'/auditlog', AuditLog,
     r'/settings', Settings,
     r'/fsync', FSync,
+    r'/sync_reporter', ReporterSync,
     r'/schedules', Schedules,
     r'/dashboard', Dashboard,
     r'/users', Users,
