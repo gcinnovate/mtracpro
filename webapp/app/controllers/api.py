@@ -614,9 +614,14 @@ class QueueForDhis2InstanceProcessing:
             destination = KEYWORD_SERVER_MAPPINGS.get(
                 params.report_type.lower(), config['dispatcher2_destination'])
         if _keyword_uses_message_template(params.report_type):
-            _save_template_request(
+            report_id = _save_template_request(
                 payload, queue_content_type, params.report_type,
                 params.raw_msg, msisdn, year, week, source, destination)
+            if not report_id:
+                return json.dumps({
+                    "status": "error",
+                    "message": "failed to save templated request",
+                })
 
         extra_params = {
             'week': week, 'year': year, 'msisdn': params.msisdn,
@@ -672,9 +677,14 @@ class QueueForDhis2InstanceProcessing:
         if not destination:
             return json.dumps({"status": f"no destination configured for keyword: {report_type}"})
         if _keyword_uses_message_template(report_type):
-            _save_template_request(
+            report_id = _save_template_request(
                 payload, queue_content_type, report_type,
                 raw_msg, msisdn, year, week, source, destination)
+            if not report_id:
+                return json.dumps({
+                    "status": "error",
+                    "message": "failed to save templated request",
+                })
 
         extra_params = {
             'week': week, 'year': year, 'msisdn': msisdn,

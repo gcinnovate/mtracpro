@@ -96,6 +96,8 @@ class DispatchBodyTest(unittest.TestCase):
 
     @mock.patch("webapp.app.controllers.api.queue_request")
     def test_template_request_persists_raw_message_separately(self, queue_request):
+        queue_request.return_value = 42
+
         _save_template_request(
             '{"text": "hello"}', "json", "INFO", "hello", "2567",
             2026, 10, "mtrackpro", "dhis2")
