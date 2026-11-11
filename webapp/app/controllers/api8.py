@@ -81,10 +81,20 @@ def _render_message_template(value, substitutions):
     return value
 
 
+def _message_template(form):
+    lookup_form = form.strip().lower() if isinstance(form, str) else form
+    if lookup_form in KEYWORD_MESSAGE_TEMPLATE:
+        return KEYWORD_MESSAGE_TEMPLATE[lookup_form]
+    for configured_form, template in KEYWORD_MESSAGE_TEMPLATE.items():
+        if (isinstance(configured_form, str)
+                and configured_form.strip().lower() == lookup_form):
+            return template
+    return None
+
+
 def _dispatch_body(form, raw_msg, msisdn):
     """Build a Dispatcher2 body and its content type for a keyword."""
-    lookup_form = form.lower() if isinstance(form, str) else form
-    template = KEYWORD_MESSAGE_TEMPLATE.get(lookup_form)
+    template = _message_template(form)
     if template is None:
         return (
             "message={0}&originator={1}".format(raw_msg, msisdn),
@@ -111,8 +121,8 @@ class Dispatch:
         params = web.input(raw_msg="", msisdn="", form="")
         web.header("Content-Type", "application/json; charset=utf-8")
         year, week = get_current_week()
-        lookup_form = params.form.lower() if isinstance(params.form, str) else params.form
-        uses_message_template = KEYWORD_MESSAGE_TEMPLATE.get(lookup_form) is not None
+        lookup_form = params.form.strip().lower() if isinstance(params.form, str) else params.form
+        uses_message_template = _message_template(params.form) is not None
         myparams = {
             "username": config["dispatcher2_username"],
             "password": config["dispatcher2_password"],

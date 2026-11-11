@@ -91,6 +91,7 @@ class DispatchBodyTest(unittest.TestCase):
         api8.KEYWORD_MESSAGE_TEMPLATE = {"info": {"text": "$raw_msg"}}
 
         self.assertTrue(_keyword_uses_message_template("INFO"))
+        self.assertTrue(_keyword_uses_message_template(" INFO "))
         self.assertFalse(_keyword_uses_message_template("unknown"))
 
     @mock.patch("webapp.app.controllers.api8.datetime.datetime")

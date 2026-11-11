@@ -6,9 +6,9 @@ import requests
 from . import (
     db, get_current_week, serversByName,
     IndicatorMapping, IndicatorsDataSet, notifyingParties, allDistrictsByName)
-from webapp.settings import config, KEYWORD_MESSAGE_TEMPLATE, KEYWORD_SERVER_MAPPINGS
+from webapp.settings import config, KEYWORD_SERVER_MAPPINGS
 import webapp.settings as settings
-from webapp.app.controllers.api8 import _dispatch_body
+from webapp.app.controllers.api8 import _dispatch_body, _message_template
 from webapp.app.tools.utils import (
     get_basic_auth_credentials, auth_user, get_webhook_msg_old,
     queue_request, parse_message, get_reporting_week,
@@ -28,8 +28,7 @@ from .tasks import (
 
 def _instance_queue_payload(keyword, raw_msg, msisdn):
     """Build the payload and queue mode for routed keyword messages."""
-    lookup_keyword = keyword.lower() if isinstance(keyword, str) else keyword
-    if KEYWORD_MESSAGE_TEMPLATE.get(lookup_keyword) is not None:
+    if _message_template(keyword) is not None:
         payload, content_type = _dispatch_body(keyword, raw_msg, msisdn)
         queue_content_type = (
             "json" if content_type == "application/json" else "text"
@@ -48,8 +47,7 @@ def _instance_queue_payload(keyword, raw_msg, msisdn):
 
 
 def _keyword_uses_message_template(keyword):
-    lookup_keyword = keyword.lower() if isinstance(keyword, str) else keyword
-    return KEYWORD_MESSAGE_TEMPLATE.get(lookup_keyword) is not None
+    return _message_template(keyword) is not None
 
 
 def send_threshold_alert(msg, district):
@@ -592,7 +590,7 @@ class QueueForDhis2InstanceProcessing:
         destination = params.destination
         if not destination:
             destination = KEYWORD_SERVER_MAPPINGS.get(
-                params.report_type.lower(), config['dispatcher2_destination'])
+                params.report_type.strip().lower(), config['dispatcher2_destination'])
         extra_params = {
             'week': week, 'year': year, 'msisdn': params.msisdn,
             'facility': '', 'raw_msg': params.raw_msg,
