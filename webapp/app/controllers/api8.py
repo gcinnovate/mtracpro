@@ -7,9 +7,8 @@ from string import Template
 import web
 import requests
 # import settings
-from . import db, get_current_week, notifyingParties, allDistrictsByName, serversByName
+from . import db, get_current_week, notifyingParties, allDistrictsByName
 from webapp.app.tools.utils import get_basic_auth_credentials, auth_user
-from webapp.app.tools.utils import queue_request
 from webapp.settings import (
     config,
     KEYWORD_MESSAGE_TEMPLATE,
@@ -106,30 +105,6 @@ def _dispatch_body(form, raw_msg, msisdn):
     return json.dumps(body), "application/json"
 
 
-def _save_template_request(payload, content_type, form, raw_msg, msisdn,
-                           year, week):
-    lookup_form = form.lower() if isinstance(form, str) else form
-    destination = KEYWORD_SERVER_MAPPINGS.get(
-        lookup_form, config.get("dispatcher2_destination", "dhis2"))
-    return queue_request(db, {
-        "source": serversByName.get(
-            config.get("dispatcher2_source", "mtrackpro"),
-            config.get("dispatcher2_source", "mtrackpro")),
-        "destination": serversByName.get(destination, destination),
-        "body": payload,
-        "week": week,
-        "year": year,
-        "district": "",
-        "facility": "",
-        "msisdn": msisdn,
-        "raw_msg": raw_msg,
-        "report_type": form,
-        "extras": "{}",
-        "status": config.get("default-queue-status", "pending"),
-        "ctype": content_type,
-    })
-
-
 class Dispatch:
     """routing messages to DHIS 2 servers"""
     def GET(self):
@@ -151,21 +126,8 @@ class Dispatch:
             "source": "mtrackpro",
             "destination": KEYWORD_SERVER_MAPPINGS.get(params.form, "localhost")
         }
-        if uses_message_template:
-            del myparams["raw_msg"]
         payload, content_type = _dispatch_body(
             params.form, params.raw_msg, params.msisdn)
-
-        if uses_message_template:
-            report_id = _save_template_request(
-                payload,
-                "json" if content_type == "application/json" else "text",
-                params.form, params.raw_msg, params.msisdn, year, week)
-            if not report_id:
-                return json.dumps({
-                    "status": "error",
-                    "message": "failed to save templated request",
-                })
 
         queueEndpoint = config.get("dispatcher2_queue_url", "http://localhost:9191/queue?")
         # print("Call=>", queueEndpoint)

@@ -52,26 +52,6 @@ def _keyword_uses_message_template(keyword):
     return KEYWORD_MESSAGE_TEMPLATE.get(lookup_keyword) is not None
 
 
-def _save_template_request(payload, content_type, keyword, raw_msg, msisdn,
-                           year, week, source, destination):
-    """Persist a templated routed request without forwarding raw_msg."""
-    return queue_request(db, {
-        'source': serversByName.get(source, source),
-        'destination': serversByName.get(destination, destination),
-        'body': payload,
-        'week': week,
-        'year': year,
-        'district': '',
-        'facility': '',
-        'msisdn': msisdn,
-        'raw_msg': raw_msg,
-        'report_type': keyword,
-        'extras': '{}',
-        'status': config.get('default-queue-status', 'pending'),
-        'ctype': content_type,
-    })
-
-
 def send_threshold_alert(msg, district):
     try:
         threshold_alert_contacts = notifyingParties[allDistrictsByName[district]]['threshold_alert_contacts']
@@ -613,24 +593,12 @@ class QueueForDhis2InstanceProcessing:
         if not destination:
             destination = KEYWORD_SERVER_MAPPINGS.get(
                 params.report_type.lower(), config['dispatcher2_destination'])
-        if _keyword_uses_message_template(params.report_type):
-            report_id = _save_template_request(
-                payload, queue_content_type, params.report_type,
-                params.raw_msg, msisdn, year, week, source, destination)
-            if not report_id:
-                return json.dumps({
-                    "status": "error",
-                    "message": "failed to save templated request",
-                })
-
         extra_params = {
             'week': week, 'year': year, 'msisdn': params.msisdn,
             'facility': '', 'raw_msg': params.raw_msg,
             'distrcit': '', 'report_type': params.report_type,
             'source': source, 'destination': destination,
             'is_qparams': is_qparams}
-        if _keyword_uses_message_template(params.report_type):
-            del extra_params['raw_msg']
         print(extra_params)
 
         # resp = post_request_to_dispatcher2(payload, ctype="text", params=extra_params)
@@ -676,24 +644,12 @@ class QueueForDhis2InstanceProcessing:
                 report_type.strip().lower())
         if not destination:
             return json.dumps({"status": f"no destination configured for keyword: {report_type}"})
-        if _keyword_uses_message_template(report_type):
-            report_id = _save_template_request(
-                payload, queue_content_type, report_type,
-                raw_msg, msisdn, year, week, source, destination)
-            if not report_id:
-                return json.dumps({
-                    "status": "error",
-                    "message": "failed to save templated request",
-                })
-
         extra_params = {
             'week': week, 'year': year, 'msisdn': msisdn,
             'facility': '', 'raw_msg': raw_msg,
             'distrcit': '', 'report_type': report_type,
             'source': source, 'destination': destination,
             'is_qparams': is_qparams}
-        if _keyword_uses_message_template(report_type):
-            del extra_params['raw_msg']
         print(extra_params)
 
         # resp = post_request_to_dispatcher2(payload, ctype="text", params=extra_params)
