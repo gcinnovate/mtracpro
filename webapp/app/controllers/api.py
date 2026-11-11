@@ -47,6 +47,11 @@ def _instance_queue_payload(keyword, raw_msg, msisdn):
     }, "json", "f"
 
 
+def _keyword_uses_message_template(keyword):
+    lookup_keyword = keyword.lower() if isinstance(keyword, str) else keyword
+    return KEYWORD_MESSAGE_TEMPLATE.get(lookup_keyword) is not None
+
+
 def send_threshold_alert(msg, district):
     try:
         threshold_alert_contacts = notifyingParties[allDistrictsByName[district]]['threshold_alert_contacts']
@@ -595,6 +600,8 @@ class QueueForDhis2InstanceProcessing:
             'distrcit': '', 'report_type': params.report_type,
             'source': source, 'destination': destination,
             'is_qparams': is_qparams}
+        if _keyword_uses_message_template(params.report_type):
+            del extra_params['raw_msg']
         print(extra_params)
 
         # resp = post_request_to_dispatcher2(payload, ctype="text", params=extra_params)
@@ -647,6 +654,8 @@ class QueueForDhis2InstanceProcessing:
             'distrcit': '', 'report_type': report_type,
             'source': source, 'destination': destination,
             'is_qparams': is_qparams}
+        if _keyword_uses_message_template(report_type):
+            del extra_params['raw_msg']
         print(extra_params)
 
         # resp = post_request_to_dispatcher2(payload, ctype="text", params=extra_params)

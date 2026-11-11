@@ -5,7 +5,10 @@ from unittest import mock
 
 from webapp.app.controllers import api8
 from webapp.app.controllers import api as dispatch_api
-from webapp.app.controllers.api import _instance_queue_payload
+from webapp.app.controllers.api import (
+    _instance_queue_payload,
+    _keyword_uses_message_template,
+)
 
 
 class DispatchBodyTest(unittest.TestCase):
@@ -83,6 +86,12 @@ class DispatchBodyTest(unittest.TestCase):
         self.assertEqual(json.loads(body), {"data": "hello", "from": "2567"})
         self.assertEqual(queue_content_type, "json")
         self.assertEqual(is_qparams, "f")
+
+    def test_template_detection_is_case_insensitive(self):
+        api8.KEYWORD_MESSAGE_TEMPLATE = {"info": {"text": "$raw_msg"}}
+
+        self.assertTrue(_keyword_uses_message_template("INFO"))
+        self.assertFalse(_keyword_uses_message_template("unknown"))
 
     @mock.patch("webapp.app.controllers.api8.datetime.datetime")
     def test_date_placeholder_uses_request_time(self, datetime_class):

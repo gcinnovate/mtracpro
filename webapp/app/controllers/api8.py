@@ -111,6 +111,8 @@ class Dispatch:
         params = web.input(raw_msg="", msisdn="", form="")
         web.header("Content-Type", "application/json; charset=utf-8")
         year, week = get_current_week()
+        lookup_form = params.form.lower() if isinstance(params.form, str) else params.form
+        uses_message_template = KEYWORD_MESSAGE_TEMPLATE.get(lookup_form) is not None
         myparams = {
             "username": config["dispatcher2_username"],
             "password": config["dispatcher2_password"],
@@ -119,11 +121,13 @@ class Dispatch:
             "year": year,
             "week": week,
             "msisdn": params.msisdn,
-            "is_qparams": 't',
+            "is_qparams": 'f' if uses_message_template else 't',
             "extras": "{}",
             "source": "mtrackpro",
             "destination": KEYWORD_SERVER_MAPPINGS.get(params.form, "localhost")
         }
+        if uses_message_template:
+            del myparams["raw_msg"]
         payload, content_type = _dispatch_body(
             params.form, params.raw_msg, params.msisdn)
 
