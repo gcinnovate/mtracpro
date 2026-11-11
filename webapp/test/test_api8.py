@@ -8,6 +8,7 @@ from webapp.app.controllers import api as dispatch_api
 from webapp.app.controllers.api import (
     _instance_queue_payload,
     _keyword_uses_message_template,
+    _save_template_request,
 )
 
 
@@ -92,6 +93,18 @@ class DispatchBodyTest(unittest.TestCase):
 
         self.assertTrue(_keyword_uses_message_template("INFO"))
         self.assertFalse(_keyword_uses_message_template("unknown"))
+
+    @mock.patch("webapp.app.controllers.api.queue_request")
+    def test_template_request_persists_raw_message_separately(self, queue_request):
+        _save_template_request(
+            '{"text": "hello"}', "json", "INFO", "hello", "2567",
+            2026, 10, "mtrackpro", "dhis2")
+
+        queue_request.assert_called_once()
+        saved_params = queue_request.call_args.args[1]
+        self.assertEqual(saved_params["raw_msg"], "hello")
+        self.assertEqual(saved_params["body"], '{"text": "hello"}')
+        self.assertEqual(saved_params["ctype"], "json")
 
     @mock.patch("webapp.app.controllers.api8.datetime.datetime")
     def test_date_placeholder_uses_request_time(self, datetime_class):
