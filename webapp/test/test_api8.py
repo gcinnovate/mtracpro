@@ -5,6 +5,7 @@ from unittest import mock
 
 from webapp.app.controllers import api8
 from webapp.app.controllers import api as dispatch_api
+from webapp.app.tools.utils import remove_query_param
 from webapp.app.controllers.api import (
     _instance_queue_payload,
     _keyword_uses_message_template,
@@ -93,6 +94,16 @@ class DispatchBodyTest(unittest.TestCase):
         self.assertTrue(_keyword_uses_message_template("INFO"))
         self.assertTrue(_keyword_uses_message_template(" INFO "))
         self.assertFalse(_keyword_uses_message_template("unknown"))
+
+    def test_remove_query_param_prevents_duplicate_queue_mode(self):
+        url = remove_query_param(
+            "http://localhost:9191/queue?source=mtrack&is_qparams=t&destination=dhis2",
+            "is_qparams")
+
+        self.assertEqual(
+            url,
+            "http://localhost:9191/queue?source=mtrack&destination=dhis2",
+        )
 
     @mock.patch("webapp.app.controllers.api8.datetime.datetime")
     def test_date_placeholder_uses_request_time(self, datetime_class):

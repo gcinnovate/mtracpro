@@ -22,6 +22,7 @@ from .celeryconfig import (
     SMB_CLIENT_HOSTNAME, SMB_SHARED_FOLDER, SMB_PORT)
 
 from smb.SMBConnection import SMBConnection
+from webapp.app.tools.utils import remove_query_param
 
 MAX_CHUNK_SIZE = 90
 
@@ -440,6 +441,7 @@ def queue_in_dispatcher2(data, url=config['dispatcher2_queue_url'], ctype="json"
         ct = 'application/json'
     else:
         ct = 'text/plain'
+    url = remove_query_param(url, "is_qparams")
     response = requests.post(
         url,
         data=data,

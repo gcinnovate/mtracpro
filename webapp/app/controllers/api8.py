@@ -8,7 +8,8 @@ import web
 import requests
 # import settings
 from . import db, get_current_week, notifyingParties, allDistrictsByName
-from webapp.app.tools.utils import get_basic_auth_credentials, auth_user
+from webapp.app.tools.utils import (
+    get_basic_auth_credentials, auth_user, remove_query_param)
 from webapp.settings import (
     config,
     KEYWORD_MESSAGE_TEMPLATE,
@@ -142,7 +143,7 @@ class Dispatch:
         queueEndpoint = config.get("dispatcher2_queue_url", "http://localhost:9191/queue?")
         # print("Call=>", queueEndpoint)
         requests.post(
-            queueEndpoint,
+            remove_query_param(queueEndpoint, "is_qparams"),
             data=payload,
             params=myparams,
             headers={"Content-type": content_type})

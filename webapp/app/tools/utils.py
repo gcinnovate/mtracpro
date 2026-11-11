@@ -8,6 +8,7 @@ import simplejson
 import datetime
 import psycopg2.extras
 import os
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from webapp.settings import config
 from webapp.settings import (
     DELIMITER, CASES_POSITIONS, DEATH_POSITIONS, KEYWORDS_DATA_LENGTH,
@@ -32,6 +33,15 @@ def format_msisdn(msisdn=None):
 
 def lit(**keywords):
     return keywords
+
+
+def remove_query_param(url, name):
+    """Remove all occurrences of a query parameter from a URL."""
+    parts = urlsplit(url)
+    query = [item for item in parse_qsl(parts.query, keep_blank_values=True)
+             if item[0] != name]
+    return urlunsplit((parts.scheme, parts.netloc, parts.path,
+                       urlencode(query), parts.fragment))
 
 
 def get_webhook_msg_old(params, label='msg'):
