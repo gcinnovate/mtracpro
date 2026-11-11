@@ -108,6 +108,17 @@ class DispatchBodyTest(unittest.TestCase):
         self.assertEqual(saved_params["body"], '{"text": "hello"}')
         self.assertEqual(saved_params["ctype"], "json")
 
+    @mock.patch("webapp.app.controllers.api8.queue_request")
+    def test_direct_dispatch_template_persistence_uses_raw_message(self, queue_request):
+        queue_request.return_value = 42
+
+        api8._save_template_request(
+            '{"text": "hello"}', "json", "INFO", "hello", "2567", 2026, 10)
+
+        saved_params = queue_request.call_args.args[1]
+        self.assertEqual(saved_params["raw_msg"], "hello")
+        self.assertEqual(saved_params["body"], '{"text": "hello"}')
+
     @mock.patch("webapp.app.controllers.api8.datetime.datetime")
     def test_date_placeholder_uses_request_time(self, datetime_class):
         datetime_class.now.return_value.strftime.return_value = "2026-10-03"
